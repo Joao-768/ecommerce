@@ -1,0 +1,13 @@
+.login {
+    display: block;
+    background-color: rgb(221, 221, 221);
+    color: #000;
+    height: 93.2vh;
+}
+
+.title-login {
+    margin-top: 160px;
+    text-align: center;
+    width: 100vw;
+}
+

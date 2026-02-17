@@ -1,0 +1,18 @@
+[
+    {
+        "id": "valentines_day",
+        "name": "Valentine's Day",
+        "start": "02-10",
+        "end": "02-14",
+        "collections": ["for-her", "commemorative"],
+        "discount": null
+    },
+    {
+        "id": "christmas",
+        "name": "Christmas",
+        "start": "12-01",
+        "end": "12-25",
+        "collections": ["for-her", "commemorative"],
+        "discount": 10
+    }
+]
