@@ -1,0 +1,43 @@
+{
+    "aboutUs": "À Propos de Nous",
+    "daily": "Quotidien",
+    "casual": "Décontracté",
+    "elegance": "Élégance",
+    
+    "buyNow": "Acheter Maintenant",
+    "collection": "Collection Bêtes Éternelles",
+    "slideDown": "Glisser Vers le Bas",
+
+    "new": "Nouveaux",
+    "bestSellers" : "Meilleures Ventes",
+    "spring": "Collection Printemps",
+    "summer": "Collection Été",
+    "fall": "Collection Automne",
+    "winter": "Collection Hiver",
+
+    "mensWatches" : "Montres pour Hommes",
+    "womensWatches" : "Montres pour Femmes",
+    "limitedCollection" : "Collection Limitée",
+
+    "searchTitle":"Que recherchez-vous?",
+    "input": "Rechercher une montre...",
+    "search": "Rechercher",
+    "popularSearches": "Recherches populaires",
+    
+    "home": "Accueil",
+    "watches": "Montres",
+
+    "createAccountTitle": "Créer un compte Untitled",
+    "createAccountDescription": "Rejoignez Untitled et découvrez une expérience du temps plus personnelle.",
+    "li1": "Paiement rapide",
+    "li2": "Suivi des commandes",
+    "li3": "Recevez des recommandations personnalisées",
+    "li4": "Ajoutez des montres à votre liste de souhaits",
+    "createAccountButton": "Créer un compte",
+    "loginTitle": "Connexion",
+    "emailAddress": "Adresse e-mail",
+    "emailAddressExample": "exemple@gmail.com",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "loginButton": "Se connecter"
+}

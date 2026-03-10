@@ -1,0 +1,43 @@
+{
+    "aboutUs": "Über Uns",
+    "daily": "Alltag",
+    "casual": "Freizeit",
+    "elegance": "Eleganz",
+    
+    "buyNow": "Jetzt Kaufen",
+    "collection": "Kollektion der Ewigen Bestien",
+    "slideDown": "Nach Unten Scrollen",
+
+    "new": "Neu",
+    "bestSellers": "Bestseller",
+    "spring": "Frühlingskollektion",
+    "summer": "Sommerkollektion",
+    "fall": "Herbstkollektion",
+    "winter": "Winterkollektion",
+
+    "mensWatches": "Herrenuhren",
+    "womensWatches": "Damenuhren",
+    "limitedCollection": "Limitierte Edition",
+
+    "searchTitle": "Wonach suchen Sie?",
+    "input": "Suchen Sie eine Uhr...",
+    "search": "Suchen",
+    "popularSearches": "Beliebte Suchanfragen",
+    
+    "home": "Startseite",
+    "watches": "Uhren",
+
+    "createAccountTitle": "Ein Untitled-Konto erstellen",
+    "createAccountDescription": "Treten Sie Untitled bei und erleben Sie Zeit auf eine persönlichere Weise.",
+    "li1": "Sofortiger Checkout",
+    "li2": "Bestellverfolgung",
+    "li3": "Individuelle Empfehlungen erhalten",
+    "li4": "Uhren zu Ihrer Wunschliste hinzufügen",
+    "createAccountButton": "Konto erstellen",
+    "loginTitle": "Anmelden",
+    "emailAddress": "E-Mail-Adresse",
+    "emailAddressExample": "beispiel@gmail.com",
+    "password": "Passwort",
+    "forgotPassword": "Passwort vergessen?",
+    "loginButton": "Anmelden"
+}

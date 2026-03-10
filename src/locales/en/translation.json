@@ -1,0 +1,43 @@
+{
+    "aboutUs": "About Us",
+    "daily": "Daily",
+    "casual": "Casual",
+    "elegance": "Elegance",
+
+    "buyNow": "Buy Now",
+    "collection": "Eternal Beasts Collection",
+    "slideDown": "Slide Down",
+
+    "new": "New",
+    "bestSellers" : "Best Sellers",
+    "spring": "Spring Collecion",
+    "summer": "Summer Collecion",
+    "fall": "Fall Collecion",
+    "winter": "Winter Collection",
+
+    "mensWatches" : "Men's Watches",
+    "womensWatches" : "Women's Watches",
+    "limitedCollection" : "Limited Collection",
+
+    "searchTitle":"What are you looking for?",
+    "input": "Search for a watch...",
+    "search": "Search",
+    "popularSearches": "Popular searches",
+    
+    "home": "Home",
+    "watches": "Watches",
+
+    "createAccountTitle": "Create a Untitled account",
+    "createAccountDescription": "Join Untitled and unlock a more personal experience of time.",
+    "li1": "Instant checkout",
+    "li2": "Order tracking",
+    "li3": "Receive custom sugestions",
+    "li4": "Add watches to your wishlist",
+    "createAccountButton": "Create Account",
+    "loginTitle": "Login",
+    "emailAddress": " Email Address",
+    "emailAddressExample": "exemple@gmail.com",
+    "password": "password",
+    "forgotPassword": "Forgot Password",
+    "loginButton": "Login"
+}
