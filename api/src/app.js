@@ -4,6 +4,8 @@ import cors from "cors";
 import { categoriesRoutes } from "./routes/categories.routes.js";
 import { collectionsRoutes } from "./routes/collections.routes.js";
 import { productRoutes } from "./routes/products.routes.js";
+import { emailRoutes } from "./routes/email.routes.js";
+import { userRoutes } from "./routes/users.routes.js";
 import { pool } from "./config/database.js";
 
 const app = express();
@@ -42,5 +44,7 @@ app.get('/api/test-db', async (req, res) => {
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/collections", collectionsRoutes);
+app.use("/api/email", emailRoutes);
+app.use("/api/users", userRoutes);
 
 export default app;

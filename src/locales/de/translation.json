@@ -39,5 +39,29 @@
     "emailAddressExample": "beispiel@gmail.com",
     "password": "Passwort",
     "forgotPassword": "Passwort vergessen?",
-    "loginButton": "Anmelden"
+    "loginButton": "Anmelden",
+    "name": "Name",
+    "namePlaceholder": "John",
+    "surname": "Surname",
+    "surnamePlaceholder": "Doe",
+    "emailPlaceholder": "beispiel@gmail.com",
+    "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
+    "confirmPasswordPlaceholder": "Bestätigen Sie Ihr Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto? ",
+    "loginHere": "Hier anmelden",
+    "requiredVasculine": "Erforderlich",
+    "requiredFeminine": "Erforderlich",
+    "iAmHuman": "Ich bin kein Roboter",
+
+    "women": "Frauen",
+    "men": "Männer",
+    "unisex": "Unisex",
+
+    "cart": "Warenkorb",
+    "checkout": "Zur Kasse",
+    "cartEmpty": "Ihr Warenkorb ist leer.",
+    "total": "Gesamt",
+    "checkoutButton": "Zur Kasse gehen",
+    "vat": "inkl. MwSt."
 }

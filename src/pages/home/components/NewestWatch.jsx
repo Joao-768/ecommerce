@@ -34,7 +34,7 @@ export default function NewestWatch({ onNavigate }) {
         className="absolute left-10 bottom-28 h-5/9 z-10"
       />
       <img
-        src="/images/the-white-fang.png"
+        src="/images/eternal-beasts/the-white-fang.png"
         alt="White Fang"
         className="absolute left-185 top-100 w-3/8 -translate-x-1/2 -translate-y-1/2 z-10"
       />
@@ -46,19 +46,18 @@ export default function NewestWatch({ onNavigate }) {
 
         <button
           className="px-6 min-w-30 h-12 text-sm font-[Panchang-Regular] bg-black text-white border-2 border-black cursor-pointer mb-5 rounded-md hover:bg-white hover:text-black transition-all duration-200"
-          onClick={() => onNavigate('product', 1)}
+          onClick={() => onNavigate('product', { productId: 1 })}
         >
           {t("buyNow")}
         </button>
 
         <button 
           className="px-6 min-w-20 h-12 text-sm font-[Panchang-Regular] bg-white text-black border-2 border-black cursor-pointer rounded-md hover:bg-black hover:text-white transition-all duration-200"
-          onClick={() => onNavigate('collection', 'eternal beast')}
-        >
-          {t("collection")}
+          onClick={() => onNavigate("collection", { collectionId: "eternalBeastsCollection" })}>
+          {t("eternalBeastsCollection")}
         </button>
       </div>
-
+            
       <div
         className={`w-screen flex flex-col items-center pt-20 font-[Panchang-Regular] transition-opacity duration-300 ${
           isHidden ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'

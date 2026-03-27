@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-export default function Audience() {
+export default function Audience( { onNavigate } ) {
   const { t } = useTranslation();
   const cards = [
     { title: "mensWatches", image: "/mensWatches.png" },
@@ -9,10 +9,18 @@ export default function Audience() {
   ];
 
   return (
-    <div className="h-screen bg-stone-100 px-10 py-16">
+    <div className="h-screen px-10 py-16">
       <div className="grid grid-cols-3 gap-4 h-full">
         {cards.map((card) => (
-          <div key={card.title} className="relative overflow-hidden rounded-lg">
+          <div 
+            key={card.title} 
+            className="relative overflow-hidden rounded-lg"
+            onClick={() => onNavigate(
+              card.title === "mensWatches" || card.title === "womensWatches"
+                ? { genderId: card.title }
+                : { collectionId: card.title }
+            )}
+          >
             <img
               className="w-full h-full object-cover"
               src={card.image}

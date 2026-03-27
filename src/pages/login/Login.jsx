@@ -6,7 +6,7 @@ export default function Login({ onNavigate }) {
     return (
         <div className="min-h-screen flex items-center justify-center px-6"> 
             <div className="w-full max-w-6xl bg-white shadow-2xl rounded-2xl grid grid-cols-2 overflow-hidden">
-                {/* LEFT SIDE */}
+                {/* left Side */}
                 <div className="p-16 flex flex-col justify-center bg-black text-white">
                     <h2 className="text-2xl font-[Panchang-Semibold] mb-6">
                         {t("createAccountTitle")}
@@ -31,7 +31,7 @@ export default function Login({ onNavigate }) {
                     </button>
                 </div>
 
-                {/* RIGHT SIDE */}
+                {/* Right Side */}
                 <div className="p-16 flex flex-col justify-center">
                     <h2 className="text-3xl font-[Panchang-Semibold] mb-10">
                         {t("loginTitle")}
@@ -46,19 +46,17 @@ export default function Login({ onNavigate }) {
                             <input
                                 type="email"
                                 placeholder={t("emailAddressExample")}
-                                required
                                 className="border-b border-stone-300 focus:border-black outline-none py-2 transition-all font-[Panchang-Regular]"
                             />
                         </div>
 
                         <div className="flex flex-col">
                             <label className="text-sm mb-2 text-stone-600 font-[Panchang-Regular]">
-                                Password
+                                {t("password")}
                             </label>
                             <input
                                 type="password"
-                                placeholder={t("password")}
-                                required
+                                placeholder={t("passwordPlaceholder")}
                                 className="border-b border-stone-300 focus:border-black outline-none py-2 transition-all font-[Panchang-Regular]"
                             />
                         </div>
@@ -66,7 +64,7 @@ export default function Login({ onNavigate }) {
                         <div className="flex justify-between items-center text-sm">
                             <button
                                 type="button"
-                                className="text-stone-500 hover:text-black transitio font-[Panchang-Regular]"
+                                className="text-stone-500 hover:text-black transition-all duration-300 font-[Panchang-Regular] hover:underline mb-8"
                             >
                                 {t("forgotPassword")}
                             </button>
@@ -74,7 +72,7 @@ export default function Login({ onNavigate }) {
 
                         <button
                         type="submit"
-                        className="w-full bg-black text-white py-3 rounded-full border border-transparent hover:bg-white hover:border-black hover:text-black transition-all duration-300 font-[Panchang-Regular]"
+                        className="w-full bg-black text-white py-3 rounded-full border border-white hover:bg-white hover:border-black hover:text-black transition-all duration-300 font-[Panchang-Regular]"
                         >
                             {t("loginButton")}
                         </button>

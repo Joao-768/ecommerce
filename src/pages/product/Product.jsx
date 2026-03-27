@@ -5,10 +5,10 @@ import { getCollectionsById } from "../../api/collectionsApi.js";
 import { getProductById } from "../../api/productsApi.js";
 import { useTranslation } from "react-i18next";
 
-export default function ProductPage({ id, onNavigate }) {
+export default function ProductPage({ id, onNavigate, cartItems, setCartItems, wishlistItems, setWishlistItems }) {
   const [product, setProduct] = useState(null);
   const [category, setCategory] = useState(null);
-  const [collection, setCollection] = useState(null);
+  const [collection, setCollection] = useState({ name: "", slug: "" });
   const [error, setError] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const { t } = useTranslation();
@@ -43,15 +43,20 @@ export default function ProductPage({ id, onNavigate }) {
     const collectionId = product.collection_id ?? product.collectionId;
 
     if (categoryId !== undefined && categoryId !== null) {
-      getCategoriesById(categoryId).then((name) => setCategory(name));
+      getCategoriesById(categoryId).then((data) => setCategory(data));
     } else {
       setCategory(product.category ?? product.style ?? null);
     }
 
     if (collectionId !== undefined && collectionId !== null) {
-      getCollectionsById(collectionId).then((name) => setCollection(name));
+      getCollectionsById(collectionId).then((data) =>
+        setCollection(data ?? { name: "", slug: "" })
+      );
     } else {
-      setCollection(product.collection ?? null);
+      setCollection({
+        name: product.collection ?? "",
+        slug: product.collection_slug ?? product.collection ?? "",
+      });
     }
   }, [product]);
 
@@ -75,16 +80,16 @@ export default function ProductPage({ id, onNavigate }) {
             <span>-</span>
             <button
               className="hover:underline"
-              onClick={() => onNavigate("style", product.style)}
+              onClick={() => onNavigate("category", { categoryId: product.category })}
             >
-              {t(String(category ?? product.style ?? ""))}
+              {t(String(category?.name))}
             </button>
             <span>-</span>
             <button
               className="hover:underline"
-              onClick={() => onNavigate("collection", product.collection)}
+              onClick={() => onNavigate("collection", { collectionId: product.collection })}
             >
-              {String(collection ?? product.collection ?? "")}
+              {String(collection?.name ?? "")}
             </button>
             <span>-</span>
             <span className="font-[Panchang-Semibold] cursor-default">
@@ -93,7 +98,7 @@ export default function ProductPage({ id, onNavigate }) {
           </nav>
           <img
             className="h-105 relative z-10"
-            src={`/images/${product.collection}/${product.image}`}
+            src={`/images/${String(collection?.slug)}/${product.slug}.png`}
             alt={product.name}
           />
         </div>
@@ -102,27 +107,32 @@ export default function ProductPage({ id, onNavigate }) {
       {/* Right Screen */}
       <div className="flex justify-center">
         <div className="min-h-screen w-105">
-          <div className="pt-40 flex items-center gap-3">
+          <div className="pt-45 flex items-center gap-3">
             <h1 className="text-3xl font-[Panchang-Semibold]">{product.name}</h1>
-            <button className="w-12 h-12 text-2xl" 
-              onClick={() => setIsFavorite((v) => !v)}>
+            <button
+              className="w-12 h-12 text-2xl"
+              onClick={() => {
+                setWishlistItems((prev) => [...prev, product]);
+                setIsFavorite(true);
+              }}
+            >
               {isFavorite ? <IoMdHeart /> : <IoMdHeartEmpty />}
             </button>
           </div>
           <h2 className="text-2xl font-[Panchang-Regular]">
-            {String(collection ?? product.collection ?? "")} Collection
+            {String(collection?.name)} Collection
           </h2>
           <p className="text-sm font-[Panchang-Regular] mt-5">
             {product.description}
           </p>
           <p className="text-2xl font-[Panchang-Semibold] mt-5">
-            {product.price},00€
+            {product.price}€
           </p>
           <button
             className="w-36 h-12 text-sm font-[Panchang-Regular] bg-black text-white border-2 border-black cursor-pointer mb-5 rounded-md hover:bg-white hover:text-black transition-all duration-200 mt-10"
-            onClick={() => onNavigate("cart", product.id)}
+            onClick={cartItems.find((item) => item.id === product.id) ? () => onNavigate("cart") : () => onNavigate("cart", { product })}
           >
-            Add to Cart
+            {cartItems.find((item) => item.id === product.id) ? "In your cart" : "Add to Cart"}
           </button>
         </div>
       </div>

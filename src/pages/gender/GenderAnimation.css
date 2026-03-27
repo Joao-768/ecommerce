@@ -1,0 +1,29 @@
+.gender-enter {
+  animation: genderDropIn 0.35s ease forwards;
+}
+
+.gender-exit {
+  animation: genderDropOut 0.35s ease forwards;
+}
+
+@keyframes genderDropIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes genderDropOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}

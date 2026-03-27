@@ -8,7 +8,7 @@ import { IoMdHeart } from "react-icons/io";
 import { IoBagHandle } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 
-export default function Header({ onNavigate, lang, setLang}) {
+export default function Header({ onNavigate, lang, setLang, haveAccount }) {
 
   const [isHidden, setIsHidden] = useState(false);
   const langOptions = ["pt", "fr", "en", "es", "de"];
@@ -47,8 +47,8 @@ export default function Header({ onNavigate, lang, setLang}) {
 
   return (
     <header className={isHidden ? 'header fixed top-0 left-0 h-30 w-full z-50 flex flex-col text-sm  header--hidden' : 'header fixed top-0 left-0 h-30 w-full z-50 flex flex-col text-sm '}>
-      {/* Left Header */}
       <div className='flex-1 flex items-center justify-between gap-5 p-25 w-full box-border relative header-top'>
+        {/* Left Header */}
         <div className='header-left'>
           <select
             className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'
@@ -78,18 +78,18 @@ export default function Header({ onNavigate, lang, setLang}) {
           <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => onNavigate('search')}><IoSearch /></button>
           <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => onNavigate('wishlist')}><IoMdHeart /></button>
           <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => onNavigate('cart')}><IoBagHandle /></button>
-          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => onNavigate('login')}><IoPerson /></button>
+          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => haveAccount ? onNavigate('userPage') : onNavigate('login')}><IoPerson /></button>
         </div>
       </div>
       {/* Bottom Header */}
       <div className='header-bottom flex-1 flex items-center justify-center gap-5 w-full box-border'>
-        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('style', 'daily')}>
+        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('category', { categoryId: 'daily' })}>
           {t("daily")}
         </button>
-        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('style', 'casual')}>
+        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('category', { categoryId: 'casual' })}>
           {t("casual")}
         </button>
-        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('style', 'elegance')}>
+        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('category', { categoryId: 'elegance' })}>
           {t("elegance")}
         </button>
       </div>

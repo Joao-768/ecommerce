@@ -1,9 +1,9 @@
 import { pool } from "../config/database.js";
 
-export async function getCategories(req, res) {
+export async function getGenders(req, res) {
     try {
         const [rows] = await pool.query(
-            "SELECT id, name FROM categories"
+            "SELECT id, name FROM genders"
         );
 
         res.json(rows);
@@ -12,7 +12,7 @@ export async function getCategories(req, res) {
     }
 }
 
-export async function getCategoriesById(req, res) {
+export async function getGendersById(req, res) {
     let connection;
     const { id } = req.params;
 
@@ -21,7 +21,7 @@ export async function getCategoriesById(req, res) {
         const [rows] = await connection.query("SELECT * FROM products WHERE id = ?", [id]);
 
         if (!rows.length) {
-            return res.status(404).json({ error: "Categoria não encontrada" });
+            return res.status(404).json({ error: "Gênero não encontrado" });
         }
 
         res.json(rows[0]);
@@ -32,13 +32,13 @@ export async function getCategoriesById(req, res) {
     }
 }
 
-export async function getProductsByCategory(req, res) {
-    const { categoryId } = req.params;
+export async function getProductsByGender(req, res) {
+    const { genderId } = req.params;
 
     try {
         const [rows] = await pool.query(
-            "SELECT * FROM products WHERE category_id = ?",
-            [categoryId]
+            "SELECT * FROM products WHERE gender_id = ?",
+            [genderId]
         );
 
         res.json(rows);

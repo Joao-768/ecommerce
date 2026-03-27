@@ -9,5 +9,11 @@ export async function getCategories() {
 export async function getCategoriesById(id) {
     const categories = await getCategories();
     const item = categories.find((c) => String(c.id) === String(id));
-    return item?.name ?? null;
+    return item ?? null;
+}
+
+export async function getProductsByCategory(categoryId) {
+    const res = await fetch(`${API_BASE}/api/categories/${categoryId}/products`);
+    if (!res.ok) throw new Error("Falha ao buscar produtos da categoria");
+    return res.json();
 }

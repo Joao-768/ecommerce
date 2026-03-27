@@ -3,7 +3,7 @@ import { pool } from "../config/database.js";
 export async function getCollections(req, res) {
     try {
         const [rows] = await pool.query(
-            "SELECT id, name FROM collections"
+            "SELECT id, name, slug FROM collections"
         );
 
         res.json(rows);
@@ -13,12 +13,12 @@ export async function getCollections(req, res) {
 }
 
 export async function getCollectionsById(req, res) {
-    let connection;
-    const { id } = req.params;
-
     try {
-        connection = await pool.getConnection();
-        const [rows] = await connection.query("SELECT * FROM products WHERE id = ?", [id]);
+        const { id } = req.params;
+        const [rows] = await pool.query(
+            "SELECT id, name, slug FROM collections WHERE id = ?",
+            [id]
+        );
 
         if (!rows.length) {
             return res.status(404).json({ error: "Coleção não encontrada" });
@@ -27,7 +27,20 @@ export async function getCollectionsById(req, res) {
         res.json(rows[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
-    } finally {
-        if (connection) connection.release();
+    }
+}
+
+export async function getProductsByCollection(req, res) {
+    const { collectionId } = req.params;
+
+    try {
+        const [rows] = await pool.query(
+            "SELECT * FROM products WHERE collection_id = ?",
+            [collectionId]
+        );
+
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 }

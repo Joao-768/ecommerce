@@ -1,12 +1,12 @@
-.style-enter {
-  animation: styleDropIn 0.35s ease forwards;
+.category-enter {
+  animation: categoryDropIn 0.35s ease forwards;
 }
 
-.style-exit {
-  animation: styleDropOut 0.35s ease forwards;
+.category-exit {
+  animation: categoryDropOut 0.35s ease forwards;
 }
 
-@keyframes styleDropIn {
+@keyframes categoryDropIn {
   from {
     transform: translateY(-100%);
     opacity: 0;
