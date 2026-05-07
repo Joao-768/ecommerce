@@ -1,65 +1,73 @@
-
-
 .header {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1)), transparent;
-  background-size: 100% 0%, 100% 100%;
-  background-position: 0 0, 0 0;
-  background-repeat: no-repeat;
-  box-sizing: border-box;
-  transition: background-size 0.25s ease, color 0.5s ease, transform 0.25s ease;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1)), transparent;
+    background-size: 100% 0%, 100% 100%;
+    background-position: 0 0, 0 0;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+    transition: background-size 0.25s ease, color 0s ease, transform 0.25s ease;
 }
 
 .header--hidden {
-  transform: translateY(-100%);
+    transform: translateY(-100%);
 }
 
 .header:hover {
-  background-size: 100% 100%, 100% 100%;
-  color: white;
+    background-size: 100% 100%, 100% 100%;
+    color: white;
 }
 
 .header:hover .header-button {
-  color: white;
+    color: white;
+}
+
+.header:hover .account-dot {
+    background: white;
+}
+
+.account-dot {
+    transition: background-color 0.25s ease;
 }
 
 .header-top {
-  padding: 0 100px;
+    padding: 0 100px;
 }
 
 .header-top > button {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .header-bottom {
-  padding: 0 20px;
+    padding: 0 20px;
 }
 
 .header-left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-left: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: 15px;
 }
 
 .header-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-right: 15px;
 }
 
 .title {
-  transition: filter 0.5s ease;
-    width: 100vw;
+    transition: filter 0.5s ease;
+    width: auto;
+    max-width: 180px;
+    height: auto;
 }
 
 .header:hover .title {
-  filter: brightness(0) invert(1);
+    filter: brightness(0) invert(1);
 }
 
 
 .header-button {
-  transition: color 0.25s ease;
+    transition: color 0.25s ease;
 }

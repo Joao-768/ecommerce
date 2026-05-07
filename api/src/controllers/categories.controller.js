@@ -1,30 +1,18 @@
 import { pool } from "../config/database.js";
 
 export async function getCategories(req, res) {
-    try {
-        const [rows] = await pool.query(
-            "SELECT id, name FROM categories"
-        );
-
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-}
-
-export async function getCategoriesById(req, res) {
     let connection;
-    const { id } = req.params;
 
     try {
         connection = await pool.getConnection();
-        const [rows] = await connection.query("SELECT * FROM products WHERE id = ?", [id]);
+        
+        // Get the categories
+        const [rows] = await connection.query(
+            "SELECT id, name FROM categories"
+        );
 
-        if (!rows.length) {
-            return res.status(404).json({ error: "Categoria não encontrada" });
-        }
-
-        res.json(rows[0]);
+        // Return the categories
+        res.json(rows);
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
@@ -33,16 +21,23 @@ export async function getCategoriesById(req, res) {
 }
 
 export async function getProductsByCategory(req, res) {
+    let connection;
     const { categoryId } = req.params;
 
     try {
-        const [rows] = await pool.query(
-            "SELECT * FROM products WHERE category_id = ?",
+        connection = await pool.getConnection();
+
+        // Get products by category id
+        const [rows] = await connection.query(
+            "SELECT p.* FROM products p WHERE p.category_id = ?",
             [categoryId]
         );
 
+        // Return the products
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
     }
 }

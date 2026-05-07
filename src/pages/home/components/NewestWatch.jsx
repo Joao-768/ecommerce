@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
+import { useNavigate } from 'react-router-dom';
 
-export default function NewestWatch({ onNavigate }) {
+export default function NewestWatch() {
   const [isHidden, setIsHidden] = useState(false);
   const { t } = useTranslation();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => {
@@ -16,6 +19,7 @@ export default function NewestWatch({ onNavigate }) {
 
   return (
     <div className="pt-48 text-black flex flex-col h-screen items-start relative overflow-hidden">
+      {/* Background Images */}
       <div className="absolute inset-0 pt-40 z-0">
         <img
           src="/images/mountains.png"
@@ -45,15 +49,15 @@ export default function NewestWatch({ onNavigate }) {
         <div className="text-9xl font-[Panchang-ExtraBold] pr-30">Fang</div>
 
         <button
-          className="px-6 min-w-30 h-12 text-sm font-[Panchang-Regular] bg-black text-white border-2 border-black cursor-pointer mb-5 rounded-md hover:bg-white hover:text-black transition-all duration-200"
-          onClick={() => onNavigate('product', { productId: 1 })}
+          className="px-6 min-w-30 h-12 text-sm font-[Panchang-Regular] bg-black text-white border-2 border-black cursor-pointer mb-5 rounded-md hover:bg-white hover:text-black transition-all duration-200 shadow-xl"
+          onClick={() => navigate('product/1')}
         >
           {t("buyNow")}
         </button>
 
         <button 
-          className="px-6 min-w-20 h-12 text-sm font-[Panchang-Regular] bg-white text-black border-2 border-black cursor-pointer rounded-md hover:bg-black hover:text-white transition-all duration-200"
-          onClick={() => onNavigate("collection", { collectionId: "eternalBeastsCollection" })}>
+          className="px-6 min-w-20 h-12 text-sm font-[Panchang-Regular] bg-white text-black border-2 border-black cursor-pointer rounded-md hover:bg-black hover:text-white transition-all duration-200 shadow-xl"
+          onClick={() => navigate('collection/1')}>
           {t("eternalBeastsCollection")}
         </button>
       </div>

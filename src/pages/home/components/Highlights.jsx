@@ -1,36 +1,60 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getSeasonalProducts } from "../../../api/collectionsApi";
+import { getProductsByCollection } from "../../../api/collectionsApi";
+import { getBestSellers, getNewProducts } from "../../../api/productsApi";
+import ProductCard from "../../../ui/ProductCard";
+import { useNavigate } from "react-router-dom";
 
-function getSeason(date) {
-    const month = date.getMonth();
-    if (month >= 2 && month <= 4) return "spring";
-    if (month >= 5 && month <= 7) return "summer";
-    if (month >= 8 && month <= 10) return "fall";
-    return "winter";
-}
-
-export default function Highlights({ onNavigate }) {
+export default function Highlights() {
     const { t } = useTranslation();
     const [currentHighlight, setCurrentHighlight] = useState("new");
     const [seasonalProducts, setSeasonalProducts] = useState([]);
+    const [newProducts, setNewProducts] = useState([]);
 
+    const navigate = useNavigate();
+
+    function getSeasonId(date) {
+        const month = date.getMonth();
+        if (month >= 2 && month <= 4) return 2;
+        if (month >= 5 && month <= 7) return 3;
+        if (month >= 8 && month <= 10) return 4;
+        return 5;
+    }
+
+    function getSeason(date) {
+        const month = date.getMonth();
+        if (month >= 2 && month <= 4) return "spring";
+        if (month >= 5 && month <= 7) return "summer";
+        if (month >= 8 && month <= 10) return "fall";
+        return "winter";
+    }
+
+    const seasonId = getSeasonId(new Date());
     const season = getSeason(new Date());
-    const newWatches = Array.from({ length: 10 }, (_, i) => `Watch ${i + 1}`);
-    const bestSellers = Array.from({ length: 10 }, (_, i) => `Watch ${i + 1}`);
+    const [bestSellers, setBestSellers] = useState([]);
 
     useEffect(() => {
         if (currentHighlight !== "season") return;
 
         (async () => {
             try {
-                const products = await getSeasonalProducts(season);
+                const products = await getProductsByCollection(seasonId);
                 setSeasonalProducts(Array.isArray(products) ? products : []);
             } catch {
                 setSeasonalProducts([]);
             }
         })();
-    }, [currentHighlight, season]);
+    }, [currentHighlight, seasonId]);
+
+    useEffect(() => {
+        getNewProducts()
+            .then((data) => setNewProducts(data.newProducts))
+            .catch(() => setNewProducts([]));
+
+        getBestSellers(10)
+            .then((data) => setBestSellers(data?.products))
+            .catch(() => setBestSellers([]));
+    }, []);
 
     return (
         <div className="min-h-screen flex flex-col pt-5">
@@ -54,7 +78,7 @@ export default function Highlights({ onNavigate }) {
                             {t("bestSellers")}
                         </button>
                         <button
-                            className={`border-0 bg-transparent text-black font-[Panchang-Regular] pb-2 cursor-pointer${
+                            className={`border-0 bg-transparent text-black font-[Panchang-Regular] pb-2 cursor-pointer ${
                                 currentHighlight === "season" ? "underline" : ""
                             }`}
                             onClick={() => setCurrentHighlight("season")}
@@ -66,53 +90,39 @@ export default function Highlights({ onNavigate }) {
                 </div>
             </div>
 
-            <div className="flex gap-1 overflow-x-auto pb-6 pt-5 pr-10 snap-x scrollbar-x overscroll-x-contain mt-4">
+            <div className="flex gap-1 overflow-x-auto p-6 pt-5 pr-10 snap-x scrollbar-x overscroll-x-contain mt-4">
                 {/* Newest Watches */}
                 {currentHighlight === "new" &&
-                newWatches.map((watch, index) => (
-                    <div key={index} className="flex flex-col items-center min-w-60 snap-start pl-10">
-                        <div className="w-60 h-96 bg-gray-200 mb-4 flex items-center justify-center">
-                            <span className="text-gray-500 font-[Panchang-Regular]">{watch} Image</span>
-                        </div>
-                        <h3 className="text-lg font-semibold font-[Panchang-Regular]">{watch}</h3>
-                        <p className="text-gray-600 font-[Panchang-Regular]">$XXX.XX</p>
-                    </div>
+                newProducts.map((product) => (
+                    <ProductCard 
+                        key={product.id}
+                        item={product}
+                        onClick={() => navigate(`product/${product.id}`)} 
+                        isSelling={true}
+                    />
                 ))}
 
                 {/* Best sellers Watches */}
                 {currentHighlight === "best" &&
-                bestSellers.map((watch, index) => (
-                        <div key={index} className="flex flex-col items-center min-w-60 snap-start pl-10">
-                            <div className="w-60 h-96 bg-gray-200 mb-4 flex items-center justify-center">
-                                <span className="text-gray-500 font-[Panchang-Regular]">{watch} Image</span>
-                            </div>
-                            <h3 className="text-lg font-semibold font-[Panchang-Regular]">{watch}</h3>
-                            <p className="text-gray-600 font-[Panchang-Regular]">$XXX.XX</p>
-                        </div>
+                bestSellers.map((product) => (
+                    <ProductCard 
+                        key={product.id}
+                        item={product}
+                        onClick={() => navigate(`product/${product.id}`)} 
+                        isSelling={true}
+                    />
                 ))}
 
                 {/* Seasonal Watches */}
                 {currentHighlight === "season" &&
-                    seasonalProducts.map((product) => (
-                        <div
-                            className="flex flex-col items-center min-w-60 snap-start pl-10"
-                        >
-                            <div 
-                                className="w-60 h-96 bg-gray-200 mb-4 flex items-center justify-center"
-                                onClick={() => onNavigate("product", { productId: product.id })}
-                            >
-                                <span className="text-gray-500 font-[Panchang-Regular]">
-                                    {product?.name ?? "Product"}
-                                </span>
-                            </div>
-                            <h3 className="text-lg font-semibold font-[Panchang-Regular]">
-                                {product?.name ?? "Untitled watch"}
-                            </h3>
-                            <p className="text-gray-600 font-[Panchang-Regular]">
-                                {product?.price != null ? `${product.price}€` : ""}
-                            </p>
-                        </div>
-                    ))}
+                seasonalProducts.map((product) => (
+                    <ProductCard 
+                        key={product.id}
+                        item={product}
+                        onClick={() => navigate(`product/${product.id}`)} 
+                        isSelling={true}
+                    />
+                ))}
             </div>
         </div>
     );

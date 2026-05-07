@@ -1,0 +1,59 @@
+import { useEffect, useState } from "react";
+import { IoArrowBackOutline } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
+import { getUserCollection } from "../../../../api/usersApi";
+import ProductCard from "../../../../ui/ProductCard";
+import { useNavigate } from "react-router-dom";
+
+export default function UserCollection() {
+    const account = localStorage.getItem("account");
+    const [collection, setCollection] = useState([]);
+    const { t } = useTranslation();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!account) return;
+        getUserCollection(account)
+            .then((data) => setCollection(data))
+            .catch((error) => console.error(error));
+    }, [account]);
+
+    return (
+        <div className="flex-1 pl-10 pr-10 pt-4 flex flex-col gap-4">
+            {/* Header */}
+            <div>
+                <h1 className="text-3xl font-[Panchang-Semibold]">
+                    {t("myCollection")}
+                </h1>
+                <p className="text-xs text-stone-500 font-[Panchang-Regular] mt-2 max-w-xl">
+                    { collection.length > 0 ? t("allYourWatches") : t("mycollectionDescription") }
+                </p>
+            </div>
+            {/* Collection Products */}
+            <div className="grid grid-cols-4 text-center">
+                {collection.map((product) => (
+                    <ProductCard 
+                        item={product} 
+                        onClick={() => {}} 
+                        isSelling={true}
+                    />
+                ))}
+                
+                {/* Add Product Button */}
+                <button 
+                    className="group w-60 h-96 border-2 border-dashed border-stone-300 rounded-lg flex flex-col items-center justify-center hover:border-black 
+                        transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+                    onClick={() => navigate("/user-page/collection/add")}
+                >
+                    <span className="w-20 h-20 border-2 border-dashed border-stone-300 rounded-lg flex items-center justify-center text-4xl text-stone-500 transition-all duration-300 group-hover:border-black group-hover:text-black">
+                        +
+                    </span>
+                    <p className="mt-2 font-[Panchang-Regular] text-black text-sm">
+                        {t("addNewWatch")}
+                    </p>
+                </button>
+            </div>
+        </div>
+    );
+}

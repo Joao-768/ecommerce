@@ -1,80 +1,67 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import "./CategoryAnimation.css";
-import { getCategories, getProductsByCategory } from "../../api/categoriesApi";
+import { getCategoriesById, getProductsByCategory } from "../../api/categoriesApi";
+import { useParams, useNavigate } from "react-router-dom";
+import { useScrollToTop } from "../../utils/format";
+import ProductCard from "../../ui/ProductCard";
 
-export default function Categories({ onNavigate, category }){
+export default function Categories(){
     const { t } = useTranslation();
-    const [watches, setWatches] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [categoryName, setCategoryName] = useState("");
+    const { id } = useParams();
 
+    const navigate = useNavigate();
+
+    useScrollToTop();
+
+    // Get products for the category
     useEffect(() => {
-        if (!category) {
-            setWatches([]);
+        // If no category ID, clear products
+        if (!id) {
+            setProducts([]);
             return;
         }
 
-        const fetchData = async () => {
-            try {
-                const categories = await getCategories();
-                const categoryValue = String(category).toLowerCase();
+        getProductsByCategory(id)
+            .then((products) => setProducts(products || []))
+            .catch(() => setProducts([]));
+    }, [id]);
 
-                const matchedCategory = categories.find(
-                    (c) =>
-                        String(c.name).toLowerCase() === categoryValue ||
-                        String(c.id) === String(category)
-                );
+    // Get category name
+    useEffect(() => {
+        // If no category ID, clear name
+        if (!id) setCategoryName("");
 
-                if (!matchedCategory) {
-                    setWatches([]);
-                    return;
-                }
 
-                const products = await getProductsByCategory(matchedCategory.id);
-                setWatches(products || []);
-            } catch (err) {
-                setWatches([]);
-            }
-        };
-
-        fetchData();
-    }, [category]);
+        // Fetch category name by ID
+        getCategoriesById(id)
+            .then((data) => setCategoryName(data?.name))
+            .catch(() => setCategoryName(""));
+        }, [id]);
 
     return(
-        <div className="category-page min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col">
             {/* Header */}
             <div className="relative py-8 px-6 pt-35">
                 <button
-                    onClick={() => onNavigate("home")}
+                    onClick={() => navigate('/')}
                     className="h-10 w-10 absolute right-6 text-xl rounded-xs font-bold cursor-pointer border border-stone-300 hover:border-black transition-all duration-300"
                 >
                     ✕
                 </button>
                 <h1 className="text-4xl text-center font-[Panchang-Semibold]">
-                    {t(category)}
+                    {t(categoryName || id)}
                 </h1>
             </div>
             {/* Watches Section */}
             <div className="flex gap-1 overflow-x-auto pb-6 pt-5 pr-10 snap-x scrollbar-x overscroll-x-contain mt-4">
-                {watches.map((watch, index) => (
-                    <div
-                        key={watch.id ?? index}
-                        className="flex flex-col items-center min-w-60 snap-start pl-10"
-                    >
-                        <div 
-                            className="w-60 h-96 bg-gray-200 mb-4 flex items-center justify-center"
-                            onClick={() => onNavigate("product", { productId: watch.id })}
-                        >
-                            <span className="text-gray-500 font-[Panchang-Regular]">
-                                {watch.name ?? "Product"}
-                            </span>
-                        </div>
-                        <h3 className="text-lg font-semibold font-[Panchang-Regular]">
-                            {watch.name ?? "Untitled watch"}
-                        </h3>
-                        <p className="text-gray-600 font-[Panchang-Regular]">
-                            {watch.price != null ? `${watch.price}€` : ""}
-                        </p>
-                    </div>
+                {products.map((product) => (
+                    <ProductCard
+                        item={product}
+                        onClick={() => navigate(`/product/${product.id}`)}
+                        isSelling={true}
+                    />
                 ))}
             </div>
         </div>

@@ -1,5 +1,5 @@
 import './headerAnimation.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
@@ -7,42 +7,63 @@ import { IoPerson } from "react-icons/io5";
 import { IoMdHeart } from "react-icons/io";
 import { IoBagHandle } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
+import { getUserRole } from "../../api/usersApi";
+import { useNavigate } from "react-router-dom";
 
-export default function Header({ onNavigate, lang, setLang, haveAccount }) {
+export default function Header({ setCartIsOpen }) {
 
-  const [isHidden, setIsHidden] = useState(false);
-  const langOptions = ["pt", "fr", "en", "es", "de"];
-  const lastScrollY = useRef(0);
-  const ticking = useRef(false);
-  const { i18n } = useTranslation();
-  const { t } = useTranslation();
+    const account = localStorage.getItem("account");
+    const [isHidden, setIsHidden] = useState(false);
+    const langOptions = ["pt", "fr", "en", "es", "de"];
+    const { i18n } = useTranslation();
+    const { t } = useTranslation();
+
+    const navigate = useNavigate();
 
   useEffect(() => {
-    lastScrollY.current = window.scrollY || 0;
+    const storedLang = localStorage.getItem("language");
+    if (storedLang && storedLang !== i18n.language) {
+      i18n.changeLanguage(storedLang);
+    }
+    if (storedLang == null && i18n.language) {
+      localStorage.setItem("language", i18n.language);
+    }
+  }, [i18n]);
+
+  const handleAccountClick = async () => {
+    if (!account) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const roleData = await getUserRole(account);
+      const role = (roleData?.userRole ?? "").toLowerCase();
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/user-page/control-panel");
+      }
+    } catch {
+        navigate("/user-page/control-panel");
+    }
+  };
+
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
 
     const onScroll = () => {
-      if (ticking.current) return;
-      ticking.current = true;
+        const currentY = window.scrollY;
 
-      window.requestAnimationFrame(() => {
-        const currentY = window.scrollY || 0;
-        const delta = currentY - lastScrollY.current;
+        setIsHidden(currentY > lastScrollY);
+        if(lastScrollY <= 0) setIsHidden(false);
 
-        if (currentY <= 0) {
-          setIsHidden(false);
-        } else if (delta > 5) {
-          setIsHidden(true);
-        } else if (delta < -5) {
-          setIsHidden(false);
-        }
-
-        lastScrollY.current = currentY;
-        ticking.current = false;
-      });
+        lastScrollY = currentY;
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
@@ -51,11 +72,11 @@ export default function Header({ onNavigate, lang, setLang, haveAccount }) {
         {/* Left Header */}
         <div className='header-left'>
           <select
-            className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'
-            value={lang}
+            className='bg-none border-none cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button outline-none'
+            value={i18n.language || "en"}
             onChange={(e) => {
               const nextLang = e.target.value;
-              setLang(nextLang);
+              localStorage.setItem("language", nextLang);
               i18n.changeLanguage(nextLang);
             }}
           >
@@ -65,31 +86,41 @@ export default function Header({ onNavigate, lang, setLang, haveAccount }) {
               </option>
             ))}
           </select>
-          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button' onClick={() => onNavigate('aboutUs')}>
+          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button' onClick={() => navigate('/about-us')}>
             {t("aboutUs")}
           </button>
         </div>
         {/* Central Header */}
-        <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button' onClick={() => onNavigate('home')}>
-          <img className='h-50 object-contain mt-4 brightness-0 title' src="/images/untitled.png" alt="untitled" />
+        <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button' onClick={() => navigate('/')}>
+          <img className='h-50 object-contain mt-4 brightness-0 title' src="/images/logo/icon.png" alt="logo" />
         </button>
         {/* Right Header */}
         <div className='header-right'>
-          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => onNavigate('search')}><IoSearch /></button>
-          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => onNavigate('wishlist')}><IoMdHeart /></button>
-          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => onNavigate('cart')}><IoBagHandle /></button>
-          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => haveAccount ? onNavigate('userPage') : onNavigate('login')}><IoPerson /></button>
+          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => navigate("/search")}><IoSearch /></button>
+          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => navigate('/wishlist')}><IoMdHeart /></button>
+          <button className='bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button' onClick={() => setCartIsOpen(true)}><IoBagHandle /></button>
+          <button
+            className="relative bg-none border-none text-black cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 header-button"
+            onClick={handleAccountClick}
+          >
+            <IoPerson />
+            {account != null ? (
+              <span className="account-dot absolute -top-1 -right-1 w-1.5 h-1.5 bg-black rounded-full" />
+            ) : (
+              <div></div>
+            )}
+          </button>
         </div>
       </div>
       {/* Bottom Header */}
       <div className='header-bottom flex-1 flex items-center justify-center gap-5 w-full box-border'>
-        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('category', { categoryId: 'daily' })}>
+        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => navigate(`/category/1`)}>
           {t("daily")}
         </button>
-        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('category', { categoryId: 'casual' })}>
+        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => navigate(`/category/2`)}>
           {t("casual")}
         </button>
-        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => onNavigate('category', { categoryId: 'elegance' })}>
+        <button className='bg-none border-none text-black cursor-pointer text-base flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button'  onClick={() => navigate(`/category/3`)}>
           {t("elegance")}
         </button>
       </div>

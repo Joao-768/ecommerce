@@ -1,19 +1,22 @@
-const API_BASE = "http://localhost:3001";
+const API_BASE = "http://localhost:3001/api/genders";
 
+// Get All Genders
 export async function getGenders() {
-    const res = await fetch(`${API_BASE}/api/genders`);
-    if (!res.ok) throw new Error("Falha ao buscar gêneros");
+    const res = await fetch(`${API_BASE}`);
+    if (!res.ok) throw new Error("Falha ao buscar genders");
     return res.json();
 }
 
-export async function getGenderById(id) {
-    const genders = await getGenders();
-    const item = genders.find((g) => String(g.id) === String(id));
-    return item?.name ?? null;
+// Get Products By Gender
+export async function getProductsByGender(genderId) {
+    const res = await fetch(`${API_BASE}/${genderId}/products`);
+    if (!res.ok) throw new Error("Falha ao buscar produtos do gênero");
+    return res.json();
 }
 
-export async function getProductsByGender(genderId) {
-    const res = await fetch(`${API_BASE}/api/genders/${genderId}/products`);
-    if (!res.ok) throw new Error("Falha ao buscar produtos do gênero");
+// Get Genders by ID
+export async function getGendersById(id) {
+    const res = await fetch(`${API_BASE}/${id}`);
+    if (!res.ok) throw new Error("Falha ao buscar gêneros");
     return res.json();
 }

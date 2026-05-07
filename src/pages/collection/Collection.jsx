@@ -1,74 +1,74 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import "./CollectionAnimation.css";
-import { getCollections, getProductsByCollection } from "../../api/collectionsApi";
+import { getCollectionsById, getProductsByCollection } from "../../api/collectionsApi";
+import { useNavigate, useParams } from "react-router-dom";
+import { useScrollToTop } from "../../utils/format";
+import ProductCard from "../../ui/ProductCard";
 
-export default function Collection({ onNavigate, collection }){
-    const watches = Array.from({ length: 10 }, (_, i) => `Watch ${i + 1}`);
+export default function Collection(){
+    const { id } = useParams();
     const { t } = useTranslation();
+    const [products, setProducts] = useState([]);
+    const [collectionName, setCollectionName] = useState("");
+
+    const navigate = useNavigate();
+
+    useScrollToTop();
     
+    // Get products for the collection
     useEffect(() => {
-            if (!collection) {
-                setWatches([]);
-                return;
-            }
-    
-            const fetchData = async () => {
-                try {
-                    const collections = await getCollections();
-    
-                    const collection = collections.find(
-                        (c) => c.name.toLowerCase() === collection.toLowerCase()
-                    );
-    
-                    if (!collection) {
-                        setWatches([]);
-                        return;
-                    }
-    
-                    const products = await getProductsByCollection(collection.id);
-                    setWatches(products || []);
-                } catch (err) {
-                    setWatches([]);
-                }
-            };
-    
-            fetchData();
-        }, [collection]);
-        
+        // If no coll ID, clear products
+        if (!id) {
+            setProducts([]);
+            return;
+        }
+
+        getProductsByCollection(id)
+            .then((products) => setProducts(products || []))
+            .catch(() => setProducts([]));
+    }, [id]);
+
+    // Get collection name
+    useEffect(() => {
+        // If no collection ID, clear name
+        if (!id) {
+            setCollectionName("");
+            return;
+        }
+
+        // Get collection name by ID
+        getCollectionsById(id)
+            .then((data) => {
+                if (data && data.name) setCollectionName(data.name);
+                else setCollectionName("");
+            })
+            .catch(() => {
+                setCollectionName("");
+            });
+        }, [id]);
+
     return(
         <div className="style-page min-h-screen flex flex-col">
             {/* Header */}
             <div className="relative py-8 px-6 pt-35">
                 <button
-                    onClick={() => onNavigate("home")}
+                    onClick={() => navigate('/')}
                     className="h-10 w-10 absolute right-6 text-xl rounded-xs font-bold cursor-pointer border border-stone-300 hover:border-black transition-all duration-300"
                 >
                     ✕
                 </button>
                 <h1 className="text-4xl text-center font-[Panchang-Semibold]">
-                    {t(collection)}
+                    {t(collectionName)}
                 </h1>
             </div>
-            {/* Watches Section */}
+            {/* Products Section */}
             <div className="flex gap-1 overflow-x-auto pb-6 pt-5 pr-10 snap-x scrollbar-x overscroll-x-contain mt-4">
-                {watches.map((watch, index) => (
-                    <div
-                        key={index}
-                        className="flex flex-col items-center min-w-60 snap-start pl-10"
-                    >
-                        <div className="w-60 h-96 bg-gray-200 mb-4 flex items-center justify-center">
-                            <span className="text-gray-500 font-[Panchang-Regular]">
-                                {watch} Image
-                            </span>
-                        </div>
-                        <h3 className="text-lg font-semibold font-[Panchang-Regular]">
-                            {watch}
-                        </h3>
-                        <p className="text-gray-600 font-[Panchang-Regular]">
-                            {watch.price != null ? `${watch.price}€` : ""}
-                        </p>
-                    </div>
+                {products.map((product) => (
+                    <ProductCard
+                        item={product}
+                        onClick={() => navigate(`/product/${product.id}`)}
+                        isSelling={true}
+                    />
                 ))}
             </div>
         </div>

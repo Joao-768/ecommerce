@@ -1,8 +1,18 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { createUser } from "../../api/usersApi.js";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+import { useScrollToTop } from "../../utils/format.js";
 
-export default function CreateAccount({ onNavigate }) {
+export default function CreateAccount() {
     const { t } = useTranslation();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    const navigate = useNavigate();
+
+    useScrollToTop();
 
     const [form, setForm] = useState({
         name: "",
@@ -10,72 +20,41 @@ export default function CreateAccount({ onNavigate }) {
         email: "",
         password: "",
         confirmPassword: "",
+        role: "user",
     });
 
     const [errors, setErrors] = useState({});
-    const [status, setStatus] = useState(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    const validate = () => {
+        const errors = {};
+        if (!form.name) errors.name = t("nameRequired");
+        if (!form.surname) errors.surname = t("surnameRequired");
+        if (!form.email) errors.email = t("emailRequired");
+        if (!form.password) errors.password = t("passwordRequired");
+        if (form.password !== form.confirmPassword) {
+            errors.confirmPassword = t("passwordsDontMatch");
+        }
+        return errors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (isSubmitting) return;
+        const errors = validate();
+        setErrors(errors);
 
-        const newErrors = {};
-        if (!form.name) newErrors.name = t("nameRequired");
-        if (!form.surname) newErrors.surname = t("surnameRequired");
-        if (!form.email) newErrors.email = t("emailRequired");
-        if (!form.password) newErrors.password = t("passwordRequired");
-        if (form.password !== form.confirmPassword)
-        newErrors.confirmPassword = t("passwordsDontMatch");
+        if (Object.keys(errors).length > 0) return;
 
-        setErrors(newErrors);
-        setStatus(null);
-
-        if (Object.keys(newErrors).length === 0) {
-            try {
-                setIsSubmitting(true);
-                const res = await fetch("http://localhost:3001/api/users", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        name: form.name,
-                        surname: form.surname,
-                        email: form.email,
-                        password: form.password,
-                    }),
-                });
-
-                if (!res.ok) {
-                    let message = "Falha ao criar conta";
-                    try {
-                        const data = await res.json();
-                        if (data?.error) message = data.error;
-                    } catch {}
-                    setStatus({ type: "error", message });
-                    return;
-                }
-
-                setStatus({ type: "success", message: "Conta criada. Verifica o email." });
-                onNavigate("emailVerification", {
-                    state: {
-                        signupData: {
-                            name: form.name,
-                            surname: form.surname,
-                            email: form.email,
-                            password: form.password,
-                        },
-                    },
-                });
-            } catch {
-                setStatus({ type: "error", message: "Falha de rede ao criar conta" });
-            } finally {
-                setIsSubmitting(false);
-            }
+        try {
+            const data = await createUser(form);
+            localStorage.setItem("account", String(data.id));
+            navigate('/user-page/control-panel');
+        } catch (err) {
+            alert(err?.message || "Falha ao criar conta");
         }
     };
 
@@ -162,7 +141,7 @@ export default function CreateAccount({ onNavigate }) {
                     </div>
 
                     {/* Password */}
-                    <div className="flex flex-col">
+                    <div className="flex flex-col relative">
                         <label
                             className={`text-sm mb-1 font-[Panchang-Regular] ${
                                 errors.password ? "text-red-500" : "text-stone-600"
@@ -171,19 +150,32 @@ export default function CreateAccount({ onNavigate }) {
                             {t("password")} {errors.password && <span> Required</span>}
                         </label>
 
-                        <input
-                            type="password"
-                            name="password"
-                            autoComplete="new-password"
-                            value={form.password}
-                            onChange={handleChange}
-                            placeholder={t("passwordPlaceholder")}
-                            className="border-b py-2 outline-none transition-all font-[Panchang-Regular]"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                autoComplete="new-password"
+                                value={form.password}
+                                onChange={handleChange}
+                                placeholder={t("passwordPlaceholder")}
+                                className="w-full border-b py-2 pr-10 outline-none transition-all font-[Panchang-Regular]"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 cursor-pointer hover:text-black transition"
+                            >
+                                {showPassword 
+                                    ? <FaEye size={16} className="-translate-x-px"/> 
+                                    : <FaEyeSlash size={18} />
+                                }
+                            </button>
+                        </div>
                     </div>
 
                     {/* Confirm Password */}
-                    <div className="flex flex-col">
+                    <div className="flex flex-col relative">
                         <label
                             className={`text-sm mb-1 font-[Panchang-Regular] ${
                                 errors.confirmPassword ? "text-red-500" : "text-stone-600"
@@ -192,50 +184,37 @@ export default function CreateAccount({ onNavigate }) {
                             {t("confirmPassword")} {errors.confirmPassword && <span> Required</span>}
                         </label>
 
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            autoComplete="new-password"
-                            value={form.confirmPassword}
-                            onChange={handleChange}
-                            placeholder={t("confirmPasswordPlaceholder")}
-                            className="border-b border-stone-300 py-2 outline-none focus:border-black transition-all font-[Panchang-Regular]"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showConfirm ? "text" : "password"}
+                                name="confirmPassword"
+                                autoComplete="new-password"
+                                value={form.confirmPassword}
+                                onChange={handleChange}
+                                placeholder={t("confirmPasswordPlaceholder")}
+                                className="w-full border-b py-2 pr-10 outline-none transition-all font-[Panchang-Regular]"
+                            />
 
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirm(!showConfirm)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 cursor-pointer hover:text-black transition"
+                            >
+                                {showConfirm
+                                    ? <FaEye size={16} className="-translate-x-px"/> 
+                                    : <FaEyeSlash size={18} />
+                                }
+                            </button>
+                        </div>
                     </div>
                 
-                    {/* I am Human */}
-                    <div className="flex items-center col-span-2 h-15 gap-2 w-full border border-stone-300 py-2 px-4 rounded-md">
-                        <input
-                            type="checkbox"
-                            id="human"
-                            className="w-4 h-4"
-                        />
-                        <label htmlFor="human" className="text-sm font-[Panchang-Regular] text-stone-600">
-                            {t("iAmHuman")}
-                        </label>
-                    </div>
-
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className={`col-span-2 bg-black text-white py-3 rounded-full transition-all font-[Panchang-Regular] ${
-                            isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:border hover:bg-white hover:text-black"
-                        }`}
-                        disabled={isSubmitting}
+                        className="col-span-2 bg-black text-white py-3 rounded-full transition-all font-[Panchang-Regular] hover:border hover:bg-white hover:text-black"
                     >
                         {t("createAccountButton")}
                     </button>
-
-                    {status?.message && (
-                        <p
-                            className={`col-span-2 text-sm ${
-                                status.type === "error" ? "text-red-500" : "text-emerald-600"
-                            }`}
-                        >
-                            {status.message}
-                        </p>
-                    )}
 
                 </form>
 
@@ -243,7 +222,7 @@ export default function CreateAccount({ onNavigate }) {
                     {t("alreadyHaveAccount")}{" "}
                     <span
                             className="underline cursor-pointer text-black"
-                            onClick={() => onNavigate("login")}
+                            onClick={() => navigate('/login')}
                     >
                         {t("loginButton")}
                     </span>

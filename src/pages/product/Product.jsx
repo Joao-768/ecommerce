@@ -2,140 +2,198 @@ import { useEffect, useState } from "react";
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import { getCategoriesById } from "../../api/categoriesApi.js";
 import { getCollectionsById } from "../../api/collectionsApi.js";
-import { getProductById } from "../../api/productsApi.js";
+import { getProductById, setWishslistItem, setCartItem, isInCart } from "../../api/productsApi.js";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
+import { useScrollToTop } from "../../utils/format.js";
 
-export default function ProductPage({ id, onNavigate, cartItems, setCartItems, wishlistItems, setWishlistItems }) {
-  const [product, setProduct] = useState(null);
-  const [category, setCategory] = useState(null);
-  const [collection, setCollection] = useState({ name: "", slug: "" });
-  const [error, setError] = useState(null);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const { t } = useTranslation();
+export default function ProductPage({ setCartIsOpen }) {
+    const [product, setProduct] = useState(null);
+    const [categoryName, setCategoryName] = useState("");
+    const [collection, setCollection] = useState({ name: "" });
+    const [isWishlisted, setIsWishlisted] = useState(false);
+    const [error, setError] = useState(null);
+    const { t } = useTranslation();
+    const account = localStorage.getItem("account");
+    const [isItemInCart, setIsItemInCart] = useState(false);
+    const [isItemActive, setIsItemActive] = useState(0);
 
-  useEffect(() => {
-    if (!id) {
-      setError("ID do relógio em falta");
-      return;
+    const { id } = useParams();
+
+    const navigate = useNavigate();
+
+    useScrollToTop();
+
+    function currency(price) {
+        return new Intl.NumberFormat('pt-PT', {
+            style: 'currency',
+            currency: 'EUR'
+        }).format(price);
     }
 
-    setError(null);
-    setProduct(null);
-
-    getProductById(id)
-      .then((data) => {
-        if (!data) {
-          setError("Relógio nao encontrado");
-          return;
+    const handleWishlist = async () => {
+        if (!account) {
+            alert("Faca login para adicionar o produto a wishlist");
+            return;
         }
-        setProduct(data);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Falha ao carregar relógio");
-      });
-  }, [id]);
 
-  useEffect(() => {
-    if (!product) return;
+        if (!product?.id) return;
 
-    const categoryId = product.category_id ?? product.categoryId;
-    const collectionId = product.collection_id ?? product.collectionId;
+        try {
+            await setWishslistItem(account, product.id);
+            setIsWishlisted(true);
+        } catch {
+            // Ignore errors for now
+        }
+    };
 
-    if (categoryId !== undefined && categoryId !== null) {
-      getCategoriesById(categoryId).then((data) => setCategory(data));
-    } else {
-      setCategory(product.category ?? product.style ?? null);
-    }
+    const handleCart = async () => {
+        if (!account) {
+            alert("Faca login para adicionar o produto ao cart");
+            return;
+        }
 
-    if (collectionId !== undefined && collectionId !== null) {
-      getCollectionsById(collectionId).then((data) =>
-        setCollection(data ?? { name: "", slug: "" })
-      );
-    } else {
-      setCollection({
-        name: product.collection ?? "",
-        slug: product.collection_slug ?? product.collection ?? "",
-      });
-    }
-  }, [product]);
+        if (!product.id) return;
+        if (product.status === 0) return;
+        if (isItemInCart) {
+            setCartIsOpen(true)
+            return;
+        }
 
-  if (error) return <p className="pt-40 text-center">{error}</p>;
-  if (!product) return <p className="pt-40 text-center">Loading...</p>;
+        try {
+            await setCartItem(account, product.id);
+            setIsItemInCart(true);
+        } catch {
+            // Ignore errors for now
+        }
+    };
 
-  return (
-    <div className="w-screen min-h-screen grid grid-cols-2">
-      {/* Left Screen */}
-      <div className="pt-24 flex justify-start items-center">
-        <div className="h-130 w-full bg-stone-200 relative flex items-center justify-center -mt-10">
-          <div className="w-full h-10 absolute top-0 left-0 z-0"></div>
-          <nav className="absolute top-0 left-3 h-10 z-10 flex items-center gap-2 text-sm font-[Panchang-Regular] whitespace-nowrap">
-            <button className="hover:underline" onClick={() => onNavigate("home")}>
-              {t("home")}
-            </button>
-            <span>-</span>
-            <button className="hover:underline" onClick={() => onNavigate("watches")}>
-              {t("watches")}
-            </button>
-            <span>-</span>
-            <button
-              className="hover:underline"
-              onClick={() => onNavigate("category", { categoryId: product.category })}
-            >
-              {t(String(category?.name))}
-            </button>
-            <span>-</span>
-            <button
-              className="hover:underline"
-              onClick={() => onNavigate("collection", { collectionId: product.collection })}
-            >
-              {String(collection?.name ?? "")}
-            </button>
-            <span>-</span>
-            <span className="font-[Panchang-Semibold] cursor-default">
-              {t(product.name)}
-            </span>
-          </nav>
-          <img
-            className="h-105 relative z-10"
-            src={`/images/${String(collection?.slug)}/${product.slug}.png`}
-            alt={product.name}
-          />
+    useEffect(() => {
+        if (!id) {
+            setError("Invalid product id");
+            return;
+        }
+
+        getProductById(id)
+            .then((data) => {
+                setProduct(data?.product ?? data);
+            })
+            .catch((err) => {
+                setError("Failed to load product");
+                console.error(err);
+            });
+    }, [id]);
+
+    useEffect(() => {
+        if (!product) return;
+
+        setCategoryName(product.category || "");
+        setCollection({
+            name: product.collection || ""
+        });
+
+        if (product.category_id != null) {
+            getCategoriesById(product.category_id).then((data) =>
+                setCategoryName(data && data.name ? data.name : "")
+            );
+        }
+
+        if (product.collection_id != null) {
+            getCollectionsById(product.collection_id).then((data) =>
+                setCollection(data ? data : { name: "" })
+            );
+        }
+
+        setIsItemActive(product.status);
+    }, [product]);
+
+    useEffect(() => {
+        if (!account || !product?.id) {
+            setIsItemInCart(false);
+            return;
+        }
+        isInCart(account, product.id)
+            .then((exists) => setIsItemInCart(Boolean(exists)))
+            .catch(() => setIsItemInCart(false));
+    }, [account, product?.id]);
+
+    if (error) return <p className="pt-40 text-center">{error}</p>;
+    if (!product) return <p className="pt-40 text-center">Loading...</p>;
+
+    return (
+        <div className="w-screen min-h-screen grid grid-cols-2">
+            {/* Left Screen */}
+            <div className="pt-24 flex justify-start items-center">
+                <div className="h-130 w-full bg-stone-200 relative flex items-center justify-center -mt-10">
+                    <div className="w-full h-10 absolute top-0 left-0 z-0"></div>
+                    <nav className="absolute top-0 left-3 h-10 z-10 flex items-center gap-2 text-sm font-[Panchang-Regular] whitespace-nowrap">
+                        <button className="hover:underline" 
+                            onClick={() => navigate('/')}
+                        >
+                            {t("home")}
+                        </button>
+                        <span>-</span>
+                        <button className="hover:underline" 
+                            onClick={() => navigate('/watches')}
+                        >
+                            {t("watches")}
+                        </button>
+                        <span>-</span>
+                        <button
+                            className="hover:underline"
+                            onClick={() => navigate(`/category/${product.category_id}`)}
+                        >
+                            {t(categoryName)}
+                        </button>
+                        <span>-</span>
+                        <button
+                            className="hover:underline"
+                            onClick={() => navigate(`/collection/${product.collection_id}`)}
+                        >
+                            {collection.name}
+                        </button>
+                        <span>-</span>
+                        <span className="font-[Panchang-Semibold] cursor-default">
+                            {t(product.name)}
+                        </span>
+                    </nav>
+                    <img
+                        className="h-105 relative z-10"
+                        src={product.image}
+                        alt={product.name}
+                    />
+                </div>
+            </div>
+
+            {/* Right Screen */}
+            <div className="flex justify-center">
+                <div className="min-h-screen w-105">
+                    <div className="pt-45 flex items-center gap-3">
+                        <h1 className="text-3xl font-[Panchang-Semibold]">{product.name}</h1>
+                        <button
+                            className="w-12 h-12 text-2xl"
+                            onClick={handleWishlist}
+                        >
+                            {isWishlisted ? <IoMdHeart /> : <IoMdHeartEmpty />}
+                        </button>
+                    </div>
+                    <h2 className="text-2xl font-[Panchang-Regular]">
+                        {collection.name} Collection
+                    </h2>
+                    <p className="text-sm font-[Panchang-Regular] mt-5">
+                        {product.description}
+                    </p>
+                    <p className="text-2xl font-[Panchang-Semibold] mt-5">
+                        {currency(product.price)}
+                    </p>
+                    <button
+                        className="min-w-38 min-h-12 text-sm font-[Panchang-Regular] bg-black text-white border-2 border-black cursor-pointer mb-5 rounded-md hover:bg-white hover:text-black transition-all duration-200 mt-10 shadow-md"
+                        onClick={handleCart}
+                    >
+                        {isItemActive === 1 ? isItemInCart ? t("inYourCart") : t("addToCart") : t("unavaliable")}
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-
-      {/* Right Screen */}
-      <div className="flex justify-center">
-        <div className="min-h-screen w-105">
-          <div className="pt-45 flex items-center gap-3">
-            <h1 className="text-3xl font-[Panchang-Semibold]">{product.name}</h1>
-            <button
-              className="w-12 h-12 text-2xl"
-              onClick={() => {
-                setWishlistItems((prev) => [...prev, product]);
-                setIsFavorite(true);
-              }}
-            >
-              {isFavorite ? <IoMdHeart /> : <IoMdHeartEmpty />}
-            </button>
-          </div>
-          <h2 className="text-2xl font-[Panchang-Regular]">
-            {String(collection?.name)} Collection
-          </h2>
-          <p className="text-sm font-[Panchang-Regular] mt-5">
-            {product.description}
-          </p>
-          <p className="text-2xl font-[Panchang-Semibold] mt-5">
-            {product.price}€
-          </p>
-          <button
-            className="w-36 h-12 text-sm font-[Panchang-Regular] bg-black text-white border-2 border-black cursor-pointer mb-5 rounded-md hover:bg-white hover:text-black transition-all duration-200 mt-10"
-            onClick={cartItems.find((item) => item.id === product.id) ? () => onNavigate("cart") : () => onNavigate("cart", { product })}
-          >
-            {cartItems.find((item) => item.id === product.id) ? "In your cart" : "Add to Cart"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

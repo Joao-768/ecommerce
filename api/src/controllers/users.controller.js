@@ -1,95 +1,34 @@
-import crypto from "node:crypto";
 import { pool } from "../config/database.js";
-import { sendEmail } from "../config/email.js";
-
-function buildVerificationEmail(token) {
-    const verifyUrl = `http://localhost:3001/api/users/verify-email?token=${token}`;
-    const html = `
-        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-            <h2>Verify your email</h2>
-            <p>Click the button below to verify your email and activate your account.</p>
-            <a href="${verifyUrl}" style="display:inline-block;background:#000;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none;">
-                Verify email
-            </a>
-            <p style="margin-top:16px;font-size:12px;color:#666;">If you did not request this, ignore this email.</p>
-        </div>
-    `;
-
-    return {
-        verifyUrl,
-        html,
-        text: `Open this link to verify your email: ${verifyUrl}`,
-    };
-}
-
-export async function getAllUsers(req, res) {
-    let connection;
-
-    try {
-        connection = await pool.getConnection();
-        const [rows] = await connection.query("SELECT * FROM users");
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    } finally {
-        if (connection) connection.release();
-    }
-}
-
-export async function getUserById(req, res) {
-    let connection;
-    const { id } = req.params;
-
-    try {
-        connection = await pool.getConnection();
-        const [rows] = await connection.query("SELECT * FROM users WHERE id = ?", [id]);
-
-        if (!rows.length) {
-        return res.status(404).json({ error: "Utilizador não encontrado" });
-        }
-
-        res.json(rows[0]);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    } finally {
-        if (connection) connection.release();
-    }    
-}
+import bcrypt from "bcryptjs";
 
 export async function createUser(req, res) {
     let connection;
     const { name, surname, email, password } = req.body;
+    let { role } = req.body
 
     if (!name || !surname || !email || !password) {
         return res.status(400).json({ error: "Todos os campos são obrigatórios" });
     }
 
+    if(!role) role = "user";
+
     try {
         connection = await pool.getConnection();
-        const verificationToken = crypto.randomBytes(24).toString("hex");
-        const tokenExpiration = new Date(Date.now() + 1000 * 60 * 60 * 24);
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Insert the new user into the database
         const [result] = await connection.query(
-            "INSERT INTO users (name, surname, email, password, verification_token, token_expiration) VALUES (?, ?, ?, ?, ?, ?)",
-            [name, surname, email, password, verificationToken, tokenExpiration]
+            "INSERT INTO users (name, surname, email, password_hash, role) VALUES (?, ?, ?, ?, ?)",
+            [name, surname, email, hashedPassword, role]
         );
 
-        const { html, text } = buildVerificationEmail(verificationToken);
-        let verificationSent = true;
-
-        try {
-            await sendEmail({
-                to: email,
-                subject: "Verify your email",
-                text,
-                html,
-            });
-        } catch {
-            verificationSent = false;
-        }
-
-        res.status(201).json({ id: result.insertId, email, verificationSent });
+        // Return the created user info
+        res.status(201).json({ id: result.insertId, email });
     } catch (error) {
+        if (error?.code === "ER_DUP_ENTRY") {
+            return res.status(409).json({ error: "Email já existe" });
+        }
         res.status(500).json({ error: error.message });
     } finally {
         if (connection) connection.release();
@@ -100,22 +39,41 @@ export async function loginUser(req, res) {
     let connection;
     const { email, password } = req.body;
 
+    // If email or password is missing, return an error
     if (!email || !password) {
-        return res.status(400).json({ error: "Email e senha são obrigatórios" });
+        return res.status(400).json({ error: "Email e password são obrigatórios" });
     }
 
     try {
         connection = await pool.getConnection();
+
+        // Search for a user with the provided email
         const [rows] = await connection.query(
-            "SELECT * FROM users WHERE email = ? AND password = ?",
-            [email, password]
+            "SELECT id, email, password_hash, status FROM users WHERE email = ?",
+            [email]
         );
 
+        const user = rows[0];
+
+        // If no user is found, return an error
         if (!rows.length) {
             return res.status(401).json({ error: "Credenciais inválidas" });
         }
 
-        res.json({ message: "Login bem-sucedido", user: rows[0] });
+        if (user.satus === "blocked")
+            return res.status(403).json({ error: "Your account has been temporarily deactivated." });
+
+        const hash = user.password_hash || "";
+        const isValid = hash.startsWith("$2")
+            ? await bcrypt.compare(password, hash)
+            : hash === password;
+
+        if (!isValid) {
+            return res.status(401).json({ error: "Credenciais inválidas" });
+        }
+
+        // If user is found, return basic user info
+        res.json({ id: user.id, email: user.email });
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
@@ -123,21 +81,16 @@ export async function loginUser(req, res) {
     }
 }
 
-export async function getUserProfile(req, res) {
+export async function getUserById(req, res) {
     let connection;
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Token de autenticação ausente ou inválido" });
-    }
-
-    const token = authHeader.split(" ")[1];
+    const userId = req.params.id;
 
     try {
         connection = await pool.getConnection();
+
         const [rows] = await connection.query(
-            "SELECT * FROM users WHERE id = ?",
-            [token]
+            "SELECT id, name, surname, email, date_of_birth FROM users WHERE id = ?",
+            [userId]
         );
 
         if (!rows.length) {
@@ -145,6 +98,7 @@ export async function getUserProfile(req, res) {
         }
 
         res.json(rows[0]);
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
@@ -152,86 +106,309 @@ export async function getUserProfile(req, res) {
     }
 }
 
-export async function verifyEmail(req, res) {
+export async function updateUser(req, res) {
     let connection;
-    const token = String(req.query.token || "");
-
-    if (!token) {
-        return res.status(400).send("Invalid verification token.");
-    }
+    const userId = req.params.id;
+    const { name, surname, email, password, date_of_birth, role } = req.body;
 
     try {
         connection = await pool.getConnection();
-        const [rows] = await connection.query(
-            "SELECT id, token_expiration FROM users WHERE verification_token = ? LIMIT 1",
-            [token]
+
+        const hashedPassword = password 
+        ? await bcrypt.hash(password, 10) 
+        : null;
+
+
+        // Update the user information in the database
+        await connection.query(
+            "UPDATE users SET name = ?, surname = ?, email = ?, date_of_birth = ?, password_hash = COALESCE(?, password_hash), role = ? WHERE id = ?",
+            [name, surname, email, date_of_birth || null, hashedPassword, role ,userId]
         );
 
-        if (!rows.length) {
-            return res.status(400).send("Verification token not found.");
-        }
-
-        const expiresAt = rows[0].token_expiration ? new Date(rows[0].token_expiration) : null;
-        if (expiresAt && Date.now() > expiresAt.getTime()) {
-            return res.status(400).send("Verification token expired.");
-        }
-
-        try {
-            await connection.query(
-                "UPDATE users SET verification_token = NULL, token_expiration = NULL, email_verified = 1 WHERE id = ?",
-                [rows[0].id]
-            );
-        } catch {
-            await connection.query(
-                "UPDATE users SET verification_token = NULL, token_expiration = NULL WHERE id = ?",
-                [rows[0].id]
-            );
-        }
-
-        res.send("Email verified. You can now log in.");
+        // Return a success message
+        res.json({ message: "Utilizador atualizado com sucesso" });
     } catch (error) {
-        res.status(500).send("Failed to verify email.");
+        res.status(500).json({ error: error.message });
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function resendVerification(req, res) {
+export async function getUserRole(req, res) {
     let connection;
-    const { email } = req.body || {};
+    const { id } = req.params;
 
-    if (!email) {
-        return res.status(400).json({ error: "Email is required." });
+    try {
+        connection = await pool.getConnection();
+
+        const [rows] = await connection.query(
+            "SELECT role FROM users WHERE id = ?",
+            [id]
+        );
+
+        if (!rows.length) {
+            return res.status(404).json({ error: "Utilizador não encontrado" });
+        }
+
+        const userRole = rows[0].role;
+        res.json({ userRole });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function getUserCollection(req, res) {
+    let connection;
+    const userId = req.params.id;
+
+    try {
+        connection = await pool.getConnection();
+
+        // Search for the user's collection in the database
+        const [rows] = await connection.query(`
+            SELECT *
+            FROM user_collection uc
+            JOIN products p ON p.id = uc.product_id
+            WHERE uc.user_id = ?
+            `,[userId]
+        );
+
+        // Return the user's collection
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function setNewPassword(req, res) {
+    let connection;
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.params.id || req.body.userId;
+
+    try {
+        if (!userId || !currentPassword || !newPassword) {
+            return res.status(400).json({ error: "Dados em falta" });
+        }
+
+        if (currentPassword === newPassword) {
+            return res.status(400).json({ error: "A nova password deve ser diferente" });
+        }
+
+        connection = await pool.getConnection();
+
+        const [rows] = await connection.query(
+            "SELECT password_hash FROM users WHERE id = ?",
+            [userId]
+        );
+
+        if (!rows.length) {
+            return res.status(404).json({ error: "Utilizador não encontrado" });
+        }
+
+        const stored = rows[0].password_hash || "";
+        const isValid = stored.startsWith("$2")
+            ? await bcrypt.compare(currentPassword, stored)
+            : stored === currentPassword;
+
+        if (!isValid) {
+            return res.status(401).json({ error: "Password atual inválida" });
+        }
+
+        const newHash = await bcrypt.hash(newPassword, 10);
+
+        await connection.query(
+            "UPDATE users SET password_hash = ? WHERE id = ?",
+            [newHash, userId]
+        );
+
+        res.json({ ok: true });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function forgotPassword(req, res) {
+    let connection;
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+        return res.status(400).json({ error: "Dados em falta" });
     }
 
     try {
         connection = await pool.getConnection();
-        const [rows] = await connection.query(
-            "SELECT id FROM users WHERE email = ? LIMIT 1",
-            [email]
+
+        const newHash = await bcrypt.hash(newPassword, 10);
+
+        const [result] = await connection.query(
+            "UPDATE users SET password_hash = ? WHERE email = ?",
+            [newHash, email]
         );
 
-        if (!rows.length) {
-            return res.status(404).json({ error: "User not found." });
+        if (!result.affectedRows) {
+            return res.status(404).json({ error: "Utilizador não encontrado" });
         }
 
-        const verificationToken = crypto.randomBytes(24).toString("hex");
-        const tokenExpiration = new Date(Date.now() + 1000 * 60 * 60 * 24);
+        res.json({ ok: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
 
+export async function setLastActivity(req, res) {
+    let connection;
+    const { userId } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID em falta" });
+    }
+
+    try {
+        connection = await pool.getConnection();
+
+        // Update the user information in the database
         await connection.query(
-            "UPDATE users SET verification_token = ?, token_expiration = ? WHERE id = ?",
-            [verificationToken, tokenExpiration, rows[0].id]
+            "UPDATE users SET last_activity = NOW() WHERE id = ?",
+            [userId]
         );
 
-        const { html, text } = buildVerificationEmail(verificationToken);
-        await sendEmail({
-            to: email,
-            subject: "Verify your email",
-            text,
-            html,
-        });
+        // Return a success message
+        res.json({ message: "Ultima atividade atualizada com sucesso" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
 
-        res.json({ ok: true });
+export async function createAddress(req, res) {
+    let connection;
+
+    const { userId, street, city, postalCode, country, district = false } = req.body;
+
+    if (!userId || !street || !city || !postalCode || !country) {
+        return res.status(400).json({ error: "Campos em falta" });
+    }
+
+    try {
+        connection = await pool.getConnection();
+
+        await connection.query(
+            `INSERT INTO Addresses 
+            (user_id, street, city, postal_code, country, district)
+            VALUES (?, ?, ?, ?, ?, ?)`,
+            [userId, street, city, postalCode, country, district]
+        );
+
+        res.json({ message: "Morada criada com sucesso" });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function getAddresses(req, res) {
+    let connection;
+
+    const userId = req.params.id;
+
+    try {
+        connection = await pool.getConnection();
+
+        const [rows] = await connection.query(
+            "SELECT * FROM Addresses WHERE user_id = ?",
+            [userId]
+        );
+
+        res.json(rows);
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function deleteAddress(req, res) {
+    let connection;
+
+    try {
+        const { id } = req.params;
+
+        connection = await pool.getConnection();
+
+        const [result] = await connection.query(
+            `DELETE FROM addresses WHERE id = ?`,
+            [id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Address not found" });
+        }
+
+        res.json({ message: "Address deleted successfully" });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function updateAddress(req, res) {
+    let connection;
+    const addressId = req.params.id;
+    const { street, city, postal_code, district, country } = req.body;
+
+    try {
+        connection = await pool.getConnection();
+
+        // Update the user information in the database
+        await connection.query(`
+            UPDATE addresses 
+            SET street = ?, city = ?, postal_code = ?, district = ?, country = ? 
+            WHERE id = ?
+            `,[street, city, postal_code, district, country ,addressId]
+        );
+
+        res.json({ message: "Address atualizado com sucesso" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function setCollectionProduct(req, res) {
+    let connection;
+
+    const userId = req.params.id;
+    const { productId, codeId } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID em falta" });
+    }
+
+    try {
+        connection = await pool.getConnection();
+
+        await connection.query(
+            "INSERT INTO user_collection (user_id, product_id, code_id) VALUES (?, ?, ?)",
+            [userId, productId, codeId]
+        );
+
+        res.json({ message: "Produto adicionado a colecao do user" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
