@@ -2,32 +2,32 @@ import { pool } from "../config/database.js";
 
 export async function createOrder(req, res) {
     let connection;
-    const { userId, userName, userSurname, total } = req.body;
+    const { userId, total, nif } = req.body;
 
-    if (!userId || !total || !userName || !userSurname) {
-        return res.status(400).json({ error: "Missing fields" });
+    if (!userId || !total) {
+        return res.status(400).json({ error: "User ID and total price are required" });
     }
 
     try {
         connection = await pool.getConnection();
 
         const [result] = await connection.query(
-            "INSERT INTO orders (user_id, name, surname, total_price, status) VALUES (?, ?, ?, ?, ?)"
-            ,[userId, userName, userSurname, total, "paid"]
+            "INSERT INTO orders (user_id, total_price, status, nif) VALUES (?, ?, ?, ?)",
+            [userId, total, "paid", nif]
         );
 
         const orderId = result.insertId;
 
         await connection.query(
-            "INSERT INTO order_status_history (order_id, status) VALUES (?, ?)"
-            ,[orderId, "paid"]
+            "INSERT INTO order_status_history (order_id, status) VALUES (?, ?)",
+            [orderId, "paid"]
         );
 
-        res.status(201).json({ id: result.insertId });
+        res.status(201).json({ id: orderId });
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if(connection) connection.release();
+        if (connection) connection.release();
     }
 }
 
@@ -37,7 +37,7 @@ export async function setOrderItems(req, res) {
     const { orderId, cartItems } = req.body;
 
     if (!orderId || !cartItems) {
-        return res.status(400).json({ error: "Missing fields" });
+        return res.status(400).json({ error: "Order ID and cart items are required" });
     }
 
     try {
@@ -45,8 +45,8 @@ export async function setOrderItems(req, res) {
 
         for (const p of cartItems) {
             await connection.query(
-                "INSERT INTO order_items (order_id, product_id, product_name, price_at_purchase) VALUES (?, ?, ?, ?)",
-                [orderId, p.id, p.name, p.price]
+                "INSERT INTO order_items (order_id, product_id, product_name, price_at_purchase, quantity, size) VALUES (?, ?, ?, ?, ?, ?)",
+                [orderId, p.id, p.name, p.price, p.quantity, p.size_mm]
             );
         }
 
@@ -62,15 +62,31 @@ export async function setOrderItems(req, res) {
 
 export async function getUserOrders(req, res) {
     let connection;
-    const { id } = req.params;
+    const { userId } = req.params;
+    const { last } = req.query;
 
     try {
         connection = await pool.getConnection();
 
-        const [rows] = await connection.query(
-            "SELECT * FROM orders WHERE user_id = ?",
-            [id]
-        );
+        if (last === 'true') {
+            const [rows] = await connection.query(`
+                SELECT orders.*, users.name, users.surname
+                FROM orders
+                JOIN users ON users.id = orders.user_id
+                WHERE user_id = ?
+                ORDER BY orders.created_at DESC
+                LIMIT 1
+            `, [userId]);
+            return res.json(rows[0] || null);
+        }
+
+        const [rows] = await connection.query(`
+            SELECT orders.*, users.name, users.surname
+            FROM orders
+            JOIN users ON users.id = orders.user_id
+            WHERE user_id = ?
+            ORDER BY orders.created_at
+        `, [userId]);
 
         res.json(rows);
 
@@ -104,26 +120,6 @@ export async function getUserOrdersItems(req, res) {
     }
 }
 
-export async function getLastOrder(req, res) {
-    let connection;
-    const { id } = req.params;
-
-    try {
-        connection = await pool.getConnection();
-
-        const [rows] = await connection.query(
-            "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
-            [id]
-        );
-
-        res.json(rows[0] || null);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    } finally {
-        if (connection) connection.release();
-    }
-}
-
 export async function getTotalItems(req, res) {
     let connection;
     const { id } = req.params;
@@ -147,36 +143,38 @@ export async function getTotalItems(req, res) {
 
 export async function getAllOrders(req, res) {
     let connection;
+    const { count, limit } = req.query;
 
     try {
         connection = await pool.getConnection();
 
-        const [rows] = await connection.query(
-            "SELECT * FROM orders ORDER BY created_at",
-        );
+        if (count === 'true') {
+            const [[total]] = await connection.query(
+                "SELECT COUNT(*) AS totalOrders FROM orders"
+            );
+            return res.json({ totalOrders: total.totalOrders });
+        }
 
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    } finally {
-        if (connection) connection.release();
-    }
-}
-
-export async function getLastFiveOrders(req, res) {
-    let connection;
-
-    try {
-        connection = await pool.getConnection();
+        if (limit) {
+            const [rows] = await connection.query(`
+                SELECT orders.*, users.name, users.surname
+                FROM orders
+                JOIN users ON users.id = orders.user_id
+                ORDER BY orders.created_at DESC
+                LIMIT ?
+            `, [parseInt(limit)]);
+            return res.json({ orders: rows });
+        }
 
         const [rows] = await connection.query(`
-            SELECT * 
-            FROM orders 
-            ORDER BY created_at 
-            DESC LIMIT 5
-        `,);
+            SELECT orders.*, users.name, users.surname
+            FROM orders
+            JOIN users ON users.id = orders.user_id
+            ORDER BY orders.created_at
+        `);
 
-        res.json({ orders: rows });
+        res.json(rows);
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
@@ -187,32 +185,32 @@ export async function getLastFiveOrders(req, res) {
 export async function updateOrder(req, res) {
     let connection;
     const orderId = req.params.id;
-    const { name, surname, total_price, status } = req.body;
+    const { total_price, status } = req.body;
 
     try {
         connection = await pool.getConnection();
 
         await connection.query(
-            "UPDATE orders SET name = ?, surname = ?, total_price = ?, status = ? WHERE id = ?",
-            [name, surname, total_price, status, orderId]
+            "UPDATE orders SET total_price = ?, status = ? WHERE id = ?",
+            [total_price, status, orderId]
         );
 
         if (status === "delivered") {
 
             const [products] = await connection.query(
-                "SELECT product_id FROM order_items WHERE order_id = ?",
+                "SELECT product_id, quantity FROM order_items WHERE order_id = ?",
                 [orderId]
             );
-
             for (const p of products) {
                 await connection.query(
-                    "UPDATE products SET sales = sales + 1 WHERE id = ?",
-                    [p.product_id]
+                    "UPDATE products SET sales = sales + ? WHERE id = ?",
+                    [p.quantity, p.product_id]
                 );
             }
+
         }
 
-        res.json({ message: "Order atualizado com sucesso" });
+        res.json({ message: "Order updated successfully" });
 
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -228,10 +226,12 @@ export async function getOrderById(req, res) {
     try {
         connection = await pool.getConnection();
 
-        const [rows] = await connection.query(
-            "SELECT * FROM orders WHERE id = ?",
-            [id]
-        );
+        const [rows] = await connection.query(`
+            SELECT orders.*, users.name, users.surname
+            FROM orders
+            JOIN users ON users.id = orders.user_id
+            WHERE orders.id = ?
+        `, [id]);
 
         res.json(rows[0] || null);
 
@@ -276,7 +276,7 @@ export async function updateOrderAddress(req, res) {
             [street, city, postal_code, district, country, addressId]
         );
 
-        res.json({ message: "Order adress atualizado com sucesso" });
+        res.json({ message: "Order address updated successfully" });
 
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -284,3 +284,26 @@ export async function updateOrderAddress(req, res) {
         if (connection) connection.release();
     }
 }
+
+export async function createOrderAddress(req, res) {
+    let connection;
+    const orderId = req.params.id;
+    const { address } = req.body;
+
+    try {
+        connection = await pool.getConnection();
+
+        await connection.query(
+            "INSERT INTO order_addresses (order_id, street, city, postal_code, district, country) VALUES (?, ?, ?, ?, ?, ?)",
+            [orderId, address.street, address.city, address.postal_code, address.district, address.country]
+        );
+
+        res.status(201).json({ message: "Address saved successfully" });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+

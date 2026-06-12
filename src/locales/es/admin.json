@@ -1,0 +1,13 @@
+{
+    "userCreated": "Usuario creado",
+    "userEdited": "Usuario editado",
+    "productCreated": "Producto creado",
+    "productEdited": "Producto editado",
+    "collectionCreated": "Colección creada",
+    "collectionEdited": "Colección editada",
+    "orderEdited": "Pedido editado",
+    "refundSuccess": "¡Reembolso realizado con éxito!",
+    "refundError": "Error en el reembolso",
+    "taskCreated": "Tarea creada",
+    "taskUpdated": "Tarea actualizada"
+}

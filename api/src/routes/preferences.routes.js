@@ -1,20 +1,18 @@
 import express from "express";
-import { getPreferences, setUserPreference, getUserPreferences, removeUserPreference } from "../controllers/preferences.controller.js";
+import { 
+    getPreferences, 
+    setUserPreference, 
+    getUserPreferences, 
+    removeUserPreference, 
+    getProductsByPreferences,
+} from "../controllers/preferences.controller.js";
 
-// Routes For Preferences
 const router = express.Router();
 
-// Get All Preferences
 router.get("/", getPreferences);
-
-// Get User Preferences
 router.get("/user/:userId", getUserPreferences);
+router.get("/user/:userId/products", getProductsByPreferences);
+router.post("/user/:userId/preferences/:preferenceId", setUserPreference);
+router.delete("/user/:userId/preferences/:preferenceId", removeUserPreference);
 
-// Set User Preference
-router.post("/user/:userId/:preferenceId", setUserPreference);
-
-// Remove User Preference
-router.delete("/user/:userId/:preferenceId", removeUserPreference);
-
-// Export the router
 export { router as preferencesRoutes };

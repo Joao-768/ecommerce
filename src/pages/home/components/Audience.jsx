@@ -9,6 +9,15 @@ export default function Audience() {
         { id: 6, title: "limitedCollection", image: "/limitedCollection.png" },
     ];
 
+    const images = [
+        { id: 1, watch: 1, src: "/images/eternal-beasts/the-white-fang.png", alt: "the-white-fang"},
+        { id: 1, watch: 2, src: "/images/winter-edition/the-arctic-wolf.png", alt: "the-arctic-wolf"},
+        { id: 2, watch: 1, src: "/images/spring-edition/the-pinky-blossom.png", alt: "the-pinky-blossom"},
+        { id: 2, watch: 2, src: "/images/winter-edition/the-ice-dragon.png", alt: "the-ice-dragon"},
+        { id: 6, watch: 1, src: "/images/limited-edition/the-sovereign-eclipse.png", alt: "the-sovereign-eclipse"},
+        { id: 6, watch: 2, src: "/images/limited-edition/the-legendary-crown.png", alt: "the-legendary-crown"},
+    ]
+
     const navigate = useNavigate();
 
     return (
@@ -16,7 +25,7 @@ export default function Audience() {
             <div className="grid grid-cols-3 gap-4 h-full">
                 {cards.map((card) => (
                     <div 
-                        key={card.title} 
+                        key={card.title}
                         className="relative overflow-hidden rounded-lg"
                         onClick={() =>
                             navigate(
@@ -27,15 +36,19 @@ export default function Audience() {
                         }
                     >
                         <img
-                            className="w-full h-full object-cover"
-                            src={card.image}
-                            alt={card.title}
+                            src={images.find(img => img.id === card.id && img.watch === 1)?.src}
+                            className="absolute -left-1/5 object-contain"
                         />
+                        <img
+                            src={images.find(img => img.id === card.id && img.watch === 2)?.src}
+                            className="absolute bottom-0 -right-1/5 object-contain"
+                        />
+
                         <div className="absolute inset-0 bg-black/20" />
                             <span className="absolute bottom-4 left-4 text-white text-xl font-[Panchang-Semibold]">
                                 {t(card.title)}
                             </span>
-                    </div>
+                        </div>
                 ))}
             </div>
         </div>

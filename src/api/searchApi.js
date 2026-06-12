@@ -1,21 +1,17 @@
-const API_BASE = "http://localhost:3001";
+import { API_URL } from "./config.js";
 
-// Search for products by search
-export async function searchProducts(search) {
-    const res = await fetch(
-        `${API_BASE}/api/search/products?search=${encodeURIComponent(search)}`
-    );
-    if (!res.ok) throw new Error("Falha ao buscar produtos");
+const API_BASE = `${API_URL}/search`;
+
+export async function searchProducts(q) {
+    const res = await fetch(`${API_BASE}?q=${encodeURIComponent(q)}`);
+    if (!res.ok) throw new Error("Fail to search products");
     return res.json();
 }
 
-// Set search count for analytics
-export async function setSearchCount(search) {
-    const res = await fetch(`${API_BASE}/api/search/count`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ search }),
+export async function incrementSearchCount(id) {
+    const res = await fetch(`${API_BASE}/${id}/count`, {
+        method: "PATCH",
     });
-    if (!res.ok) throw new Error("Falha ao atualizar contagem de busca");
+    if (!res.ok) throw new Error("Fail to increment search count");
     return res.json();
 }

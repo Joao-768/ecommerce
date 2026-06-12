@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
-import { getAllOrders } from '../../../../api/ordersApi';
-import { getTotalOrders } from '../../../../api/adminApi';
+import { getAllOrders, getTotalOrders } from "../../../../api/ordersApi";
 import { formatCurrency } from '../../../../utils/format';
 import Table from '../../../../ui/Table';
 
@@ -74,7 +73,7 @@ export default function OrdersManagement() {
     };
 
     return (
-        <div className="flex-1 pl-10 my-10 flex flex-col gap-5 pr-10">
+        <div className="flex-1 pl-10 flex flex-col gap-5 pr-10">
 
             {/* Stats */}
             <h1 className="text-3xl font-[Panchang-Semibold]">Order Management</h1>

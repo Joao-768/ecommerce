@@ -5,6 +5,7 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import Table from "../../../../ui/Table.jsx";
 import { formatDate } from "../../../../utils/format.js";
+import { GhostButton } from "../../../../ui/Buttons.jsx";
 
 export default function UserOrders() {
     const account = localStorage.getItem("account");
@@ -13,23 +14,22 @@ export default function UserOrders() {
     const navigate = useNavigate();
 
     const columns = [
-        { key: "order_id", label: "Id" },
-        { key: "name", label: "Name" },
-        { key: "total_price", label: "Total Price" },
-        { key: "status", label: "Status" },
-        { key: "created_at", label: "Purchase Date" },
+        { key: "order_id", label: t("id") },
+        { key: "name", label: t("name") },
+        { key: "surname", label: t("surname") },
+        { key: "total_price", label: t("totalPrice") },
+        { key: "status", label: t("status") },
+        { key: "created_at", label: t("purchaseDate") },
         { 
             key: "actions", 
-            label: "Actions" 
+            label: t("actions") 
             , render: (row) => (
-                <div className="flex flex-col gap-1">
-                    <button 
-                        className="hover:underline text-left hover:cursor-pointer"
-                        onClick={() => navigate(`/user-page/orders/${row.id}/view`)}
-                    >
-                        View Details
-                    </button>
-                </div>
+                <GhostButton
+                    className="text-left text-sm"
+                    onClick={() => navigate(`/user-page/orders/${row.id}/view`)}
+                >
+                    {t("viewDetails")}
+                </GhostButton>
             )
         },
     ];
@@ -38,8 +38,9 @@ export default function UserOrders() {
         id: order.id,
         order_id: `# ${order.id}`,
         name: order.name,
+        surname: order.surname,
         total_price: order.total_price,
-        status: order.status,
+        status: t(order.status),
         created_at: formatDate(order.created_at),
     }));
 
@@ -55,7 +56,7 @@ export default function UserOrders() {
                 {t("myOrders")}
             </h1>
             <p className="text-xs font-[Panchang-Regular]">
-                {orders.length === 0 ? t("myOrdersDescription") : "Your Orders"}
+                {orders.length === 0 ? t("myOrdersDescription") : t("yourOrders")}
             </p>
 
             <div className="bg-white rounded-2xl pl-5 pr-5 pb-5 pt-1 shadow-md border border-stone-100">

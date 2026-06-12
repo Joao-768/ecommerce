@@ -39,7 +39,7 @@ export default function Watches() {
                         </h2>
 
                         <div className="overflow-x-auto">
-                            <div className="flex gap-6 pb-4 px-10">
+                            <div className="flex gap-2 px-10 pt-2 pb-10">
                                 {products.map((product) => (
                                     <div className="shrink-0">
                                         <ProductCard

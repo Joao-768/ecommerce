@@ -5,7 +5,7 @@ import { getLastFiveOrders } from "../../../../api/ordersApi";
 import { getLastFiveProducts } from "../../../../api/productsApi";
 import { getCategories } from "../../../../api/categoriesApi";
 import { getCollections } from "../../../../api/collectionsApi";
-import { getGenders } from "../../../../api/genderApi";
+import { getGenders } from "../../../../api/gendersApi";
 import Table from "../../../../ui/Table";
 
 export default function Logs() {
@@ -34,25 +34,17 @@ export default function Logs() {
 
     const userColumns = [
         { key: "name", label: "Name" },
-        { key: "price", label: "Price" },
-        { key: "stock", label: "Stock" },
-        { key: "sales", label: "Sales" },
-        { key: "category", label: "Category" },
-        { key: "collection", label: "Collection" },
-        { key: "gender", label: "Gender" },
-        { key: "date", label: "Date" },
+        { key: "surname", label: "Surname" },
+        { key: "email", label: "Email" },
+        { key: "status", label: "Status" },
     ];
 
-    const userData = lastProducts.map((product) => ({
-        id: product.id,
-        name: product.name,
-        price: formatCurrency(product.price),
-        stock: product.stock,
-        sales: product.sales,
-        category: getCategoryName(product.category_id),
-        collection: getCollectionName(product.collection_id),
-        gender: getGenderName(product.gender_id),
-        date: product.created_at?.slice(0, 10) || "",
+    const userData = lastUsers.map((user) => ({
+        id: user.id,
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        status: user.status,
     }));
 
     const orderColumns = [

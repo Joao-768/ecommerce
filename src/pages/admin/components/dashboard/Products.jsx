@@ -8,8 +8,7 @@ import {
     CartesianGrid,
     ResponsiveContainer
 } from "recharts";
-import { getBestSellers } from "../../../../api/productsApi";
-import { getOutOfStock, getTotalProducts } from "../../../../api/adminApi";
+import { getBestSellers, getTotalProducts, getOutOfStock } from "../../../../api/productsApi";
 
 export default function Products() {
     const [totalProducts, setTotalProducts] = useState();

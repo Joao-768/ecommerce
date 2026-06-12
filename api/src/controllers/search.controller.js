@@ -2,22 +2,35 @@ import { pool } from "../config/database.js";
 
 export async function searchProducts(req, res) {
     let connection;
-    const { search } = req.query;
+    const { q } = req.query;
 
-    // If no query is provided, return an empty array
-    if (!search) return res.json([]);
+    if (!q) return res.json([]);
 
     try {
         connection = await pool.getConnection();
-
-        // Search for products matching the query
         const [rows] = await connection.query(
-            `SELECT * FROM products WHERE products.name LIKE ?`,
-            [`%${search}%`]
+            "SELECT * FROM products WHERE products.name LIKE ?",
+            [`%${q}%`]
         );
-
-        // Return the search results
         res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function incrementSearchCount(req, res) {
+    let connection;
+    const { id } = req.params;
+
+    try {
+        connection = await pool.getConnection();
+        await connection.query(
+            "UPDATE products SET search_count = COALESCE(search_count, 0) + 1 WHERE id = ?",
+            [id]
+        );
+        res.json({ ok: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {

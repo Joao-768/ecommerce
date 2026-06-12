@@ -19,3 +19,23 @@ export function useScrollToTop() {
         window.scrollTo(0, 0);
     }, [pathname]);
 }
+
+export function generateCode(col, cat, id) {
+    return `${col}-${cat}-${id}`
+}
+
+export function getSeasonStatus(collectionId) {
+    const month = new Date().getMonth() + 1;
+
+    const seasons = {
+        "2": [3, 4, 5],
+        "3": [6, 7, 8],
+        "4": [9, 10, 11],
+        "5": [12, 1, 2],
+    };
+
+    const season = seasons[collectionId];
+    if (!season) return true;
+
+    return season.includes(month);
+}

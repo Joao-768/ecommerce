@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getTotalUsers, getTotalAdmins, getLastActiveUsers, getAllUsers, getBlockedUsers, deleteUser } from "../../../../api/adminApi";
+import { getUserStats, deleteUser } from "../../../../api/adminApi";
+import { getAllUsers } from "../../../../api/usersApi";
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import Table from "../../../../ui/Table";
@@ -31,7 +32,6 @@ export default function UserManagement() {
                     >
                         Edit
                     </button>
-
                     <button
                         onClick={() => handleDelete(row.id)}
                         className="hover:underline text-left"
@@ -54,71 +54,59 @@ export default function UserManagement() {
 
     const handleSearch = (value) => {
         setSearchQuery(value);
-
         const filtered = allUsers.filter((user) =>
             `${user.name} ${user.surname} ${user.email}`
                 .toLowerCase()
                 .includes(value.toLowerCase())
         );
-
         setSearchResults(filtered);
     };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are You Sure?")) return;
-
         try {
             await deleteUser(id);
-
-            // remover da lista
             setSearchResults(prev => prev.filter(user => user.id !== id));
             setAllUsers(prev => prev.filter(user => user.id !== id));
-
         } catch (error) {
             console.error(error);
         }
     };
 
     useEffect(() => {
-        // Total Users
-        getTotalUsers()
-            .then((data) => setTotalUsers(data?.totalUsers ?? 0))
-            .catch(() => setTotalUsers(0));
-
-        // Total Admins
-        getTotalAdmins()
-            .then((data) => setAdmins(data?.totalAdmins ?? 0))
-            .catch(() => setAdmins(0));
-
-        // Last Active Users
-        getLastActiveUsers()
-            .then((data) => setActiveUsers(data?.activeUsers ?? 0))
-            .catch(() => setActiveUsers(0));
+        // User Stats — totalUsers, totalAdmins, activeUsers, blockedUsers
+        getUserStats()
+            .then((data) => {
+                setTotalUsers(data?.totalUsers ?? 0);
+                setAdmins(data?.totalAdmins ?? 0);
+                setActiveUsers(data?.activeUsers ?? 0);
+                setBlockedUsers(data?.blockedUsers ?? 0);
+            })
+            .catch(() => {
+                setTotalUsers(0);
+                setAdmins(0);
+                setActiveUsers(0);
+                setBlockedUsers(0);
+            });
 
         // All Users
         getAllUsers()
-        .then((data) => {
-            const users = data?.users ?? [];
-            setAllUsers(users);
-            setSearchResults(users);
-        })
-        .catch(() => {
-            setAllUsers([]);
-            setSearchResults([]);
-        });
-
-        // Blocked Users
-        getBlockedUsers()
-            .then((data) => setBlockedUsers(data?.blockedUsers ?? 0))
-            .catch(() => setBlockedUsers(0));
+            .then((data) => {
+                const users = data?.users ?? [];
+                setAllUsers(users);
+                setSearchResults(users);
+            })
+            .catch(() => {
+                setAllUsers([]);
+                setSearchResults([]);
+            });
     }, []);
 
     return (
         <>
-            <div className="flex-1 pl-10 my-10 flex flex-col gap-5 pr-10">
+            <div className="flex-1 pl-10 flex flex-col gap-5 pr-10">
                 <h1 className="text-3xl font-[Panchang-Semibold]">User Management</h1>
                 
-                {/* Stats */}
                 <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-5">
                     <p className="text-md font-[Panchang-Regular] pb-2">Total Users: {totalUsers}</p>
                     <p className="text-md font-[Panchang-Regular] pb-2">Active Users: {activeUsers}</p>
@@ -126,7 +114,6 @@ export default function UserManagement() {
                     <p className="text-md font-[Panchang-Regular] pb-2">Admins: {admins}</p>
                 </div>
 
-                {/* Search */}
                 <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-5">
                     <div className="flex items-center gap-4">
                         <input
@@ -143,12 +130,7 @@ export default function UserManagement() {
                             Add New User
                         </button>
                     </div>
-
-                    <Table
-                        columns={columns}
-                        data={data}
-                    />
-
+                    <Table columns={columns} data={data} />
                 </div>
             </div>
         </>

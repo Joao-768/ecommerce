@@ -97,11 +97,11 @@ export default function CollectionManagement() {
     }, [])
 
     return (
-        <div className="flex-1 pl-10 pr-10 pt-10">
+        <div className="flex-1 pl-10 pr-10">
             <h1 className="text-3xl font-[Panchang-Semibold]">Collection Management</h1>
 
             {/* Search */}
-            <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-5">
+            <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-10">
                 <div className="flex items-center gap-4">
                     <input
                         type="text"

@@ -4,7 +4,7 @@ import Orders from "./Orders"
 import Categories from "./Categories"
 import Collections from "./Collections"
 import Logs from "./Logs"
-import Alerts from "./Alerts"
+import Alerts from "./Alerts/Alerts"
 import { Outlet } from "react-router-dom"
 
 
@@ -20,7 +20,7 @@ export default function Dashboard() {
     ]
 
     return (
-        <div className="flex-1 pl-10 my-10 flex flex-col gap-5 pr-10">
+        <div className="flex-1 pl-10 flex flex-col gap-5 pr-10">
             <h1 className="text-3xl font-[Panchang-Semibold]">Dashboard</h1>
             
             {sections.map((s) => (

@@ -24,7 +24,7 @@ export async function setUserPreference(req, res) {
     const { userId, preferenceId } = req.params;
 
     if (!userId || !preferenceId) {
-        return res.status(400).json({ error: "Todos os campos são obrigatórios" });
+        return res.status(400).json({ error: "User ID and Preference ID are required" });
     }
 
     try {
@@ -37,7 +37,7 @@ export async function setUserPreference(req, res) {
         );
 
         if (existing.length > 0) {
-            return res.status(409).json({ error: "Preference já existe" });
+            return res.status(409).json({ error: "Preference already exists" });
         }
 
         // Insert New User Preference
@@ -92,6 +92,30 @@ export async function getUserPreferences(req, res) {
         const [rows] = await connection.query(
             "SELECT * FROM user_preferences WHERE user_id = ?"
         , [userId]);
+
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function getProductsByPreferences(req, res) {
+    let connection;
+    const { userId } = req.params;
+
+    try {
+        connection = await pool.getConnection();
+
+        const [rows] = await connection.query(`
+            SELECT DISTINCT p.*
+            FROM products p
+            JOIN product_preferences pp ON pp.product_id = p.id
+            WHERE pp.preference_id IN (
+                SELECT preference_id FROM user_preferences WHERE user_id = ?
+            )
+        `, [userId]);
 
         res.json(rows);
     } catch (error) {

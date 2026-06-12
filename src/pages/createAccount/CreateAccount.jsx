@@ -4,6 +4,8 @@ import { createUser } from "../../api/usersApi.js";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useScrollToTop } from "../../utils/format.js";
+import { Button, GhostButton } from "../../ui/Buttons.jsx";
+import { FormInput } from "../../ui/Form.jsx";
 
 export default function CreateAccount() {
     const { t } = useTranslation();
@@ -23,31 +25,47 @@ export default function CreateAccount() {
         role: "user",
     });
 
-    const [errors, setErrors] = useState({});
-
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-    };
-
-    const validate = () => {
-        const errors = {};
-        if (!form.name) errors.name = t("nameRequired");
-        if (!form.surname) errors.surname = t("surnameRequired");
-        if (!form.email) errors.email = t("emailRequired");
-        if (!form.password) errors.password = t("passwordRequired");
-        if (form.password !== form.confirmPassword) {
-            errors.confirmPassword = t("passwordsDontMatch");
-        }
-        return errors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const errors = validate();
-        setErrors(errors);
+        if (!form.name || !form.surname || !form.email || !form.password) {
+            alert(t("fillAllFields"));
+            return;
+        }
 
-        if (Object.keys(errors).length > 0) return;
+        if (form.password !== form.confirmPassword) {
+            alert(t("passwordsDontMatch"));
+            return;
+        }
+
+        if (form.password.length < 8) {
+            alert(t("passwordShort"));
+            return;
+        }
+
+        if(!/[!@#$%^&*_-]/.test(form.password)) {
+            alert(t("passwordSpecialChar"));
+            return;
+        }
+
+        if(!/[A-Z]/.test(form.password)) {
+            alert(t("passwordUppercase"));
+            return;
+        }
+
+        if(!/[a-z]/.test(form.password)) {
+            alert(t("passwordLowercase"));
+            return;
+        }
+
+        if(!/\d/.test(form.password)) {
+            alert(t("passwordNumber"));
+            return;
+        }
 
         try {
             const data = await createUser(form);
@@ -76,21 +94,19 @@ export default function CreateAccount() {
                     {/* Name */}
                     <div className="flex flex-col">
                         <label
-                            className={`text-sm mb-1 font-[Panchang-Regular] ${
-                                errors.name ? "text-red-500" : "text-stone-600"
-                            }`}
+                            className={`text-sm mb-1 font-[Panchang-Regular] text-stone-600`}
                         >
-                            {t("name")} {errors.name && <span> Required</span>}
+                            {t("name")}
                         </label>
 
-                        <input
+                        <FormInput
+                            variant="line"
                             type="text"
                             name="name"
                             autoComplete="given-name"
                             value={form.name}
                             onChange={handleChange}
                             placeholder={t("namePlaceholder")}
-                            className="border-b border-stone-300 py-2 outline-none focus:border-black transition-all font-[Panchang-Regular]"
                         />
 
                     </div>
@@ -98,21 +114,19 @@ export default function CreateAccount() {
                     {/* Surname */}
                     <div className="flex flex-col">
                         <label
-                            className={`text-sm mb-1 font-[Panchang-Regular] ${
-                                errors.surname ? "text-red-500" : "text-stone-600"
-                            }`}
+                            className={`text-sm mb-1 font-[Panchang-Regular] text-stone-600`}
                         >
-                            {t("surname")} {errors.surname && <span> Required</span>}
+                            {t("surname")}
                         </label>
 
-                        <input
+                        <FormInput
+                            variant="line"
                             type="text"
                             name="surname"
                             autoComplete="family-name"
                             value={form.surname}
                             onChange={handleChange}
                             placeholder={t("surnamePlaceholder")}
-                            className="border-b border-stone-300 py-2 outline-none focus:border-black transition-all font-[Panchang-Regular]"
                         />
 
                     </div>
@@ -120,22 +134,21 @@ export default function CreateAccount() {
                     {/* Email */}
                     <div className="flex flex-col col-span-2">
                         <label
-                            className={`text-sm mb-1 font-[Panchang-Regular] ${
-                                errors.email ? "text-red-500" : "text-stone-600"
-                            }`}
+                            className={`text-sm mb-1 font-[Panchang-Regular] text-stone-600`}
                         >
-                            {t("emailAddress")} {errors.email && <span> Required</span>}
+                            {t("emailAddress")}
                         </label>
                         
 
-                        <input
+                        <FormInput
+                            variant="line"
                             type="email"
                             name="email"
                             autoComplete="email"
                             value={form.email}
                             onChange={handleChange}
                             placeholder={t("emailPlaceholder")}
-                            className="border-b border-stone-300 py-2 outline-none focus:border-black transition-all font-[Panchang-Regular]"
+                            className="col-span-2"
                         />
 
                     </div>
@@ -143,11 +156,9 @@ export default function CreateAccount() {
                     {/* Password */}
                     <div className="flex flex-col relative">
                         <label
-                            className={`text-sm mb-1 font-[Panchang-Regular] ${
-                                errors.password ? "text-red-500" : "text-stone-600"
-                            }`}
+                            className={`text-sm mb-1 font-[Panchang-Regular] "text-stone-600`}
                         >
-                            {t("password")} {errors.password && <span> Required</span>}
+                            {t("password")}
                         </label>
 
                         <div className="relative">
@@ -157,31 +168,26 @@ export default function CreateAccount() {
                                 autoComplete="new-password"
                                 value={form.password}
                                 onChange={handleChange}
-                                placeholder={t("passwordPlaceholder")}
-                                className="w-full border-b py-2 pr-10 outline-none transition-all font-[Panchang-Regular]"
+                                placeholder="••••••••"
+                                className="w-full border-b border-stone-300 py-2 pr-10 outline-none focus:border-black transition-all font-[Panchang-Regular]"
                             />
 
-                            <button
+                            <GhostButton
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 cursor-pointer hover:text-black transition"
+                                className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
                             >
-                                {showPassword 
-                                    ? <FaEye size={16} className="-translate-x-px"/> 
-                                    : <FaEyeSlash size={18} />
-                                }
-                            </button>
+                                {showPassword ? <FaEye size={16} className="-translate-x-px" /> : <FaEyeSlash size={18} />}
+                        </GhostButton>
                         </div>
                     </div>
 
                     {/* Confirm Password */}
                     <div className="flex flex-col relative">
                         <label
-                            className={`text-sm mb-1 font-[Panchang-Regular] ${
-                                errors.confirmPassword ? "text-red-500" : "text-stone-600"
-                            }`}
+                            className={`text-sm mb-1 font-[Panchang-Regular] text-stone-600`}
                         >
-                            {t("confirmPassword")} {errors.confirmPassword && <span> Required</span>}
+                            {t("confirmPassword")}
                         </label>
 
                         <div className="relative">
@@ -191,41 +197,35 @@ export default function CreateAccount() {
                                 autoComplete="new-password"
                                 value={form.confirmPassword}
                                 onChange={handleChange}
-                                placeholder={t("confirmPasswordPlaceholder")}
-                                className="w-full border-b py-2 pr-10 outline-none transition-all font-[Panchang-Regular]"
+                                placeholder="••••••••"
+                                className="w-full border-b border-stone-300 py-2 pr-10 outline-none focus:border-black transition-all font-[Panchang-Regular]"
                             />
 
-                            <button
+                            <GhostButton
                                 type="button"
                                 onClick={() => setShowConfirm(!showConfirm)}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 cursor-pointer hover:text-black transition"
+                                className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
                             >
-                                {showConfirm
-                                    ? <FaEye size={16} className="-translate-x-px"/> 
-                                    : <FaEyeSlash size={18} />
-                                }
-                            </button>
+                                {showConfirm ? <FaEye size={16} className="-translate-x-px" /> : <FaEyeSlash size={18} />}
+                            </GhostButton>
                         </div>
                     </div>
                 
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        className="col-span-2 bg-black text-white py-3 rounded-full transition-all font-[Panchang-Regular] hover:border hover:bg-white hover:text-black"
+                    <Button 
+                        type="submit" 
+                        className="col-span-2 py-3 rounded-full w-full"
+                        shape="pill"
                     >
                         {t("createAccountButton")}
-                    </button>
+                    </Button>
 
                 </form>
 
                 <p className="mt-8 text-center text-sm text-stone-500 font-[Panchang-Regular]">
                     {t("alreadyHaveAccount")}{" "}
-                    <span
-                            className="underline cursor-pointer text-black"
-                            onClick={() => navigate('/login')}
-                    >
+                    <GhostButton onClick={() => navigate('/login')} className="text-black">
                         {t("loginButton")}
-                    </span>
+                    </GhostButton>
                 </p>
 
             </div>

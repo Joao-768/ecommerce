@@ -1,18 +1,26 @@
-export default function ProductCard({ item, onClick, isSelling }) {
+import { formatCurrency, getSeasonStatus } from "../utils/format";
+import { useTranslation } from "react-i18next";
 
-    function currency(price) {
-        return new Intl.NumberFormat('pt-PT', {
-            style: 'currency',
-            currency: 'EUR'
-        }).format(price);
-    }
+export default function ProductCard({ item, onClick, isRemovable, onRemove, isSelling, showSize = false}) {
+    const { t } = useTranslation();
 
     return (
         <div 
-            className="w-60 h-96 bg-white rounded-lg shadow-sm border border-stone-100
-            transition-all duration-300 hover:shadow-xl hover:scale-[1.02]
-            flex flex-col justify-between hover:cursor-pointer"
+            className="relative z-0 hover:z-10 w-60 h-96 bg-white rounded-lg shadow-sm border 
+            border-stone-100 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]
+            flex flex-col justify-between hover:cursor-pointer active:scale-95"
         >
+
+            {isRemovable && (
+                <button
+                    onClick={() => onRemove(item.id)}
+                    className="h-10 w-10 absolute top-4 right-6 text-xl rounded-xs font-bold 
+                    cursor-pointer border border-stone-300 hover:border-black transition-all duration-300"
+                >
+                    ✕
+                </button>
+            )}
+
             <button
                 onClick={onClick}
                 className="w-60 h-96 mb-4 flex items-center justify-center overflow-hidden hover:cursor-pointer"
@@ -28,14 +36,25 @@ export default function ProductCard({ item, onClick, isSelling }) {
                 {item.name}
             </h2>
 
-            {isSelling && item.status === 1 ? 
+            {isSelling ?
+                getSeasonStatus(item.collection_id) ? 
+                    <h3 className="text-md font-[Panchang-Regular] pb-2 text-center hover:cursor-pointer">
+                        {formatCurrency(item.price)}
+                    </h3>
+                : 
+                    <h3 className="text-md font-[Panchang-Regular] pb-2 text-center hover:cursor-pointer">
+                        {t("unavaliable")}
+                    </h3>
+            :
+                <div className="h-3"/>
+            }
+
+            {showSize ?
                 <h3 className="text-md font-[Panchang-Regular] pb-2 text-center hover:cursor-pointer">
-                    {currency(item.price)}
+                    {item.size}mm
                 </h3>
-            : 
-                <h3 className="text-md font-[Panchang-Regular] pb-2 text-center hover:cursor-pointer">
-                    Unavailable
-                </h3>
+            :
+                <div className="h-3"/>
             }
         </div>
     );

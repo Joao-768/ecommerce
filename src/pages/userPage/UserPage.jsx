@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useScrollToTop } from '../../utils/format';
 
-// Components
+// Componen
 import UserControlPanel from './components/UserControlPanel';
 import UserCollection from './components/userCollection/UserCollection';
 import UserCollectionAdd from './components/userCollection/UserCollectionAdd';
@@ -10,6 +10,7 @@ import UserOrders from './components/userOrders/UserOrders';
 import UserPreferences from './components/userPreferences';
 import { useEffect } from 'react';
 import { getUserRole } from '../../api/usersApi';
+import { NavButton } from '../../ui/Buttons';
 
 export default function UserPage() {
     const account = localStorage.getItem("account");
@@ -63,9 +64,9 @@ export default function UserPage() {
             <div className="w-72 sticky top-46 pt-10 border-r text-sm flex flex-col gap-10 font-[Panchang-Regular]">
 
                 {sidebarOptions.map((opt) => (
-                    <button
+                    <NavButton
                         key={opt.key}
-                        className={`cursor-pointer text-left w-full ${
+                        className={`text-left w-full active:scale-100 ${
                             location.pathname.startsWith(`/user-page/${opt.path}`)
                                 ? "font-[Panchang-Semibold]"
                                 : ""
@@ -73,15 +74,12 @@ export default function UserPage() {
                         onClick={() => navigate(`/user-page/${opt.path}`)}
                     >
                         {t(opt.label)}
-                    </button>
+                    </NavButton>
                 ))}
 
-                <button 
-                    className="cursor-pointer text-left"
-                    onClick={logout}
-                >
+                <NavButton className="text-left active:scale-100" onClick={logout}>
                     {t("logout")}
-                </button>
+                </NavButton>
             </div>
 
             <div className="flex-1 overflow-y-auto">

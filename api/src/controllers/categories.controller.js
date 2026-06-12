@@ -8,7 +8,7 @@ export async function getCategories(req, res) {
         
         // Get the categories
         const [rows] = await connection.query(
-            "SELECT id, name FROM categories"
+            "SELECT * FROM categories"
         );
 
         // Return the categories
@@ -35,6 +35,26 @@ export async function getProductsByCategory(req, res) {
 
         // Return the products
         res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+// Get Total Categories
+export async function getTotalCategories(req, res) {
+    let connection;
+
+    try {
+        connection = await pool.getConnection();
+
+        const [rows] = await connection.query(
+            "SELECT COUNT(*) AS totalCategories FROM categories"
+        );
+
+        const totalCategories = rows[0].totalCategories;
+        res.json({ totalCategories });
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {

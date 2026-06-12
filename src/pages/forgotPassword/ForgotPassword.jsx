@@ -3,12 +3,15 @@ import { forgotPassword } from "../../api/usersApi";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useScrollToTop } from "../../utils/format";
+import { useTranslation } from "react-i18next";
+import { Button, GhostButton } from "../../ui/Buttons.jsx";
+import { FormInput } from "../../ui/Form.jsx";
 
 export default function ForgotPassword() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useScrollToTop();
 
@@ -26,20 +29,18 @@ export default function ForgotPassword() {
         e.preventDefault();
 
         if (!form.email || !form.newPassword || !form.confirmPassword) {
-            alert("Preenche todos os campos");
+            alert(t("fillAllFields"));
             return;
         }
 
         if (form.newPassword !== form.confirmPassword) {
-            alert("Passwords diferentes");
+            alert(t("passwordsDontMatch"));
             return;
         }
 
         try {
             await forgotPassword(form.email, form.newPassword);
-
             navigate('/login');
-
         } catch (error) {
             alert(error?.message || "Falha ao atualizar password");
         }
@@ -47,63 +48,60 @@ export default function ForgotPassword() {
 
     return (
         <div className="h-screen w-screen flex items-center justify-center px-6 bg-stone-100">
-            <div className="w-full max-w-xl p-10 bg-white shadow-2xl rounded-3xl">
-                <h2 className="text-3xl font-[Panchang-Semibold] mb-3 text-center">
-                    Change My Password
-                </h2>
+            <div className="w-full max-w-3xl p-10 bg-white shadow-2xl rounded-3xl">
+                <h1 className="text-3xl font-[Panchang-Semibold] mb-3 text-center">
+                    {t("changeMyPassword")}
+                </h1>
                 <p className="text-stone-500 mb-8 text-center font-[Panchang-Regular]">
-                    Set a new password for your account.
+                    {t("passwordDescription")}
                 </p>
 
-                <form onSubmit={handleSubmit} className="grid gap-5">
+                <form onSubmit={handleSubmit} className="grid gap-6">
 
                     {/* Email */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs text-stone-500 font-[Panchang-Regular]">
-                            Email
+                    <div className="flex flex-col">
+                        <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
+                            {t("emailAddress")}
                         </label>
-
-                        <input
+                        <FormInput
+                            variant="line"
                             type="email"
                             name="email"
+                            autoComplete="email"
                             value={form.email}
                             onChange={handleChange}
-                            className="h-10 px-4 rounded-full border border-stone-300 bg-white text-sm font-[Panchang-Regular] shadow-sm hover:border-black focus:outline-none focus:ring-2 focus:ring-black/20"
+                            placeholder={t("emailPlaceholder")}
                         />
                     </div>
 
                     {/* New Password */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs text-stone-500 font-[Panchang-Regular]">
-                            New Password
+                    <div className="flex flex-col">
+                        <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
+                            {t("newPassword")}
                         </label>
-
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
                                 name="newPassword"
                                 value={form.newPassword}
                                 onChange={handleChange}
-                                className="w-full h-10 px-4 pr-10 rounded-full border border-stone-300 bg-white text-sm font-[Panchang-Regular] shadow-sm hover:border-black focus:outline-none focus:ring-2 focus:ring-black/20"
+                                placeholder="••••••••"
+                                className="w-full border-b border-stone-300 py-2 pr-10 outline-none focus:border-black transition-all font-[Panchang-Regular]"
                             />
-
-                            <button
+                            <GhostButton
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black transition"
+                                className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
                             >
-                                {showPassword 
-                                    ? <FaEye size={16} className="-translate-x-px" /> 
-                                    : <FaEyeSlash size={18} />
-                                }
-                            </button>
+                                {showPassword ? <FaEye size={16} className="-translate-x-px" /> : <FaEyeSlash size={18} />}
+                            </GhostButton>
                         </div>
                     </div>
 
                     {/* Confirm New Password */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs text-stone-500 font-[Panchang-Regular]">
-                            Confirm New Password
+                    <div className="flex flex-col">
+                        <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
+                            {t("confirmNewPassword")}
                         </label>
                         <div className="relative">
                             <input
@@ -111,29 +109,27 @@ export default function ForgotPassword() {
                                 name="confirmPassword"
                                 value={form.confirmPassword}
                                 onChange={handleChange}
-                                className="w-full h-10 px-4 pr-10 rounded-full border border-stone-300 bg-white text-sm font-[Panchang-Regular] shadow-sm hover:border-black focus:outline-none focus:ring-2 focus:ring-black/20"
+                                placeholder="••••••••"
+                                className="w-full border-b border-stone-300 py-2 pr-10 outline-none focus:border-black transition-all font-[Panchang-Regular]"
                             />
-
-                            <button
+                            <GhostButton
                                 type="button"
                                 onClick={() => setShowConfirm(!showConfirm)}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 cursor-pointer hover:text-black transition"
+                                className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
                             >
-                                {showConfirm 
-                                    ? <FaEye size={16} className="-translate-x-px"/> 
-                                    : <FaEyeSlash size={18} />
-                                }
-                            </button>
+                                {showConfirm ? <FaEye size={16} className="-translate-x-px" /> : <FaEyeSlash size={18} />}
+                            </GhostButton>
                         </div>
                     </div>
 
-                    {/* Submit Button */}
-                    <button
+                    <Button
                         type="submit"
-                        className="mt-2 bg-black text-white py-3 rounded-full transition-all font-[Panchang-Regular] hover:border hover:bg-white hover:text-black"
+                        className="py-3 rounded-full w-full"
+                        shape="pill"
                     >
-                        Change My Password
-                    </button>
+                        {t("change")}
+                    </Button>
+
                 </form>
             </div>
         </div>

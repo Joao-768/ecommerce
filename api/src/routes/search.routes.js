@@ -1,11 +1,12 @@
 import express from 'express';
-import { searchProducts } from '../controllers/search.controller.js';
+import { 
+    searchProducts, 
+    incrementSearchCount 
+} from '../controllers/search.controller.js';
 
-// Routes for search
 const router = express.Router();
 
-// Search products
-router.get('/products', searchProducts);
+router.get('/', searchProducts);
+router.patch('/:id/count', incrementSearchCount);
 
-// Export the router
 export { router as searchRoutes };

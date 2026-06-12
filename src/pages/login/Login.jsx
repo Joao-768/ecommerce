@@ -4,6 +4,8 @@ import { loginUser, getUserRole, setLastActivity } from "../../api/usersApi";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useScrollToTop } from "../../utils/format";
+import { Button, GhostButton } from "../../ui/Buttons";
+import { FormInput } from "../../ui/Form";
 
 export default function Login() {
     const account = localStorage.getItem("account");
@@ -77,12 +79,14 @@ export default function Login() {
                         <li>• {t("li4")}</li>
                     </ul>
 
-                    <button 
-                        className="border  py-3 rounded-full text-black bg-white hover:border-white hover:bg-black hover:text-white transition-all duration-300 font-[Panchang-Regular]"
+                    <Button
+                        variant="secondary"
+                        shape="pill"
+                        className="w-full py-3 rounded-full border-white hover:border-white"
                         onClick={() => navigate('/create-account')}
                     >
                         {t("createAccountButton")}
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Right Side */}
@@ -97,13 +101,13 @@ export default function Login() {
                             <label className="text-sm mb-2 text-stone-600 font-[Panchang-Regular]">
                                 {t("emailAddress")}
                             </label>
-                            <input
+                            <FormInput
+                                variant="line"
                                 type="email"
                                 name="email"
-                                placeholder={t("emailAddressExample")}
                                 value={form.email}
                                 onChange={handleChange}
-                                className="border-b border-stone-300 focus:border-black outline-none py-2 transition-all font-[Panchang-Regular]"
+                                placeholder={t("emailAddressExample")}
                             />
                         </div>
 
@@ -117,42 +121,37 @@ export default function Login() {
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     name="password"
-                                    placeholder={t("passwordPlaceholder")}
+                                    placeholder="••••••••"
                                     value={form.password}
                                     onChange={handleChange}
                                     className="w-full border-b border-stone-300 focus:border-black outline-none py-2 pr-10 transition-all font-[Panchang-Regular]"
                                 />
 
-                                <button
+                                <GhostButton
                                     type="button"
+                                    className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 cursor-pointer hover:text-black transition"
                                 >
-                                    {showPassword 
-                                        ? <FaEye size={16} className="-translate-x-px" /> 
-                                        : <FaEyeSlash size={18} />
-                                    }
-                                </button>
+                                    {showPassword ? <FaEye size={16} /> : <FaEyeSlash size={18} />}
+                                </GhostButton>
                             </div>
                         </div>
 
-                        {/* Forgot Password */}
-                        <div className="flex justify-between items-center text-sm">
-                            <button
-                                type="button"
-                                className="text-stone-500 hover:text-black transition-all duration-300 font-[Panchang-Regular] hover:underline mb-8"
-                                onClick={() => navigate("/forgot-password")}
-                            >
-                                {t("forgotPassword")}
-                            </button>
-                        </div>
+                        <GhostButton
+                            type="button"
+                            className="text-stone-500 hover:text-black mb-8"
+                            onClick={() => navigate("/forgot-password")}
+                        >
+                            {t("forgotPassword")}
+                        </GhostButton>
 
-                        <button
-                            type="submit"
-                            className="w-full bg-black text-white py-3 rounded-full border border-white hover:bg-white hover:border-black hover:text-black transition-all duration-300 font-[Panchang-Regular]"
+                        <Button 
+                            type="submit" 
+                            className="w-full py-3 rounded-full mt-5"
+                            shape="pill"
                         >
                             {t("loginButton")}
-                        </button>
+                        </Button>
                     </form>
                 </div>
             </div>

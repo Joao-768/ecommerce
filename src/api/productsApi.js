@@ -1,246 +1,164 @@
-const API_BASE = "http://localhost:3001/api/products";
+import { generateCollectionSlug } from "../../api/src/utils/collectionsUtils";
+import { API_URL } from "./config.js";
 
-// Create a new user account
+const API_BASE = `${API_URL}/products`;
+
 export async function createProduct(productData) {
     const res = await fetch(API_BASE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData),
     });
-
     if (!res.ok) {
-        let message = "Falha ao criar produto";
         const data = await res.json().catch(() => ({}));
-        if (data.error) message = data.error;
-        throw new Error(message);
+        throw new Error(data.error || "Fail to create product");
     }
-
     return res.json();
 }
 
 export async function getProducts() {
-    const res = await fetch(`${API_BASE}/products`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter todos os produtos");
-    }
+    const res = await fetch(API_BASE);
+    if (!res.ok) throw new Error("Fail to fetch all products");
     return res.json();
 }
 
-// Fetch product by ID
-export async function getProductById(id) {
-    if (!id) {
-        return { product: null, error: "ID do relógio em falta" };
-    }
-    const res = await fetch(`${API_BASE}/${id}`);
-    if (res.status === 404) {
-        return { product: null, error: "Relógio nao encontrado" };
-    }
-    if (!res.ok) {
-        return { product: null, error: "Falha ao carregar relógio" };
-    }
+export async function getProductById(id, lang = 'en') {
+    if (!id) return { product: null, error: "ID do relógio em falta" };
+    const res = await fetch(`${API_BASE}/${id}?lang=${lang}`);
+    if (res.status === 404) return { product: null, error: "Product not found" };
+    if (!res.ok) return { product: null, error: "Fail to fetch product by ID" };
     const product = await res.json();
     return { product, error: null };
 }
 
-// Increase the search count
-export async function incrementSearchCount(id) {
-    const res = await fetch(`${API_BASE}/${id}/search`, {
-        method: "POST",
-    });
-
-    if (!res.ok) throw new Error("Falha ao atualizar contador");
-    return res.json();
-}
-
-// set wishlist item
-export async function setWishslistItem(userId, productId) {
-    const res = await fetch(`${API_BASE}/wishlist`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, productId }),
-    });
-
-    if (!res.ok) throw new Error("Falha ao adicionar à wishlist");
-    return res.json();
-}
-
-// Get wishlist items for a user
-export async function getWishlistItems(userId) {
-    const res = await fetch(`${API_BASE}/wishlist/${userId}`);
-    if (!res.ok) throw new Error("Falha ao buscar wishlist");
-    return res.json();
-}
-
-// set cart item
-export async function setCartItem(userId, productId) {
-    const res = await fetch(`${API_BASE}/cart`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, productId }),
-    });
-
-    if (!res.ok) throw new Error("Falha ao adicionar à cart");
-    return res.json();
-}
-
-// Get cart items for a user
-export async function getCartItems(userId) {
-    const res = await fetch(`${API_BASE}/cart/${userId}`);
-    if (!res.ok) throw new Error("Falha ao buscar cart");
-    return res.json();
-}
-
-// Get cart items for a user
-export async function isInCart(userId, productId) {
-    const res = await fetch(`${API_BASE}/cart/${userId}/${productId}`);
-    if (!res.ok) throw new Error("Falha ao verificar carrinho");
-    return res.json();
-}
-
-export async function getPopularProducts() {
-    const res = await fetch(`${API_BASE}/popularProducts`);
-    if (!res.ok) throw new Error("Falha ao carregar relógios populares");
-    return res.json();
-}
-
-export async function getTotalProductByCollection() {
-    const res = await fetch(`${API_BASE}/collections`);
-    if (!res.ok) throw new Error("Falha ao carregar total de produtos por categoria");
-    return res.json();
-}
-
-export async function getNewProducts() {
-    const res = await fetch(`${API_BASE}/new`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter novos produtos");
-    }
-    return res.json();
-}
-
-export async function removeCartItem(userId, productId) {
-    const res = await fetch(
-        `${API_BASE}/cart/${userId}/${productId}`,
-        {
-            method: "DELETE",
-        }
-    );
-
-    if (!res.ok) throw new Error("Failed to remove cart item");
-
-    return res.json();
-}
-
-export async function clearCart(userId) {
-    const res = await fetch(
-        `${API_BASE}/cart/${userId}`,
-        {
-            method: "DELETE",
-        }
-    );
-
-    if (!res.ok) throw new Error("Failed to remove cart items");
-
-    return res.json();
-}
-
-// Update Product Details
 export async function updateProduct(productId, name, price, stock, category, collection, gender) {
-    const res = await fetch(`${API_BASE}/${productId}/update`, {
+    const res = await fetch(`${API_BASE}/${productId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, price, stock, category, collection, gender }),
     });
-
     if (!res.ok) {
-        let message = "Falha ao atualizar informações do utilizador";
-        try {
-            const data = await res.json();
-            if (data && data.error) message = data.error;
-        } catch {
-            // Ignore parse errors
-        }
-        throw new Error(message);
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to update product");
     }
-
     return res.json();
 }
 
-// Get Prouct Codes
-export async function getCodes() {
-    const res = await fetch(`${API_BASE}/codes`);
-    if (!res.ok) throw new Error("Falha ao Receber Codigos");
-    return res.json();
-}
-
-// Increase Product Stock
-export async function increaseStock(productId, amount) {
-    const res = await fetch(`${API_BASE}/${productId}/increase`, {
-        method: "PUT",
+export async function setCode(id, code) {
+    const res = await fetch(`${API_BASE}/${id}/code`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ code }),
     });
-
     if (!res.ok) {
-        let message = "Falha ao atualizar stock do product";
-        try {
-            const data = await res.json();
-            if (data && data.error) message = data.error;
-        } catch {
-            // Ignore parse errors
-        }
-        throw new Error(message);
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to create code");
     }
-
     return res.json();
 }
 
-// Decrease Product Stock
-export async function decreaseStock(productId, amount) {
-    const res = await fetch(`${API_BASE}/${productId}/decrease`, {
-        method: "PUT",
+export async function adjustStock(productId, amount, type) {
+    const res = await fetch(`${API_BASE}/${productId}/stock`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify({ amount, type }),
     });
-
     if (!res.ok) {
-        let message = "Falha ao atualizar stock do product";
-        try {
-            const data = await res.json();
-            if (data && data.error) message = data.error;
-        } catch {
-            // Ignore parse errors
-        }
-        throw new Error(message);
-    }
-
-    return res.json();
-}
-
-export async function getLowStock() {
-    const res = await fetch(`${API_BASE}/lowStock`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter stock baixo");
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to adjust product stock");
     }
     return res.json();
 }
 
-export async function getProductsByPreference(preferenceId) {
-    const res = await fetch(`${API_BASE}/${preferenceId}/products`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter stock baixo");
-    }
+export async function getPopularProducts() {
+    const res = await fetch(`${API_BASE}?sort=popular`);
+    if (!res.ok) throw new Error("Fail to fetch popular products");
     return res.json();
 }
 
-export async function getLastFiveProducts() {
-    const res = await fetch(`${API_BASE}/lastFive`);
-
-    if (!res.ok) throw new Error("Falha ao receber as ultimas 5 products");
+export async function getNewProducts() {
+    const res = await fetch(`${API_BASE}?sort=new`);
+    if (!res.ok) throw new Error("Fail to fetch new products");
     return res.json();
 }
 
 export async function getBestSellers(quantity) {
-    const res = await fetch(`${API_BASE}/${quantity}/bestSellers`); 
-    if (!res.ok) throw new Error("Falha ao receber os best sellers");
+    const res = await fetch(`${API_BASE}?sort=bestsellers&limit=${quantity}`);
+    if (!res.ok) throw new Error("Fail to fetch best sellers");
+    return res.json();
+}
+
+export async function getLastFiveProducts() {
+    const res = await fetch(`${API_BASE}?sort=new&limit=5`);
+    if (!res.ok) throw new Error("Fail to fetch last five products");
+    return res.json();
+}
+
+export async function getLowStock() {
+    const res = await fetch(`${API_BASE}?stock=low`);
+    if (!res.ok) throw new Error("Fail to fetch low stock products");
+    return res.json();
+}
+
+export async function getTotalProducts() {
+    const res = await fetch(`${API_BASE}?count=true`);
+    if (!res.ok) throw new Error("Fail to fetch total products");
+    return res.json();
+}
+
+export async function getInStock() {
+    const res = await fetch(`${API_BASE}?count=true`);
+    if (!res.ok) throw new Error("Fail to fetch products in stock");
+    const data = await res.json();
+    return { inStock: data.inStock };
+}
+
+export async function getOutOfStock() {
+    const res = await fetch(`${API_BASE}?count=true`);
+    if (!res.ok) throw new Error("Fail to fetch products out of stock");
+    const data = await res.json();
+    return { outOfStock: data.outOfStock };
+}
+
+export async function getTotalProductByCollection() {
+    const res = await fetch(`${API_BASE}/collections`);
+    if (!res.ok) throw new Error("Fail to fetch total products by collection");
+    return res.json();
+}
+
+export async function getCodes() {
+    const res = await fetch(`${API_BASE}/codes`);
+    if (!res.ok) throw new Error("Fail to fetch codes");
+    return res.json();
+}
+
+export async function getProductSizes(productId) {
+    const res = await fetch(`${API_BASE}/${productId}/sizes`);
+    if (!res.ok) throw new Error("Fail to fetch product sizes");
+    return res.json();
+}
+
+export async function setProductSize(productId, size) {
+    const res = await fetch(`${API_BASE}/${productId}/sizes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ size }),
+    });
+    if (!res.ok) throw new Error("Fail to set product size");
+    return res.json();
+}
+
+export async function uploadImage(file, collectionName, productName) {
+    const formData = new FormData();
+    formData.append("image", file);
+    const res = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        headers: {
+            "collectionname": generateCollectionSlug(collectionName),
+            "filename": `${productName}.png`,
+        },
+        body: formData,
+    });
+    if (!res.ok) throw new Error("Fail to upload image");
     return res.json();
 }

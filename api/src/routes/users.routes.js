@@ -1,66 +1,53 @@
 import express from "express";
-import { 
-    createUser, 
-    loginUser, 
+import {
+    createUser,
+    loginUser,
     getUserById,
-    updateUser, 
-    getUserCollection, 
-    setNewPassword, 
-    forgotPassword, 
-    getUserRole, 
-    setLastActivity, 
-    createAddress, 
-    getAddresses,
+    updateUser,
+    getUserRole,
+    setNewPassword,
+    forgotPassword,
+    setLastActivity,
+    getUserCollection,
     setCollectionProduct,
+    createAddress,
+    getAddresses,
     deleteAddress,
-    updateAddress
+    updateAddress,
+    getAllUsers,
+    removeCollectionProduct,
+    setNif,
+    verifyNif,
+    getPaymentMethod,
+    setPaymentMethod
 } from "../controllers/users.controller.js";
 
-
-// Create a router for user-related routes
 const router = express.Router();
 
-// Create a new user
+// Auth
 router.post("/", createUser);
-
-// Login user
+router.get("/", getAllUsers);
 router.post("/login", loginUser);
+router.post("/password/forgot", forgotPassword);
+router.patch("/lastActivity", setLastActivity);
 
-// User Info
+// Addresses
+router.delete("/addresses/:id", deleteAddress);
+router.put("/addresses/:id", updateAddress);
+
+// /:id
 router.get("/:id", getUserById);
-
-// Update User Info
-router.put("/:id/update", updateUser);
-
-// Get User Collection
-router.get("/:id/collection", getUserCollection);
-
-// Get User Role
+router.put("/:id", updateUser);
 router.get("/:id/role", getUserRole);
-
-// Set New Password
 router.put("/:id/password", setNewPassword);
-
-// Set New Password Whitout Email
-router.put("/password/forgot", forgotPassword);
-
-// Set Last Activity
-router.put("/lastActivity", setLastActivity);
-
-// Set User Adresses
 router.post("/:id/addresses", createAddress);
-
-// Get User Adresses
 router.get("/:id/addresses", getAddresses);
+router.get("/:id/collection", getUserCollection);
+router.post("/:id/collection", setCollectionProduct);
+router.delete("/:id/collection/:productId", removeCollectionProduct);
+router.put("/:id/nif", setNif);
+router.post("/:id/nif/verify", verifyNif);
+router.get("/:id/payment-method", getPaymentMethod);
+router.post("/:id/payment-method", setPaymentMethod);
 
-// Set Product In User Collection
-router.post("/:id/setCollectionProduct", setCollectionProduct);
-
-// Delete Adress
-router.delete('/addresses/:id', deleteAddress);
-
-// Update Adress
-router.put('/addresses/:id/update', updateAddress);
-
-// Export the router
 export { router as userRoutes };

@@ -1,26 +1,21 @@
 import express from "express";
-import { createCollection, deleteCollection, getCollections, getCollectionsById, getProductsByCollection, updateCollection } from "../controllers/collection.controller.js";
+import {
+    createCollection,
+    getCollections,
+    getCollectionsById,
+    getProductsByCollection,
+    updateCollection,
+    deleteCollection,
+} from "../controllers/collections.controller.js";
 
-// Routes for collections
 const router = express.Router();
 
-// Create New Collection
+// CRUD
 router.post("/", createCollection);
-
-// Get All Collections
 router.get("/", getCollections);
-
-// Get Collection By Id
 router.get("/:id", getCollectionsById);
-
-// Get Products By Collection
 router.get("/:collectionId/products", getProductsByCollection);
+router.put("/:id", updateCollection);
+router.delete("/:id", deleteCollection);
 
-// Delete Collection
-router.delete('/:id', deleteCollection);
-
-// Update Collection Info
-router.put("/:id/update", updateCollection);
-
-// Export the router
 export { router as collectionsRoutes };

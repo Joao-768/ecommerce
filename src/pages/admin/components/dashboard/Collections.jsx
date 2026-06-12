@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getTotalCollections } from "../../../../api/adminApi";
+import { getTotalCollections } from "../../../../api/collectionsApi";
 
 export default function Collections() {
     const [totalCollections, setTotalCollections] = useState(0);
@@ -12,7 +12,6 @@ export default function Collections() {
         <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100">
             <h1 className="text-xl font-[Panchang-Semibold] pb-2">Collections</h1>
             <p className="text-md font-[Panchang-Regular] pb-2">Total Collections: {totalCollections}</p>
-            {/* Tabela */}
         </div>
     )
 }

@@ -1,14 +1,15 @@
 import express from "express";
-import { getCategories, getProductsByCategory } from "../controllers/categories.controller.js";
+import {
+    getCategories,
+    getProductsByCategory,
+    getTotalCategories,
+} from "../controllers/categories.controller.js";
 
-// Routes for categories
 const router = express.Router();
 
-// Get all categories
+// CRUD
 router.get("/", getCategories);
-
-// Get products by category ID
+router.get("/total", getTotalCategories);
 router.get("/:categoryId/products", getProductsByCategory);
 
-// Export the router
 export { router as categoriesRoutes };

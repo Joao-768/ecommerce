@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllOrders } from "../../../../api/ordersApi";
-import { getTotalOrders } from "../../../../api/adminApi";
+import { getAllOrders, getTotalOrders } from "../../../../api/ordersApi";
 import Table from "../../../../ui/Table";
 import { formatDate } from "../../../../utils/format";
 

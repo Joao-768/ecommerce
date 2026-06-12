@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getProductsByCollection } from "../../../../api/collectionsApi";
 import { getCollections } from "../../../../api/collectionsApi";
 import { getCategories } from "../../../../api/categoriesApi";
-import { getGenders } from "../../../../api/genderApi";
+import { getGenders } from "../../../../api/gendersApi";
 import { IoArrowBackOutline } from "react-icons/io5";
 import Table from "../../../../ui/Table";
 

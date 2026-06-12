@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom"
 import { getCodes } from "../../../../api/productsApi";
-import { setUserCollection } from "../../../../api/usersApi";
+import { setCollectionProduct } from "../../../../api/usersApi";
 import { IoArrowBackOutline } from "react-icons/io5";
+import { Button, GhostButton } from "../../../../ui/Buttons";
+import { FormInput } from "../../../../ui/Form";
 
 export default function UserCollectionAdd() {
     const account = localStorage.getItem("account");
@@ -21,13 +23,14 @@ export default function UserCollectionAdd() {
         setSelectedCode(code);
     }
 
-    function addProduct() {
+    console.log(selectedCode)
+    async function addProduct() {
         if (!selectedCode) {
-            alert("Seleciona um código primeiro");
+            alert(t("selectCodeFirst"));
             return;
         }
-        setUserCollection(account, selectedCode.product_id, selectedCode.id);
-        alert("Product added to your collection");
+        await setCollectionProduct(account, selectedCode.id);
+        alert(t("productAddedToCollection"));
         navigate("/user-page/collection");
     };
 
@@ -54,13 +57,13 @@ export default function UserCollectionAdd() {
 
     return(
         <div className="flex-1 pl-10">
-            <button
-                className="mb-4 inline-flex items-center gap-2 text-sm font-[Panchang-Regular] text-stone-500 hover:underline"
+            <GhostButton
+                className="mb-4 inline-flex items-center gap-2 text-sm text-stone-500"
                 onClick={() => navigate("/user-page/collection")}
             >
                 <IoArrowBackOutline />
                 {t("backToCollection")}
-            </button>
+            </GhostButton>
 
             <h1 className="text-3xl font-[Panchang-Semibold]">
                 {t("addNewWatch")}
@@ -70,12 +73,12 @@ export default function UserCollectionAdd() {
             </p>
             <h3 className="pt-5">{t("watchCode")}</h3>
             <div className="w-1/4">
-                <input
+                <FormInput
                     type="text"
                     placeholder={`ex.: ${codes[0]?.code}`}
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="h-10 w-full px-4 rounded-full border border-stone-300 bg-white text-sm font-[Panchang-Regular] placeholder-stone-400 shadow-sm hover:border-black outline-none"
+                    className="w-full h-10 shadow-sm hover:border-black"
                 />
                 {searchResults.length > 0 && (
                     <div className="absolute z-10 mt-2 w-5/7 bg-white border border-stone-200 rounded-lg shadow-lg max-h-60 overflow-auto">
@@ -90,12 +93,9 @@ export default function UserCollectionAdd() {
                         ))}
                     </div>
                 )}
-                <button
-                    className="px-5 py-2 mt-3 rounded-full bg-black text-white text-sm font-[Panchang-Regular] border border-black hover:bg-white hover:text-black transition-all duration-200"
-                    onClick={addProduct}
-                >
+                <Button shape="pill" className="mt-3" onClick={addProduct}>
                     Add
-                </button>
+                </Button>
             </div>
         </div>
     )

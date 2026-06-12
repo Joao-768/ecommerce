@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getTotalProducts, getInStockProducts, getOutOfStock, getTotalCollections, getAllProducts, deleteProduct } from '../../../../api/adminApi'
-import { getCollections } from '../../../../api/collectionsApi';
+import { deleteProduct } from '../../../../api/adminApi'
+import { getCollections, getTotalCollections } from '../../../../api/collectionsApi';
 import { getCategories } from '../../../../api/categoriesApi';
-import { getGenders } from '../../../../api/genderApi';
+import { getGenders } from '../../../../api/gendersApi';
+import { getProducts, getTotalProducts } from '../../../../api/productsApi';
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../../../../utils/format';
@@ -12,6 +13,7 @@ export default function ProductManagement() {
     const [totalProducts, setTotalProducts] = useState();
     const [inStock, setInStock] = useState();
     const [outOfStock, setOutOfStock] = useState();
+    const [lowStock, setLowStock] = useState();
     const [totalCollections, setTotalCollections] = useState();
     const [searchQuery, setSearchQuery] = useState("");
     const [allProducts, setAllProducts] = useState([]);
@@ -106,28 +108,27 @@ export default function ProductManagement() {
     };
 
     useEffect(() => {
-        // Get Total Users
         getTotalProducts()
-            .then((data) => setTotalProducts(data?.totalProducts ?? 0))
-            .catch(() => setTotalProducts(0));
-
-        // Get In Stock Products
-        getOutOfStock()
-            .then((data) => setOutOfStock(data?.outOfStock ?? 0))
-            .catch(() => setOutOfStock(0));
-
-        // Get Total Users
-        getInStockProducts()
-            .then((data) => setInStock(data?.inStock ?? 0))
-            .catch(() => setInStock(0));
+            .then((data) => {
+                setTotalProducts(data?.total ?? 0);
+                setInStock(data?.inStock ?? 0);
+                setOutOfStock(data?.outOfStock ?? 0);
+                setLowStock(data?.lowStock ?? 0);
+            })
+            .catch(() => {
+                setTotalProducts(0);
+                setInStock(0);
+                setOutOfStock(0);
+                setLowStock(0);
+            });
 
         // Get Total Collections
         getTotalCollections()
             .then((data) => setTotalCollections(data?.totalCollections ?? 0))
             .catch(() => setTotalCollections(0));
 
-        // Get Total Collections
-        getAllProducts()
+        // Get All Products
+        getProducts()
             .then((data) => {
                 const products = data?.products ?? [];
                 setAllProducts(products);
@@ -156,14 +157,15 @@ export default function ProductManagement() {
     }, []);
 
     return (
-        <div className="flex-1 pl-10 my-10 flex flex-col gap-5 pr-10">
+        <div className="flex-1 pl-10 flex flex-col gap-5 pr-10">
 
             {/* Stats */}
             <h1 className="text-3xl font-[Panchang-Semibold]">Product Management</h1>
             <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-5">
                 <p className="text-md font-[Panchang-Regular] pb-2">Total Products: {totalProducts}</p>
-                <p className="text-md font-[Panchang-Regular] pb-2">Products In Stock: {inStock}</p>
-                <p className="text-md font-[Panchang-Regular] pb-2">Products Out of Stock: {outOfStock}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">In Stock Products: {inStock}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">Out of Stock Products: {outOfStock}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">Low Stock Products: {lowStock}</p>
                 <p className="text-md font-[Panchang-Regular] pb-2">Total Collections: {totalCollections}</p>
             </div>
 

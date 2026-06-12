@@ -1,12 +1,14 @@
-import { useState } from "react";
-import { getTotalCategories } from "../../../../api/adminApi";
+import { useState, useEffect } from "react";
+import { getTotalCategories } from "../../../../api/categoriesApi";
 
 export default function Categories() {
     const [totalCategories, setTotalCategories] = useState(0);
 
-    getTotalCategories()
-        .then((data) => setTotalCategories(data?.totalCategories ?? 0))
-        .catch(() => setTotalCategories(0));
+    useEffect(() => {
+        getTotalCategories()
+            .then((data) => setTotalCategories(data?.totalCategories ?? 0))
+            .catch(() => setTotalCategories(0));
+    }, []);
 
     return (
         <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100">

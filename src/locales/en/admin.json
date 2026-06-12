@@ -1,0 +1,13 @@
+{
+    "userCreated": "User Created",
+    "userEdited": "User Edited",
+    "productCreated": "Product Created",
+    "productEdited": "Product Edited",
+    "collectionCreated": "Collection Created",
+    "collectionEdited": "Collection Edited",
+    "orderEdited": "Order Edited",
+    "refundSuccess": "Refund successful!",
+    "refundError": "Refund error",
+    "taskCreated": "Task Created",
+    "taskUpdated": "Task Updated"
+}

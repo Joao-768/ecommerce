@@ -4,6 +4,7 @@ import { getProductsByCollection } from "../../../api/collectionsApi";
 import { getBestSellers, getNewProducts } from "../../../api/productsApi";
 import ProductCard from "../../../ui/ProductCard";
 import { useNavigate } from "react-router-dom";
+import { TabButton } from "../../../ui/Buttons";
 
 export default function Highlights() {
     const { t } = useTranslation();
@@ -48,11 +49,11 @@ export default function Highlights() {
 
     useEffect(() => {
         getNewProducts()
-            .then((data) => setNewProducts(data.newProducts))
+            .then((data) => setNewProducts(data?.products ?? []))
             .catch(() => setNewProducts([]));
 
         getBestSellers(10)
-            .then((data) => setBestSellers(data?.products))
+            .then((data) => setBestSellers(data?.products ?? []))
             .catch(() => setBestSellers([]));
     }, []);
 
@@ -61,30 +62,15 @@ export default function Highlights() {
             <div className="flex justify-center pt-28">
                 <div className="relative">
                     <div className="flex items-center gap-6">
-                        <button
-                            className={`border-0 bg-transparent text-black font-[Panchang-Regular] pb-2 cursor-pointer ${
-                                currentHighlight === "new" ? "underline" : ""
-                            }`}
-                            onClick={() => setCurrentHighlight("new")}
-                        >
+                        <TabButton active={currentHighlight === "new"} onClick={() => setCurrentHighlight("new")}>
                             {t("new")}
-                        </button>
-                        <button
-                            className={`border-0 bg-transparent text-black font-[Panchang-Regular] pb-2 cursor-pointer ${
-                                currentHighlight === "best" ? "underline" : ""
-                            }`}
-                            onClick={() => setCurrentHighlight("best")}
-                            >
+                        </TabButton>
+                        <TabButton active={currentHighlight === "best"} onClick={() => setCurrentHighlight("best")}>
                             {t("bestSellers")}
-                        </button>
-                        <button
-                            className={`border-0 bg-transparent text-black font-[Panchang-Regular] pb-2 cursor-pointer ${
-                                currentHighlight === "season" ? "underline" : ""
-                            }`}
-                            onClick={() => setCurrentHighlight("season")}
-                            >
+                        </TabButton>
+                        <TabButton active={currentHighlight === "season"} onClick={() => setCurrentHighlight("season")}>
                             {t(season)}
-                        </button>
+                        </TabButton>
                     </div>
                     <span className="absolute left-0 -bottom-1 h-px bg-black transition-transform duration-300" />
                 </div>

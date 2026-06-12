@@ -1,97 +1,45 @@
 import express from "express";
-import { 
+import {
+    createProduct,
     getProducts,
-    getProductById, 
-    incrementSearchCount, 
-    setWishslistItem, 
-    getWishlistItems, 
-    setCartItem, 
-    getCartItems, 
-    isInCart, 
-    getPopularProducts, 
-    createProduct, 
-    getTotalProductByCollection, 
-    getNewProducts, 
-    removeCartItem, 
-    clearCart,
+    getProductById,
     updateProduct,
+    getTotalProductByCollection,
     getCodes,
-    decreaseStock,
-    increaseStock,
-    getLowStock,
-    getProductsByPreference,
-    getLastFiveProducts,
-    getBestSellers
-} from "../controllers/product.controller.js";
+    adjustStock,
+    setCode,
+    getProductSizes,
+    setProductSize
+} from "../controllers/products.controller.js";
+import fs from "fs";
+import { upload } from "../utils/upload.js";
+import { fileURLToPath } from "url";
+import path from "path";
 
-// Routes for products
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
 
-// Create New Product
+// CRUD
 router.post("/", createProduct);
+router.get("/", getProducts);
 
-// Get All Products
-router.get("/products", getProducts);
-
-// Add item to wishlist
-router.post("/wishlist", setWishslistItem);
-
-// Get wishlist items for a user
-router.get("/wishlist/:userId", getWishlistItems);
-
-// Add item to cart
-router.post("/cart", setCartItem);
-
-// Get Last Five Products
-router.get("/lastFive", getLastFiveProducts);
-
-// Get cart items for a user
-router.get("/cart/:userId", getCartItems);
-
-// Increment search count for a product
-router.post("/:id/search", incrementSearchCount);
-
-// Verify if the product is in the user cart
-router.get("/cart/:userId/:productId", isInCart);
-
-// Get Popular Products
-router.get("/popularProducts", getPopularProducts);
-
-// Get Total Products By Collection
+// Other endpoints
+router.get("/codes", getCodes);
 router.get("/collections", getTotalProductByCollection);
 
-// New Products
-router.get("/new", getNewProducts);
-
-// Remove Cart Item
-router.delete("/cart/:userId/:productId", removeCartItem);
-
-// Remove Cart Item
-router.delete("/cart/:userId", clearCart);
-
-// Get Product Codes
-router.get("/codes", getCodes);
-
-// Get Low Stock
-router.get("/lowStock", getLowStock);
-
-// Get Best Sellers Products
-router.get("/:quantity/bestSellers", getBestSellers);
-
-// Get Products By Preference
-router.get("/:preferenceId/products", getProductsByPreference);
-
-// Get product by ID
+// /:id
 router.get("/:id", getProductById);
+router.put("/:id", updateProduct);
+router.patch("/:id/code", setCode);
+router.get("/:id/sizes", getProductSizes);
+router.post("/:id/sizes", setProductSize);
+router.patch("/:id/stock", adjustStock);
+router.post("/:id/image", upload.single("image"), (req, res) => {
+    const { collectionname, filename } = req.headers;
+    const dir = path.join(__dirname, "../../../public/images", collectionname);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, filename), req.file.buffer);
+    res.json({ path: `/images/${collectionname}/${filename}` });
+});
 
-// Update Product Info
-router.put("/:id/update", updateProduct);
-
-// Increase Product Stock
-router.put("/:id/increase", increaseStock);
-
-// Decrease Product Stock
-router.put("/:id/decrease", decreaseStock);
-
-// Export the router
-export { router as productRoutes };
+export { router as productsRoutes };

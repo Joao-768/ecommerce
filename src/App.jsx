@@ -17,20 +17,19 @@ import ForgotPassword from './pages/forgotPassword/ForgotPassword';
 // Shop
 import Cart from './pages/cart/Cart';
 import Checkout from './pages/checkout/Checkout';
-import Category from './pages/category/Category';
+import ProductList from './pages/productList/ProductList';
 import Product from './pages/product/Product';
 import Search from './pages/search/Search';
 import Watches from './pages/watches/Watches';
 import Wishlist from './pages/wishlist/Wishlist';
-import Collection from './pages/collection/Collection';
-import Gender from './pages/gender/Gender';
 
 // Admin
 import Admin from './pages/admin/Admin';
 
 import Dashboard from "./pages/admin/components/dashboard/Dashboard";
-import AddTask from "./pages/admin/components/dashboard/AddTask";
-import EditTask from "./pages/admin/components/dashboard/EditTask";
+import Task from "./pages/admin/components/dashboard/Alerts/Task";
+import AddTask from "./pages/admin/components/dashboard/Alerts/AddTask";
+import EditTask from "./pages/admin/components/dashboard/Alerts/EditTask";
 
 import CollectionManagement from "./pages/admin/components/collectionManagement/CollectionManagement"; 
 import AddCollection from "./pages/admin/components/collectionManagement/addCollection";
@@ -41,8 +40,8 @@ import OrdersManagement from "./pages/admin/components/orderManagement/OrderMana
 import EditOrder from "./pages/admin/components/orderManagement/EditOrder";
 
 import ProductManagement from "./pages/admin/components/productManagement/ProductManagement";
-import AddProduct from "./pages/admin/components/productManagement/AddProduct";
-import EditProduct from "./pages/admin/components/productManagement/EditProduct";
+import AddProduct from "./pages/admin/components/productManagement/addProduct/AddProduct";
+import EditProduct from "./pages/admin/components/productManagement/editProduct/EditProduct";
 
 import UserManagement from "./pages/admin/components/userManagement/UserManagement";
 import AddUser from "./pages/admin/components/userManagement/AddUser";
@@ -63,11 +62,14 @@ import AddAddress from "./pages/userPage/components/userPersonalInfo/AddAddress"
 import EditAddress from "./pages/userPage/components/userPersonalInfo/EditAddress";
 import ChangePassword from "./pages/userPage/components/userPersonalInfo/ChangePassword";
 
+// Not Found
+import NotFound from "./pages/notFound/NotFound";
+
 export default function App() {
     const [cartIsOpen, setCartIsOpen] = useState(false);
     const location = useLocation();
 
-    const hideLayout = location.pathname === "/search";
+    const hideLayout = location.pathname === "/about-us";
 
     return (
         <>
@@ -84,25 +86,22 @@ export default function App() {
 
                 {/* Shop */}
                 <Route path="/checkout" element={<Checkout />} />
-                <Route path="/category/:id" element={<Category />} />
-                <Route path="/product/:id" element={<Product setCartIsOpen={setCartIsOpen} />} />
+                <Route path="/category/:id" element={<ProductList type="category" />} />
+                <Route path="/collection/:id" element={<ProductList type="collection" />} />
+                <Route path="/gender/:id" element={<ProductList type="gender" />} />
+                <Route path="/product/:id" element={<Product cartIsOpen={cartIsOpen} setCartIsOpen={setCartIsOpen} />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/watches" element={<Watches />} />
                 <Route path="/wishlist" element={<Wishlist />} />
-                <Route path="/collection/:id" element={<Collection />} />
-                <Route path="/gender/:id" element={<Gender />} />
 
                 {/* Admin */}
                 <Route path="/admin" element={<Admin />}>
                     <Route index element={<Dashboard />} />
-
-                    {/* Dashboard */}
                     <Route path="dashboard" element={<Dashboard />} />
-
+                    <Route path="task/:id" element={<Task />} />
                     <Route path="task/:id/edit" element={<EditTask />} />
                     <Route path="task/add" element={<AddTask />} />
 
-                    {/* Collection Management */}
                     <Route path="collection-management">
                         <Route index element={<CollectionManagement />} />
                         <Route path="add" element={<AddCollection />} />
@@ -110,20 +109,17 @@ export default function App() {
                         <Route path=":id/products" element={<ProductsCollection />} />
                     </Route>
 
-                    {/* Order Management */}
                     <Route path="order-management">
                         <Route index element={<OrdersManagement />} />
                         <Route path=":id/edit" element={<EditOrder />} />
                     </Route>
 
-                    {/* Product Management */}
                     <Route path="product-management">
                         <Route index element={<ProductManagement />} />
                         <Route path="add" element={<AddProduct />} />
                         <Route path=":id/edit" element={<EditProduct />} />
                     </Route>
 
-                    {/* User Management */}
                     <Route path="user-management">
                         <Route index element={<UserManagement />} />
                         <Route path="add" element={<AddUser />} />
@@ -133,39 +129,35 @@ export default function App() {
 
                 {/* User */}
                 <Route path="/user-page/*" element={<UserPage />}>
-                    
                     <Route index element={<UserControlPanel />} />
-
                     <Route path="control-panel" element={<UserControlPanel />} />
 
-                    {/* Collection */}
                     <Route path="collection" element={<UserCollection />} />
                     <Route path="collection/add" element={<UserCollectionAdd />} />
 
-                    {/* Orders */}
                     <Route path="orders">
                         <Route index element={<UserOrders />} />
                         <Route path=":id/view" element={<AddOrder />} />
                     </Route>
 
-                    {/* Preferences */}
                     <Route path="preferences" element={<UserPreferences />} />
 
-                    {/* Personal Info */}
                     <Route path="personal-info">
                         <Route index element={<UserInfo />} />
                         <Route path="add" element={<AddAddress />} />
                         <Route path=":id/edit" element={<EditAddress />} />
                         <Route path="password" element={<ChangePassword />} />
                     </Route>
-
                 </Route>
+
+                {/* Not Found */}
+                <Route path="*" element={<NotFound />} />
 
             </Routes>
 
             <Cart 
                 isOpen={cartIsOpen} 
-                onClose={() => setCartIsOpen(false)} 
+                onClose={() => setCartIsOpen(false)}
             />
 
             {!hideLayout && <Footer />}

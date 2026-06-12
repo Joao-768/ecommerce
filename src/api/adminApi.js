@@ -1,249 +1,98 @@
-const API_BASE = "http://localhost:3001/api/admin";
+import { API_URL } from "./config.js";
 
-export async function getTotalUsers() {
-    const res = await fetch(`${API_BASE}/totalUsers`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter total de utilizadores");
-    }
-    return res.json();
-}
+const API_BASE = `${API_URL}/admin`;
 
-export async function getTotalAdmins() {
-    const res = await fetch(`${API_BASE}/totalAdmins`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter total de administradores");
-    }
-    return res.json();
-}
-
-export async function getNewUsers() {
-    const res = await fetch(`${API_BASE}/newUsers`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter novos utilizadores");
-    }
-    return res.json();
-}
-
-export async function getTotalProducts() {
-    const res = await fetch(`${API_BASE}/totalProducts`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter total de produtos");
-    }
-    return res.json();
-}
-
-export async function getInStockProducts() {
-    const res = await fetch(`${API_BASE}/inStock`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter produtos em stock");
-    }
-    return res.json();
-}
-
-export async function getOutOfStock() {
-    const res = await fetch(`${API_BASE}/outOfStock`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter produtos sem stock");
-    }
-    return res.json();
-}
-
-export async function getTotalCategories() {
-    const res = await fetch(`${API_BASE}/totalCategories`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter total de categorias");
-    }
-    return res.json();
-}
-
-export async function getTotalCollections() {
-    const res = await fetch(`${API_BASE}/totalCollections`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter total de colecoes");
-    }
+export async function getUserStats() {
+    const res = await fetch(`${API_BASE}/users?count=true`);
+    if (!res.ok) throw new Error("Fail to fetch user stats");
     return res.json();
 }
 
 export async function getUsersByMonth() {
-    const res = await fetch(`${API_BASE}/usersByMonth`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter utilizadores por mês");
-    }
-    return res.json();
-}
-
-export async function getTotalOrders() {
-    const res = await fetch(`${API_BASE}/totalOrders`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter total de encomendas");
-    }
+    const res = await fetch(`${API_BASE}/users?month=true`);
+    if (!res.ok) throw new Error("Fail to fetch users by month");
     return res.json();
 }
 
 export async function getLastFiveUsers() {
-    const res = await fetch(`${API_BASE}/lastFiveUsers`);
-    if (!res.ok)throw new Error("Falha ao obter novos utilizadores")
-    return res.json();
-}
-
-// Get Last Active Users
-export async function getLastActiveUsers() {
-    const res = await fetch(`${API_BASE}/lastActiveUsers`);
-    if (!res.ok) {
-        let message = "Falha ao obter ultimos utilizadores ativos";
-        try {
-            const data = await res.json();
-            if (data && data.error) message = data.error;
-        } catch {
-            // Ignore parse errors
-        }
-        throw new Error(message);
-    }
-    return res.json();
-}
-
-export async function getAllUsers() {
-    const res = await fetch(`${API_BASE}/allUsers`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter todos os utilizadores");
-    }
-    return res.json();
-}
-
-export async function getBlockedUsers() {
-    const res = await fetch(`${API_BASE}/blockedUsers`);
-    if (!res.ok) {
-        throw new Error("Falha ao obter todos os utilizadores bloqueados");
-    }
+    const res = await fetch(`${API_BASE}/users?limit=5`);
+    if (!res.ok) throw new Error("Fail to fetch last five users");
     return res.json();
 }
 
 export async function deleteUser(id) {
-    try {
-        const response = await fetch(`${API_BASE}/users/${id}`, {
-            method: 'DELETE'
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Erro ao apagar user");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error("Erro:", error);
-        throw error;
-    }
-}
-
-export async function getAllProducts() {
-    const res = await fetch(`${API_BASE}/allProducts`);
+    const res = await fetch(`${API_BASE}/users/${id}`, {
+        method: "DELETE",
+    });
     if (!res.ok) {
-        throw new Error("Falha ao obter todos os produtos");
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to delete user");
     }
     return res.json();
 }
 
 export async function deleteProduct(id) {
-    try {
-        const response = await fetch(`${API_BASE}/products/${id}`, {
-            method: 'DELETE'
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Erro ao apagar product");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error("Erro:", error);
-        throw error;
+    const res = await fetch(`${API_BASE}/products/${id}`, {
+        method: "DELETE",
+    });
+    if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to delete product");
     }
+    return res.json();
 }
 
 export async function blockUser(id) {
-    try {
-        const response = await fetch(`${API_BASE}/users/${id}/block`, {
-            method: "POST"
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Erro ao atualizar status do user");
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error("Erro:", error);
-        throw error;
+    const res = await fetch(`${API_BASE}/users/${id}/block`, {
+        method: "PATCH",
+    });
+    if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to block user");
     }
+    return res.json();
 }
 
 export async function isUserActive(id) {
     const res = await fetch(`${API_BASE}/users/${id}/isActive`);
-    if (!res.ok) {
-        throw new Error("Falha ao receber status do user");
-    }
+    if (!res.ok) throw new Error("Fail to fetch user status");
     return res.json();
 }
 
 export async function getAdminTasks() {
     const res = await fetch(`${API_BASE}/tasks`);
-    if (!res.ok) {
-        throw new Error("Falha ao receber tasks do admin");
-    }
+    if (!res.ok) throw new Error("Fail to fetch admin tasks");
     return res.json();
 }
 
 export async function getAdminTaskById(taskId) {
-    const res = await fetch(`${API_BASE}/${taskId}/task`);
-    if (!res.ok) {
-        throw new Error("Falha ao receber info da task");
-    }
+    const res = await fetch(`${API_BASE}/tasks/${taskId}`);
+    if (!res.ok) throw new Error("Fail to fetch admin task");
     return res.json();
 }
 
 export async function createAdminTask(form) {
-    const res = await fetch(`${API_BASE}/createTask`, {
+    const res = await fetch(`${API_BASE}/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
     });
-
     if (!res.ok) {
-        let message = "Falha ao criar Admin Task";
         const data = await res.json().catch(() => ({}));
-        if (data.error) message = data.error;
-        throw new Error(message);
+        throw new Error(data.error || "Fail to create task");
     }
-
     return res.json();
 }
 
-export async function updateAdminTask(form) {
-    const res = await fetch(`${API_BASE}/${form.id}/updateTask`, {
+export async function updateAdminTask(taskId, task, description, status) {
+    const res = await fetch(`${API_BASE}/tasks/${taskId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ task, description, status }),
     });
-
     if (!res.ok) {
-        let message = "Falha ao atualizar informações da task";
-        try {
-            const data = await res.json();
-            if (data && data.error) message = data.error;
-        } catch {
-            // Ignore parse errors
-        }
-        throw new Error(message);
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to update task");
     }
-
     return res.json();
 }

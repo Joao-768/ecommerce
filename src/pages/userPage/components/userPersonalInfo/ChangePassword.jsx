@@ -2,6 +2,8 @@ import { useState } from "react";
 import { setNewPassword } from "../../../../api/usersApi";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { Button, GhostButton } from "../../../../ui/Buttons";
+import { FormInput } from "../../../../ui/Form";
 
 export default function ChangePassword({ setCurrentSection }) {
     const account = localStorage.getItem("account");
@@ -28,9 +30,9 @@ export default function ChangePassword({ setCurrentSection }) {
     };
 
     // Set New Password
-    const setPassword = async () => {
+    async function setPassword() {
         if (Object.keys(validate()).length) {
-            alert("Preenche os campos corretamente");
+            alert(t("fillFieldsCorrectly"));
             return;
         }
         await setNewPassword(account, form.password, form.newPassword);
@@ -42,9 +44,9 @@ export default function ChangePassword({ setCurrentSection }) {
         <div className="flex-1 pl-10 pr-10 pt-4 flex flex-col gap-10">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-[Panchang-Semibold]">Change My Password</h1>
+                <h1 className="text-3xl font-[Panchang-Semibold]">{t("changeMyPassword")}</h1>
                 <p className="text-xs text-stone-500 font-[Panchang-Regular] mt-2 max-w-xl">
-                    Choose a strong password you haven't used before.
+                    {t("passwordDescription")}
                 </p>
             </div>
 
@@ -53,16 +55,17 @@ export default function ChangePassword({ setCurrentSection }) {
                     <div className="flex flex-col gap-2 col-span-2">
 
                         <label className="text-xs text-stone-500 font-[Panchang-Regular]">
-                            Current Password
+                            {t("currentPassword")}
                         </label>
 
                         <div className="relative w-115">
-                            <input
+                            <FormInput
                                 type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={form.password}
                                 onChange={handleChange}
-                                className="h-10 w-115 px-4 pr-10 rounded-full border border-stone-300 bg-white text-sm font-[Panchang-Regular] shadow-sm hover:border-black focus:outline-none focus:ring-2 focus:ring-black/20"
+                                placeholder="••••••••"
+                                className="w-115 h-10 pr-10 shadow-sm hover:border-black focus:ring-2 focus:ring-black/20"
                             />
 
                             <button
@@ -83,16 +86,17 @@ export default function ChangePassword({ setCurrentSection }) {
 
                         <div className="flex flex-col gap-2">
                             <label className="text-xs text-stone-500 font-[Panchang-Regular]">
-                                New Password
+                                {t("newPassword")}
                             </label>
 
                             <div className="relative">
-                                <input
+                                <FormInput
                                     type={showNew ? "text" : "password"}
                                     name="newPassword"
                                     value={form.newPassword}
+                                    placeholder="••••••••"
                                     onChange={handleChange}
-                                    className="w-full h-10 px-4 pr-10 rounded-full border border-stone-300 bg-white text-sm font-[Panchang-Regular] shadow-sm hover:border-black focus:outline-none focus:ring-2 focus:ring-black/20"
+                                    className="w-full h-10 pr-10 shadow-sm hover:border-black focus:ring-2 focus:ring-black/20"
                                 />
 
                                 <button
@@ -111,16 +115,17 @@ export default function ChangePassword({ setCurrentSection }) {
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs text-stone-500 font-[Panchang-Regular]">
-                            Confirm New Password
+                            {t("confirmNewPassword")}
                         </label>
 
                         <div className="relative">
-                            <input
+                            <FormInput
                                 type={showConfirm ? "text" : "password"}
                                 name="confirmPassword"
                                 value={form.confirmPassword}
                                 onChange={handleChange}
-                                className="w-full h-10 px-4 pr-10 rounded-full border border-stone-300 bg-white text-sm font-[Panchang-Regular] shadow-sm hover:border-black focus:outline-none focus:ring-2 focus:ring-black/20"
+                                placeholder="••••••••"
+                                className="w-full h-10 pr-10 shadow-sm hover:border-black focus:ring-2 focus:ring-black/20"
                             />
 
                             <button
@@ -138,13 +143,9 @@ export default function ChangePassword({ setCurrentSection }) {
                 </div>
 
                 <div className="mt-8">
-                    <button
-                        type="submit"
-                        className="px-6 py-2 rounded-full bg-black text-white text-sm font-[Panchang-Regular] border border-black hover:bg-white hover:text-black transition-all duration-200"
-                        onClick={setPassword}
-                    >
-                        Change My Password
-                    </button>
+                    <Button shape="pill" onClick={setPassword}>
+                        {t("changeMyPassword")}
+                    </Button>
                 </div>
             </div>
         </div>

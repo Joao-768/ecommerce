@@ -1,16 +1,42 @@
-# React + Vite
+# Ecommerce de Relógios
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web de e-commerce desenvolvida como projeto de fim de curso, focada na venda de relógios.
 
-Currently, two official plugins are available:
+## Tecnologias utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Frontend:** React, React Router DOM, Tailwind CSS, i18next  
+**Backend:** Node.js, Express  
+**Base de dados:** MySQL  
 
-## React Compiler
+## Funcionalidades
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Catálogo de produtos com filtragem por categoria, coleção e género
+- Página de produto com seleção de tamanho
+- Carrinho de compras e lista de desejos
+- Processo de checkout com morada de entrega
+- Autenticação com registo e login
+- Página de perfil do utilizador com histórico de encomendas
+- Suporte a múltiplos idiomas (PT, EN, ES, FR, DE)
+- Painel de administrador para gestão de produtos, utilizadores e encomendas
 
-## Expanding the ESLint configuration
+## Como correr localmente
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Pré-requisitos
+- Node.js
+- XAMPP (MySQL)
+
+### Frontend
+```bash
+npm install
+npm run dev
+```
+
+### Backend
+```bash
+cd api
+npm install
+npm run dev
+```
+
+### Base de dados
+Importar o ficheiro `ecommerce_db.sql` no phpMyAdmin e configurar o ficheiro `.env` na pasta `api` com base no `.env.example`.

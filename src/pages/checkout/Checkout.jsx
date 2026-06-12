@@ -1,299 +1,203 @@
 import { useEffect, useState } from "react";
-import { FiCreditCard, FiLock, FiShoppingCart } from "react-icons/fi";
-import { FaCcVisa, FaCcMastercard, FaPaypal } from "react-icons/fa";
-import { getCartItems, clearCart, decreaseStock } from "../../api/productsApi";
-import { getAddresses, getUserById } from "../../api/usersApi";
+import { adjustStock } from "../../api/productsApi";
+import { getCartItems, clearCart } from "../../api/cartApi";
+import { getAddresses, getPaymentMethod, getUserById, setPaymentMethod, setNif } from "../../api/usersApi";
 import { useTranslation } from "react-i18next";
-import { createOrder, setOrderItems, updateOrderAddress } from "../../api/ordersApi";
+import { createOrder, createOrderAddress, setOrderItems } from "../../api/ordersApi";
 import { formatCurrency, useScrollToTop } from "../../utils/format";
+import { FiShoppingCart } from "react-icons/fi";
+
+import Step1 from "./Step1";
+import Step2 from "./Step2";
+import Summary from "./Summary";
+import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
     const account = localStorage.getItem("account");
     const [step, setStep] = useState(1);
     const [cartItems, setCartItems] = useState([]);
     const [addresses, setAddresses] = useState([]);
-    const [show, setShow] = useState(false);
+    const [isDifferentAddress, setIsDifferentAddress] = useState(false);
+    const [user, setUser] = useState(null);
+    const [savedCards, setSavedCards] = useState([]);
+    const [selectedCard, setSelectedCard] = useState(null);
+
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     useScrollToTop();
 
-    const [form, setForm] = useState({
-        name: "",
-        surname: "",
-        email: "",
-        address: "",
-        street: "",
-        city: "",
-        postal_code: "",
-        district: "",
-        country: "",
-        cardNumber: "",
-        expiry: "",
-        cvc: "",
+    const [billing, setBilling] = useState({
+        name: "", surname: "", email: "", nif: "",
+        address: "", street: "", city: "", postal_code: "", district: "", country: ""
     });
 
-    const update = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
+    const [delivery, setDelivery] = useState({
+        name: "", surname: "",
+        address: "", street: "", city: "", postal_code: "", district: "", country: ""
+    });
+
+    const [card, setCard] = useState({
+        cardNumber: "", expiry: "", cvc: ""
+    });
+
+    const updateBilling = (e) => setBilling(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const updateDelivery = (e) => setDelivery(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const updateCard = (e) => setCard(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
     useEffect(() => {
         getCartItems(account)
-            .then((data) => setCartItems(data || []))
+            .then((data) => setCartItems(data))
             .catch(() => setCartItems([]));
 
         getUserById(account)
-            .then((user) => {
-                setForm((prev) => ({
-                    ...prev,
-                    name: user.name,
-                    surname: user.surname,
-                }));
+        .then((u) => {
+            setUser(u);
+            setBilling(prev => ({ ...prev, name: u.name, surname: u.surname, nif: u.nif ?? "" }));
         });
 
-
         getAddresses(account)
-            .then((address) => setAddresses(address || []))
+            .then((address) => setAddresses(address))
             .catch(() => setAddresses([]));
+
+        getPaymentMethod(account)
+        .then((data) => {
+            setSavedCards(data);
+            if (data?.length) setSelectedCard(data[0]);
+        })
+        .catch(() => setSavedCards([]));
     }, [account]);
 
-    async function payement() {
-        if(!form.name || !form.surname || !total || !form.cardNumber || !form.expiry || !form.cvc){
-            alert("Campos em falta!");
+    async function payment() {
+        const finalDelivery = isDifferentAddress ? delivery : billing;
+
+        if (!billing.name || !billing.surname || !total) {
+            alert(t("missingFields"));
             return;
         }
-        try {
-            const order = await createOrder(account, form.name, form.surname, total);
 
-            await updateOrderAddress(order.id, form.street, form.city, form.postal_code, form.district, form.country);
+        if (billing.nif.length !== 9 || !/^\d+$/.test(billing.nif)) {
+            alert(t("invalidNIF"));
+            return;
+        }
 
-            await setOrderItems(order.id, cartItems);
+        if (!finalDelivery.street || !finalDelivery.city || !finalDelivery.postal_code || !finalDelivery.district || !finalDelivery.country) {
+            alert(t("missingAddress"));
+            return;
+        }
 
-            for (const item of cartItems) {
-                await decreaseStock(item.id, item.quantity || 1);
+        if (finalDelivery.postal_code.length < 4 || finalDelivery.postal_code.length > 10) {
+            alert(t("invalidPostalCode"));
+            return;
+        }
+
+        if (!card.cvc) {
+            alert(t("missingFields"));
+            return;
+        }
+
+        if (!selectedCard) {
+            if (!card.cardNumber || !card.expiry || !card.cvc) { 
+                alert(t("missingFields")); 
+                return; 
             }
 
-            await clearCart(account);
+            if (card.cvc.length !== 3 || card.cardNumber.length !== 16 || !/^\d+$/.test(card.cvc) || !/^\d+$/.test(card.cardNumber)) { 
+                alert(t("invalidPayment")); 
+                return; 
+            }
 
-            alert("Order successfully created!");
+            if (card.expiry.length !== 5 || card.expiry[2] !== "/") { 
+                alert(t("invalidExpiryFormat")); 
+                return; 
+            }
+
+            const [month, year] = card.expiry.split("/");
+            const currentYear = new Date().getFullYear() % 100;
+            const currentMonth = new Date().getMonth() + 1;
+
+            if (Number(month) < 1 || Number(month) > 12) { 
+                alert(t("invalidMonth")); 
+                return; 
+            }
+            if (Number(year) < currentYear || (Number(year) === currentYear && Number(month) < currentMonth)) { 
+                alert(t("expiredCard")); 
+                return; 
+            }
+        } else {
+            if (card.cvc.length !== 3 || !/^\d+$/.test(card.cvc)) { 
+                alert(t("invalidPayment")); 
+                return; 
+            }
+        }
+
+        try {
+            const order = await createOrder(account, total, billing.nif);
+            await createOrderAddress(order.id, finalDelivery);
+            await setOrderItems(order.id, cartItems);
+            if (!user?.nif) {
+                await setNif(account, billing.nif);
+            }
+            if (!selectedCard) {
+                await setPaymentMethod(account, card.cardNumber, card.expiry);
+            }
+            for (const item of cartItems) await adjustStock(item.id, item.quantity || 1, "decrease");
+            await clearCart(account);
+            alert(t("orderSuccess"));
+            navigate("/user-page/orders");
         } catch (err) {
             console.error(err);
         }
     }
 
     let total = 0;
-    for (const item of cartItems) {
-        total += Number(item.price || 0);
-    }
+    for (const item of cartItems) total += Number(item.price || 0) * (item.quantity || 1);
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-            <div className="w-full max-w-5xl grid md:grid-cols-3 gap-6">
-                {/* Form */}
-                <div className="md:col-span-2 bg-white rounded-2xl shadow-lg p-6">
-                    {/* Header */}
+        <div className="min-h-screen flex items-start justify-center p-6 pt-40">
+            <div className="w-full max-w-6xl grid md:grid-cols-5 gap-6">
+                <div className="md:col-span-3 bg-white rounded-2xl shadow-lg p-6">
                     <div className="flex items-center gap-2 mb-6">
                         <FiShoppingCart className="text-xl" />
-                        <h1 className="text-xl font-bold">{t("checkout")}</h1>
+                        <h1 className="text-xl font-[Panchang-Semibold]">{t("checkout")}</h1>
                     </div>
 
-                    {/* Step Indicator */}
                     <div className="flex gap-2 mb-6">
                         {[1, 2].map((s) => (
-                            <div
-                                key={s}
-                                className={`h-2 flex-1 rounded-full ${
-                                    step >= s ? "bg-black" : "bg-gray-200"
-                                }`}
-                            />
+                            <div key={s} className={`h-2 flex-1 rounded-full ${step >= s ? "bg-black" : "bg-gray-200"}`} />
                         ))}
                     </div>
 
-                    {/* Step 1 */}
                     {step === 1 && (
-                        <div className="space-y-4">
-                            <h2 className="font-semibold">Shipping Information</h2>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <input
-                                    name="name"
-                                    placeholder={t("name")}
-                                    value={form.name}
-                                    onChange={update}
-                                    className="w-full p-3 border rounded-xl"
-                                />
-
-                                <input
-                                    name="surname"
-                                    placeholder={t("surname")}
-                                    value={form.surname}
-                                    onChange={update}
-                                    className="w-full p-3 border rounded-xl"
-                                />
-                            </div>
-
-                        <div className="relative">
-                        <input
-                            name="street"
-                            placeholder={t("street")}
-                            value={form.street}
-                            onChange={(e) => setForm({ ...form, street: e.target.value })}
-                            onFocus={() => setShow(true)}
-                            className="w-full p-3 border rounded-xl"
+                        <Step1
+                            billing={billing} 
+                            updateBilling={updateBilling}
+                            delivery={delivery} 
+                            updateDelivery={updateDelivery}
+                            addresses={addresses} 
+                            setStep={setStep} 
+                            t={t}
+                            isDifferentAddress={isDifferentAddress} 
+                            setIsDifferentAddress={setIsDifferentAddress}
+                            user={user}
                         />
-
-                        {show && (
-                            <div className="absolute w-full bg-white border rounded-xl mt-1 shadow">
-                                {addresses.map((a) => (
-                                    <div
-                                        key={a.id}
-                                        onClick={() => {
-                                            setForm({
-                                                ...form,
-                                                street: a.street,
-                                                city: a.city,
-                                                postal_code: a.postal_code,
-                                                district: a.district,
-                                                country: a.country,
-                                            });
-                                            setShow(false);
-                                        }}
-                                        className="p-3 hover:bg-gray-100 hover:rounded-xl cursor-pointer"
-                                    >
-                                        {a.street}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <input
-                                name="city"
-                                placeholder={t("city")}
-                                value={form.city}
-                                onChange={update}
-                                className="p-3 border rounded-xl"
-                            />
-
-                            <input
-                                name="postal_code"
-                                placeholder={t("postalCode")}
-                                value={form.postal_code}
-                                onChange={update}
-                                className="p-3 border rounded-xl"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <input
-                                name="district"
-                                placeholder={t("district")}
-                                value={form.district}
-                                onChange={update}
-                                className="p-3 border rounded-xl"
-                            />
-
-                            <input
-                                name="country"
-                                placeholder={t("country")}
-                                value={form.country}
-                                onChange={update}
-                                className="p-3 border rounded-xl"
-                            />
-                        </div>
-
-                            <button
-                                onClick={() => {
-                                    if (!form.name || !form.surname || !form.street || !form.city || !form.postal_code || !form.district || !form.country) {
-                                        alert("Preenche os dados de envio");
-                                        return;
-                                    }
-                                setStep(2);
-                                }}
-                                className="w-full bg-black text-white py-3 rounded-xl hover:opacity-90 border-2 hover:text-black hover:bg-white duration-200"
-                            >
-                                {t("checkoutContinueButton")}
-                            </button>
-                        </div>
                     )}
-
-                    {/* Step 2 */}
                     {step === 2 && (
-                        <div className="space-y-4">
-                            <h2 className="font-semibold">{t("secondCheckoutSubtitle")}</h2>
-
-                            <div className="flex items-center gap-3 text-xl">
-                                <FaCcVisa />
-                                <FaCcMastercard />
-                                <FaPaypal />
-                            </div>
-
-                            <div className="relative">
-                                <FiCreditCard className="h-1/2 absolute left-3 top-3 text-gray-400" />
-                                <input
-                                    name="cardNumber"
-                                    placeholder="Card Number"
-                                    value={form.cardNumber}
-                                    onChange={update}
-                                    className="w-full p-3 pl-10 border rounded-xl"
-                                />
-                            </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <input
-                                name="expiry"
-                                placeholder="MM/YY"
-                                value={form.expiry}
-                                onChange={update}
-                                className="p-3 border rounded-xl"
-                            />
-
-                            <input
-                                name="cvc"
-                                placeholder="CVC"
-                                value={form.cvc}
-                                onChange={update}
-                                className="p-3 border rounded-xl"
-                            />
-                        </div>
-
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setStep(1)}
-                                    className="w-full bg-white text-black py-3 rounded-xl hover:opacity-90 border-2 hover:text-white hover:bg-black duration-200"
-                            >
-                                    {t("checkoutBack")}
-                                </button>
-
-                                <button 
-                                    className="w-full bg-black text-white py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 border-2 border-black hover:text-black hover:bg-white duration-200"
-                                    onClick={payement}
-                                >
-                                    <FiLock /> {t("checkoutPay")}
-                                </button>
-                            </div>
-                        </div>
+                        <Step2
+                            card={card}
+                            updateCard={updateCard}
+                            setStep={setStep}
+                            payment={payment}
+                            t={t}
+                            savedCards={savedCards}
+                            selectedCard={selectedCard}
+                            setSelectedCard={setSelectedCard}
+                        />
                     )}
                 </div>
 
-                {/* Right Page */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 h-fit">
-                    <h2 className="font-bold mb-4">{t("orderSummary")}</h2>
-
-                    <div className="space-y-3 text-sm">
-
-                        {cartItems.map((p) => (
-                            <div key={p.id} className="flex justify-between">
-                            <span>{p.name}</span>
-                            <span>{formatCurrency(p.price)}</span>
-                        </div>
-                        ))}
-
-                        <div className="border-t pt-3 flex justify-between font-bold">
-                            <span>{t("total")}</span>
-                            <span>{formatCurrency(total)}</span>
-                        </div>
-                    </div>
+                <div className="md:col-span-2">
+                    <Summary cartItems={cartItems} total={total} formatCurrency={formatCurrency} t={t} />
                 </div>
             </div>
         </div>

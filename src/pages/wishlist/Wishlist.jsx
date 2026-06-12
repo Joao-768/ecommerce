@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getWishlistItems } from "../../api/productsApi";
+import { getWishlistItems } from "../../api/wishlistApi";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useScrollToTop } from "../../utils/format";
@@ -24,16 +24,25 @@ export default function Wishlist() {
 
     return (
         <div className="min-h-screen pt-40 px-8">
-            <h1 className="text-4xl font-[Panchang-Bold] mb-4 flex justify-center">{t("wishlistTitle")}</h1>
-            <h3 className="text-2xl font-[Panchang-Semibold] mb-4 flex justify-center">{t("wishlistDescription")}</h3>
-            <div className="flex gap-6 overflow-x-auto snap-x scroll-smooth px-4">
-                {wishlistItems.map((product) => (
-                    <ProductCard
-                        item={product}
-                        onClick={() => navigate(`/product/${product.id}`)}
-                        isSelling={true}
-                    />
-                ))}
+            <h1 className="text-4xl font-[Panchang-Semibold] mb-4 flex justify-center">
+                {t("wishlistTitle")}
+            </h1>
+
+            <h3 className="text-2xl font-[Panchang-Medium] mb-4 flex justify-center">
+                {t("wishlistDescription")}
+            </h3>
+
+            <div className="overflow-x-auto px-4 pb-5">
+                <div className="flex gap-2 snap-x scroll-smooth py-4">
+                    {wishlistItems.map((product) => (
+                        <ProductCard
+                            key={product.id}
+                            item={product}
+                            onClick={() => navigate(`/product/${product.id}`)}
+                            isSelling={true}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );

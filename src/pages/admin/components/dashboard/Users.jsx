@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getNewUsers, getTotalUsers, getUsersByMonth } from "../../../../api/adminApi";
+import { getUserStats, getUsersByMonth } from "../../../../api/adminApi";
 import {
     LineChart,
     Line,
@@ -29,28 +29,28 @@ export default function Users() {
         { name: "Dec", users: 0 },
     ]);
 
-    function getMonth()  {
+    function getMonth() {
         const date = new Date();
         return date.getMonth();
     }
 
-
     useEffect(() => {
-        // Get Total Users
-        getTotalUsers()
-            .then((data) => setTotalUsers(data?.totalUsers ?? 0))
-            .catch(() => setTotalUsers(0));
-
-        // Get New Users
-        getNewUsers()
-            .then((data) => setNewUsers(data?.newUsers ?? 0))
-            .catch(() => setNewUsers(0));
+        // Get User Stats (total + new)
+        getUserStats()
+            .then((data) => {
+                setTotalUsers(data?.totalUsers ?? 0);
+                setNewUsers(data?.newUsers ?? 0);
+            })
+            .catch(() => {
+                setTotalUsers(0);
+                setNewUsers(0);
+            });
 
         // Get Users By Month
         getUsersByMonth()
             .then((data) => setMonthUsers(data))
             .catch(() => setMonthUsers([]));
-            
+
     }, [])
 
     return (
@@ -60,7 +60,6 @@ export default function Users() {
                 <p className="text-md font-[Panchang-Regular] pb-2">Total Users: {totalUsers}</p>
                 <p className="text-md font-[Panchang-Regular] pb-2">New Users This Week: {newWeekUsers}</p>
                 
-                {/* Grafico de Linhas */}
                 <div className="w-full h-100 font-[Panchang-Regular]">
                     <h2 className="text-md font-[Panchang-Regular] mb-4 pb-2">
                         User Growth
@@ -69,18 +68,9 @@ export default function Users() {
                     <ResponsiveContainer width="100%" height="90%">
                         <LineChart data={monthUsers.slice(0, actualMonth + 1)}>
                             <CartesianGrid strokeDasharray="4 4" />
-
                             <XAxis dataKey="name"/>
                             <YAxis />
-
-                            <Tooltip 
-                                trigger="click" 
-                            
-                                style={{
-                                    position: "absolute",
-                                }}
-                            />
-
+                            <Tooltip trigger="click" style={{ position: "absolute" }} />
                             <Line
                                 type="monotone"
                                 dataKey="users"

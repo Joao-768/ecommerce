@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
-import { getUserCollection } from "../../../../api/usersApi";
+import { getUserCollection, removeCollectionProduct } from "../../../../api/usersApi";
 import ProductCard from "../../../../ui/ProductCard";
 import { useNavigate } from "react-router-dom";
+import { AddCardButton } from "../../../../ui/Buttons";
 
 export default function UserCollection() {
     const account = localStorage.getItem("account");
@@ -18,6 +19,15 @@ export default function UserCollection() {
             .then((data) => setCollection(data))
             .catch((error) => console.error(error));
     }, [account]);
+
+    async function removeProduct(productId) {
+        try {
+            await removeCollectionProduct(account, productId);
+            setCollection(collection.filter(p => p.id !== productId));
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <div className="flex-1 pl-10 pr-10 pt-4 flex flex-col gap-4">
@@ -34,17 +44,18 @@ export default function UserCollection() {
             <div className="grid grid-cols-4 text-center">
                 {collection.map((product) => (
                     <ProductCard 
-                        item={product} 
-                        onClick={() => {}} 
-                        isSelling={true}
+                        key={product.id}
+                        item={product}
+                        isRemovable={true}
+                        onRemove={removeProduct}
+                        onClick={() => navigate(`/product/${product.id}`)}
                     />
                 ))}
                 
                 {/* Add Product Button */}
-                <button 
-                    className="group w-60 h-96 border-2 border-dashed border-stone-300 rounded-lg flex flex-col items-center justify-center hover:border-black 
-                        transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+                <AddCardButton
                     onClick={() => navigate("/user-page/collection/add")}
+                    className="hover:shadow-xl hover:scale-[1.02]"
                 >
                     <span className="w-20 h-20 border-2 border-dashed border-stone-300 rounded-lg flex items-center justify-center text-4xl text-stone-500 transition-all duration-300 group-hover:border-black group-hover:text-black">
                         +
@@ -52,7 +63,7 @@ export default function UserCollection() {
                     <p className="mt-2 font-[Panchang-Regular] text-black text-sm">
                         {t("addNewWatch")}
                     </p>
-                </button>
+                </AddCardButton>
             </div>
         </div>
     );

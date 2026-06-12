@@ -1,131 +1,119 @@
-const API_BASE = "http://localhost:3001/api/orders";
+import { API_URL } from "./config.js";
 
-export async function createOrder(userId, userName, userSurname, total) {
+const API_BASE = `${API_URL}/orders`;
+
+export async function createOrder(userId, total, nif) {
     const res = await fetch(API_BASE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({userId, userName, userSurname, total}),
+        body: JSON.stringify({ userId, total, nif }),
     });
-
     if (!res.ok) {
-        let message = "Falha ao criar Order";
         const data = await res.json().catch(() => ({}));
-        if (data.error) message = data.error;
-        throw new Error(message);
+        throw new Error(data.error || "Fail to create order");
     }
-
     return res.json();
 }
 
 export async function setOrderItems(orderId, cartItems) {
-    const res = await fetch(`${API_BASE}/orderItems`, {
+    const res = await fetch(`${API_BASE}/${orderId}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, cartItems }),
     });
-
     if (!res.ok) {
-        let message = "Falha ao criar Order Items";
         const data = await res.json().catch(() => ({}));
-        if (data.error) message = data.error;
-        throw new Error(message);
+        throw new Error(data.error || "Fail to create order items");
     }
-
     return res.json();
 }
 
-export async function getUserOrders(userId) {
-    const res = await fetch(`${API_BASE}/${userId}/orders`);
-
-    if (!res.ok) throw new Error("Falha ao receber as orders do utilizador");
-    return res.json();
-}
-
-export async function getUserOrdersItems(orderId) {
-    const res = await fetch(`${API_BASE}/${orderId}/items`);
-
-    if (!res.ok) throw new Error("Falha ao receber os itens da order");
-    return res.json();
-}
-
-export async function getLastOrder(userId) {
-    const res = await fetch(`${API_BASE}/${userId}/lastOrder`);
-
-    if (!res.ok) throw new Error("Falha ao receber a ultima order do utilizador");
-    return res.json();
-}
-
-export async function getTotalItems(orderId) {
-    const res = await fetch(`${API_BASE}/${orderId}/totalItems`);
-
-    if (!res.ok) throw new Error("Falha ao receber o total de items");
+export async function createOrderAddress(orderId, address) {
+    const res = await fetch(`${API_BASE}/${orderId}/address`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address }),
+    });
+    if (!res.ok) throw new Error("Fail to create order address");
     return res.json();
 }
 
 export async function getAllOrders() {
-    const res = await fetch(`${API_BASE}/allOrders`);
-    if (!res.ok) throw new Error("Falha ao receber todas as orders");
+    const res = await fetch(`${API_BASE}`);
+    if (!res.ok) throw new Error("Fail to fetch all orders");
+    return res.json();
+}
+
+export async function getTotalOrders() {
+    const res = await fetch(`${API_BASE}?count=true`);
+    if (!res.ok) throw new Error("Fail to fetch total orders");
     return res.json();
 }
 
 export async function getLastFiveOrders() {
-    const res = await fetch(`${API_BASE}/lastFive`);
-    if (!res.ok) throw new Error("Falha ao receber as ultimas 5 orders");
+    const res = await fetch(`${API_BASE}?limit=5`);
+    if (!res.ok) throw new Error("Fail to fetch last five orders");
     return res.json();
 }
 
-// Update Order
-export async function updateOrder(orderId, name, surname, total_price, status, collection) {
-    const res = await fetch(`${API_BASE}/${orderId}/update`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, surname, total_price, status, collection }),
-    });
+export async function getUserOrders(userId) {
+    const res = await fetch(`${API_BASE}/user/${userId}`);
+    if (!res.ok) throw new Error("Fail to fetch user orders");
+    return res.json();
+}
 
-    if (!res.ok) {
-        let message = "Falha ao atualizar informações da order";
-        try {
-            const data = await res.json();
-            if (data && data.error) message = data.error;
-        } catch {
-            // Ignore parse errors
-        }
-        throw new Error(message);
-    }
-
+export async function getLastOrder(userId) {
+    const res = await fetch(`${API_BASE}/user/${userId}?last=true`);
+    if (!res.ok) throw new Error("Fail to fetch last order");
     return res.json();
 }
 
 export async function getOrderById(orderId) {
     const res = await fetch(`${API_BASE}/${orderId}`);
-    if (!res.ok) throw new Error("Falha ao a order");
+    if (!res.ok) throw new Error("Fail to fetch order by ID");
     return res.json();
 }
 
 export async function getOrderAddress(orderId) {
     const res = await fetch(`${API_BASE}/${orderId}/address`);
-    if (!res.ok) throw new Error("Falha ao receber o address da order");
+    if (!res.ok) throw new Error("Fail to fetch order address");
     return res.json();
 }
 
-// Update Order
+export async function getUserOrdersItems(orderId) {
+    const res = await fetch(`${API_BASE}/${orderId}/items`);
+    if (!res.ok) throw new Error("Fail to fetch user orders items");
+    return res.json();
+}
+
+export async function getTotalItems(orderId) {
+    const res = await fetch(`${API_BASE}/${orderId}/items/total`);
+    if (!res.ok) throw new Error("Fail to fetch total items in order");
+    return res.json();
+}
+
+export async function updateOrder(orderId, total_price, status) {
+    const res = await fetch(`${API_BASE}/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ total_price, status }),
+    });
+    if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to update order");
+    }
+    return res.json();
+}
+
 export async function updateOrderAddress(addressId, street, city, postal_code, district, country) {
-    const res = await fetch(`${API_BASE}/${addressId}/updateAddress`, {
+    const res = await fetch(`${API_BASE}/${addressId}/address`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ street, city, postal_code, district, country }),
     });
-
     if (!res.ok) {
-        let message = "Falha ao atualizar order address";
-        try {
-            const data = await res.json();
-            if (data && data.error) message = data.error;
-        } catch {
-            // Ignore parse errors
-        }
-        throw new Error(message);
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Fail to update order address");
     }
-
     return res.json();
 }
