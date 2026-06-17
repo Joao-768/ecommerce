@@ -5,9 +5,10 @@ import { TbTriangleInvertedFilled } from "react-icons/tb";
 import AdminFormWrapper from "../../../../ui/AdminFormWrapper";
 import { FormInput, FormSelect } from "../../../../ui/Form";
 import { Button } from "../../../../ui/Buttons";
+import { useTranslation } from "react-i18next";
 
 export default function AddUser() {
-
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
@@ -25,25 +26,30 @@ export default function AddUser() {
 
     return(
         <div className="flex justify-center items-start align h-full w-3/4">
-            <AdminFormWrapper title="Create New User">
-                <form onSubmit={(e) => { e.preventDefault(); createUser(form); navigate("/admin/user-management"); alert("User Created"); }}
+            <AdminFormWrapper title={t("createNewUser")}>
+                <form onSubmit={(e) => { e.preventDefault(); createUser(form); navigate("/admin/user-management"); alert(t("userCreated")); }}
                     className="grid grid-cols-2 gap-6"
                 >
-                    <FormInput type="text" name="name" value={form.name} onChange={handleChange} placeholder="First Name" />
-                    <FormInput type="text" name="surname" value={form.surname} onChange={handleChange} placeholder="Last Name" />
-                    <FormInput type="email" name="email" value={form.email} onChange={handleChange} placeholder="Email Address" className="col-span-2" />
-                    <FormInput type="password" name="password" value={form.password} onChange={handleChange} placeholder="Password" />
+                    <FormInput type="text" name="name" value={form.name} onChange={handleChange} placeholder={t("firstName")} />
+                    <FormInput type="text" name="surname" value={form.surname} onChange={handleChange} placeholder={t("lastName")} />
+                    <FormInput type="email" name="email" value={form.email} onChange={handleChange} placeholder={t("email")} className="col-span-2" />
+                    <FormInput type="password" name="password" value={form.password} onChange={handleChange} placeholder={t("password")} />
+                    <FormInput type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} placeholder={t("confirmPassword")} />
 
                     <FormSelect
                         name="role"
                         value={form.role}
                         onChange={handleChange}
-                        options={[{ value: "user", label: "User" }, { value: "admin", label: "Admin" }]}
+                        options={[{ value: "user", label: t("user") }, { value: "admin", label: t("admin") }]}
                     />
 
                     <div className="col-span-2 flex justify-end gap-4 mt-4">
-                        <Button shape="pill" variant="secondary" type="button" onClick={() => navigate("/admin/user-management")}>Cancel</Button>
-                        <Button shape="pill" type="submit">Create User</Button>
+                        <Button shape="pill" variant="secondary" type="button" onClick={() => navigate("/admin/user-management")}>
+                            {t("cancel")}
+                        </Button>
+                        <Button shape="pill" type="submit">
+                            {t("createUser")}
+                        </Button>
                     </div>
                 </form>
             </AdminFormWrapper>

@@ -13,12 +13,12 @@
     "checkoutBack": "Zurück",
     "checkoutPay": "Bezahlen",
     "orderSummary": "Bestellübersicht",
-    "missingFields": "Campos em falta!",
-    "invalidPayment": "Informação de pagamento inválida!",
-    "missingAddress": "Campos de endereço em falta!",
-    "invalidPostalCode": "Código postal inválido!",
-    "invalidExpiryFormat": "Formato inválido. Use MM/AA",
-    "invalidMonth": "Mês inválido",
-    "expiredCard": "Cartão expirado",
-    "fillShippingData": "Preenche os dados de envio"
+    "missingFields": "Fehlende Felder!",
+    "invalidPayment": "Ungültige Zahlungsinformationen!",
+    "missingAddress": "Fehlende Adressfelder!",
+    "invalidPostalCode": "Ungültige Postleitzahl!",
+    "invalidExpiryFormat": "Ungültiges Format. Verwenden Sie MM/JJ",
+    "invalidMonth": "Ungültiger Monat",
+    "expiredCard": "Karte abgelaufen",
+    "fillShippingData": "Bitte füllen Sie die Versanddaten aus"
 }

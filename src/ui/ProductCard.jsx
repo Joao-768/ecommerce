@@ -1,7 +1,7 @@
 import { formatCurrency, getSeasonStatus } from "../utils/format";
 import { useTranslation } from "react-i18next";
 
-export default function ProductCard({ item, onClick, isRemovable, onRemove, isSelling, showSize = false}) {
+export default function ProductCard({ item, onClick, isRemovable, onRemove, isSelling, showSize = false, showQuantity = false}) {
     const { t } = useTranslation();
 
     return (
@@ -38,11 +38,11 @@ export default function ProductCard({ item, onClick, isRemovable, onRemove, isSe
 
             {isSelling ?
                 getSeasonStatus(item.collection_id) ? 
-                    <h3 className="text-md font-[Panchang-Regular] pb-2 text-center hover:cursor-pointer">
+                    <h3 className="text-md font-[Panchang-Regular] pb-1 text-center hover:cursor-pointer">
                         {formatCurrency(item.price)}
                     </h3>
                 : 
-                    <h3 className="text-md font-[Panchang-Regular] pb-2 text-center hover:cursor-pointer">
+                    <h3 className="text-md font-[Panchang-Regular] pb-1 text-center hover:cursor-pointer">
                         {t("unavaliable")}
                     </h3>
             :
@@ -50,8 +50,16 @@ export default function ProductCard({ item, onClick, isRemovable, onRemove, isSe
             }
 
             {showSize ?
-                <h3 className="text-md font-[Panchang-Regular] pb-2 text-center hover:cursor-pointer">
+                <h3 className="text-md font-[Panchang-Regular] pb-1 text-center hover:cursor-pointer">
                     {item.size}mm
+                </h3>
+            :
+                <div className="h-3"/>
+            }
+
+            {showQuantity ?
+                <h3 className="text-md font-[Panchang-Regular] pb-1 text-center hover:cursor-pointer">
+                    x{item.quantity}
                 </h3>
             :
                 <div className="h-3"/>

@@ -4,11 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getUserOrdersItems } from "../../../../api/ordersApi";
 import { GhostButton } from "../../../../ui/Buttons";
 import ProductGrid from "../../../../ui/ProductGrid";
+import { useTranslation } from "react-i18next";
 
 export default function ViewOrder() {
     const { id } = useParams();
     const [orderItems, setOrderItems] = useState([]);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!id) return;
@@ -24,18 +26,19 @@ export default function ViewOrder() {
                 onClick={() => navigate('/user-page/orders')}
             >
                 <IoArrowBackOutline />
-                Back to orders
+                {t("OrdersBackButton")}
             </GhostButton>
-            <h1 className="text-3xl font-[Panchang-Semibold]">Your Order Items</h1>
+            <h1 className="text-3xl font-[Panchang-Semibold]">{t("yourOrderItems")}</h1>
             <p className="text-xs font-[Panchang-Regular]">
-                Below are the items included in your order.
+                {t("orderDescription")}
             </p>
 
             <ProductGrid
                 products={orderItems}
                 isSelling={false}
-                showSize
-                className="flex flex-wrap gap-6 justify-start"
+                showSize={true}
+                showQuantity
+                className="flex flex-wrap gap-3 justify-start"
             />
         </div>
     );

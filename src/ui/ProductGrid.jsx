@@ -1,7 +1,7 @@
 import ProductCard from "./ProductCard";
 import { useNavigate } from "react-router-dom";
 
-export default function ProductGrid({ products, onCardClick, isSelling, isRemovable, onRemove, className = "", showSize = false }) {
+export default function ProductGrid({ products, onCardClick, isSelling, isRemovable, onRemove, className = "", showSize = false, showQuantity = false}) {
     const navigate = useNavigate();
 
     return (
@@ -16,6 +16,8 @@ export default function ProductGrid({ products, onCardClick, isSelling, isRemova
                     onRemove={onRemove}
                     showSize={showSize}
                     size={p.size ?? p.size_mm}
+                    showQuantity={showQuantity}
+                    quantity={p.quantity}
                 />
             ))}
         </div>

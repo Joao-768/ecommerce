@@ -10,12 +10,14 @@ import { generateCode } from "../../../../../utils/format";
 import { uploadImage } from "../../../../../api/productsApi";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
+import { useTranslation } from "react-i18next";
 
 export default function AddProduct() {
     const [categories, setCategories] = useState([]);
     const [collections, setCollections] = useState([]);
     const [genders, setGenders] = useState([]);
     const [step, setStep] = useState(1);
+    const { t } = useTranslation();
 
     const navigate = useNavigate();
 
@@ -89,7 +91,7 @@ export default function AddProduct() {
             <div className="w-full max-w-2xl bg-white rounded-2xl p-8 shadow-md border border-stone-100">
 
                 <h2 className="text-3xl font-[Panchang-Semibold] mb-8 text-center">
-                    Create New Product
+                    {t("createNewProduct")}
                 </h2>
 
                 <form onSubmit={handleSubmit}>
@@ -124,6 +126,7 @@ export default function AddProduct() {
                             genders={genders}
                             navigate={navigate}
                             setStep={setStep}
+                            t={t}
                         />
                     )}
 
@@ -133,6 +136,7 @@ export default function AddProduct() {
                             setForm={setForm}
                             handleChange={handleChange}
                             setStep={setStep}
+                            t={t}
                         />
                     )}
                 </form>

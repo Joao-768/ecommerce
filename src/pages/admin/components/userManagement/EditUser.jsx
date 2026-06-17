@@ -5,12 +5,14 @@ import { blockUser, isUserActive } from "../../../../api/adminApi";
 import { Button } from "../../../../ui/Buttons.jsx";
 import { FormInput, FormSelect } from "../../../../ui/Form.jsx";
 import AdminFormWrapper from "../../../../ui/AdminFormWrapper.jsx";
+import { useTranslation } from "react-i18next";
 
 export default function EditUser() {
     const { id } = useParams();
     const [editUser, setEditUser] = useState(null);
     const [isActive, setIsActive] = useState(null);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!id) return;
@@ -38,7 +40,7 @@ export default function EditUser() {
     };
 
     return (
-        <AdminFormWrapper title="Edit User">
+        <AdminFormWrapper title={t("editUser")}>
             <form
                 onSubmit={async (e) => {
                     e.preventDefault();
@@ -51,29 +53,33 @@ export default function EditUser() {
                         editUser.password,
                         editUser.role
                     );
-                    alert("User Edited");
+                    alert(t("userEdited"));
                     navigate("/admin/user-management");
                 }}
                 className="grid grid-cols-2 gap-6"
             >
-                <FormInput type="text" name="name" value={editUser?.name} onChange={handleChange} placeholder="First Name" />
-                <FormInput type="text" name="surname" value={editUser?.surname} onChange={handleChange} placeholder="Last Name" />
-                <FormInput type="email" name="email" value={editUser?.email} onChange={handleChange} placeholder="Email Address" className="col-span-2" />
-                <FormInput type="password" name="password" value={editUser?.password} onChange={handleChange} placeholder="New Password" />
+                <FormInput type="text" name="name" value={editUser?.name} onChange={handleChange} placeholder={t("firstName")} />
+                <FormInput type="text" name="surname" value={editUser?.surname} onChange={handleChange} placeholder={t("lastName")} />
+                <FormInput type="email" name="email" value={editUser?.email} onChange={handleChange} placeholder={t("email")} className="col-span-2" />
+                <FormInput type="password" name="password" value={editUser?.password} onChange={handleChange} placeholder={t("newPassword")} />
 
                 <FormSelect
                     name="role"
                     value={editUser?.role}
                     onChange={handleChange}
-                    options={[{ value: "user", label: "User" }, { value: "admin", label: "Admin" }]}
+                    options={[{ value: "user", label: t("user") }, { value: "admin", label: t("admin") }]}
                 />
 
                 <div className="col-span-2 flex justify-end gap-4 mt-4">
-                    <Button shape="pill" variant="secondary" type="button" onClick={() => navigate("/admin/user-management")}>Cancel</Button>
-                    <Button shape="pill" type="button" onClick={() => handleBlockUser(editUser.id)}>
-                        {isActive ? "Block" : "Unlock"}
+                    <Button shape="pill" variant="secondary" type="button" onClick={() => navigate("/admin/user-management")}>
+                        {t("cancel")}
                     </Button>
-                    <Button shape="pill" type="submit">Update User</Button>
+                    <Button shape="pill" type="button" onClick={() => handleBlockUser(editUser.id)}>
+                        {isActive ? t("block") : t("unlock")}
+                    </Button>
+                    <Button shape="pill" type="submit">
+                        {t("update")}
+                    </Button>
                 </div>
             </form>
         </AdminFormWrapper>

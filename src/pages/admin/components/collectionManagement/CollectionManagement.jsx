@@ -4,6 +4,7 @@ import { getTotalProductByCollection } from '../../../../api/productsApi'
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import Table from '../../../../ui/Table';
+import { useTranslation } from 'react-i18next';
 
 export default function CollectionManagement() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -11,20 +12,21 @@ export default function CollectionManagement() {
     const [searchResults, setSearchResults] = useState([]);
     const [totals, setTotals] = useState([]);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const columns = [
-        { key: "name", label: "Name" },
-        { key: "total", label: "Number of Products" },
+        { key: "name", label: t("name") },
+        { key: "total", label: t("total") },
         {
             key: "actions",
-            label: "Actions",
+            label: t("actions"),
             render: (row) => (
                 <div className="flex flex-col gap-1">
                     <button 
                         className="hover:underline text-left"
                         onClick={() => navigate(`${row.id}/products`)}
                     >
-                        View
+                        {t("view")}
                     </button>
                     <button 
                         className="hover:underline text-left"
@@ -33,13 +35,13 @@ export default function CollectionManagement() {
                             navigate(`${row.id}/edit`);
                         }}
                     >
-                        Edit
+                        {t("edit")}
                     </button>
                     <button 
                         className="hover:underline text-left"
                         onClick={() => handleDelete(row.id)}
                     >
-                        Delete
+                        {t("delete")}
                     </button>
                 </div>
             )
@@ -98,14 +100,14 @@ export default function CollectionManagement() {
 
     return (
         <div className="flex-1 pl-10 pr-10">
-            <h1 className="text-3xl font-[Panchang-Semibold]">Collection Management</h1>
+            <h1 className="text-3xl font-[Panchang-Semibold]">{t("collectionManagement")}</h1>
 
             {/* Search */}
             <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-10">
                 <div className="flex items-center gap-4">
                     <input
                         type="text"
-                        placeholder="Search for a collection"
+                        placeholder={t("searchForCollection")}
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="flex-1 border border-black px-4 py-3 bg-transparent focus:outline-none rounded-full font-[Panchang-Regular] shadow-md"
@@ -114,7 +116,7 @@ export default function CollectionManagement() {
                         className="border border-black px-4 py-3 bg-transparent focus:outline-none rounded-full font-[Panchang-Regular] shadow-md hover:bg-black hover:text-white duration-200"
                         onClick={() => navigate("add")}
                     >
-                        Add New Collection
+                        {t("addNewCollection")}
                     </button>
                 </div>
 

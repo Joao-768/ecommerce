@@ -141,3 +141,23 @@ export async function deleteCollection(req, res) {
         if (connection) connection.release();
     }
 }
+
+export async function getTotalCollections(req, res) {
+    let connection;
+    
+    try {
+        connection = await pool.getConnection();
+
+        // Get the total number of collections
+        const [rows] = await connection.query(
+            "SELECT COUNT(*) AS totalCollections FROM collections"
+        );
+
+        // Return the total number of collections
+        res.json(rows[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+}

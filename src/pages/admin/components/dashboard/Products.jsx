@@ -9,8 +9,10 @@ import {
     ResponsiveContainer
 } from "recharts";
 import { getBestSellers, getTotalProducts, getOutOfStock } from "../../../../api/productsApi";
+import { useTranslation } from "react-i18next";
 
 export default function Products() {
+    const { t } = useTranslation();
     const [totalProducts, setTotalProducts] = useState();
     const [outOfStock, setOutOfStock] = useState();
     const [bestSelling, setBestSelling] = useState([
@@ -48,12 +50,12 @@ export default function Products() {
 
     return (
         <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100">
-            <h1 className="text-xl font-[Panchang-Semibold] pb-2">Products</h1>
-            <p className="text-md font-[Panchang-Regular] pb-2">Total Products: {totalProducts}</p>
-            <p className="text-md font-[Panchang-Regular] pb-2">Products Out of Stock: {outOfStock}</p>
+            <h1 className="text-xl font-[Panchang-Semibold] pb-2">{t("products")}</h1>
+            <p className="text-md font-[Panchang-Regular] pb-2">{t("totalProducts")}: {totalProducts}</p>
+            <p className="text-md font-[Panchang-Regular] pb-2">{t("productsOutOfStock")}: {outOfStock}</p>
             <div className="w-full h-180 font-[Panchang-Regular]">
                 <h2 className="text-lg font-semibold mb-4 font-[Panchang-Semibold]">
-                    Best-selling Products
+                    {t("bestSellingProducts")}
                 </h2>
 
                 <ResponsiveContainer width="100%" height="90%">

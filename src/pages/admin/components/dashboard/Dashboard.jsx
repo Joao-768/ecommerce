@@ -6,9 +6,10 @@ import Collections from "./Collections"
 import Logs from "./Logs"
 import Alerts from "./Alerts/Alerts"
 import { Outlet } from "react-router-dom"
-
+import { useTranslation } from "react-i18next"
 
 export default function Dashboard() {
+    const { t } = useTranslation();
     const sections = [
         {key: "users", component: <Users/>},
         {key: "products", component: <Products/>},
@@ -21,7 +22,7 @@ export default function Dashboard() {
 
     return (
         <div className="flex-1 pl-10 flex flex-col gap-5 pr-10">
-            <h1 className="text-3xl font-[Panchang-Semibold]">Dashboard</h1>
+            <h1 className="text-3xl font-[Panchang-Semibold]">{t("dashboard")}</h1>
             
             {sections.map((s) => (
                 <div key={s.key}>

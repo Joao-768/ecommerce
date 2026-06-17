@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getUserRole } from '../../api/usersApi';
@@ -17,11 +18,11 @@ export default function Admin() {
     const location = useLocation();
 
     const sidebarOptions = [
-        { key: "dashboard", label: "Dashboard", path:"dashboard"},
-        { key: "userManagement", label: "User Management", path: "user-management"},
-        { key: "productManagement", label: "Product Management", path:"product-management"},
-        { key: "collectionManagement", label: "Collection Management", path:"collection-management"},
-        { key: "orderManagement", label: "Order Management", path:"order-management"},
+        { key: "dashboard", label: t("dashboard"), path:"dashboard"},
+        { key: "userManagement", label: t("userManagement"), path: "user-management"},
+        { key: "productManagement", label: t("productManagement"), path:"product-management"},
+        { key: "collectionManagement", label: t("collectionManagement"), path:"collection-management"},
+        { key: "orderManagement", label: t("orderManagement"), path:"order-management"},
     ];
 
     const navigate = useNavigate();

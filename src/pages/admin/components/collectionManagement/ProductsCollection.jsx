@@ -6,6 +6,7 @@ import { getCategories } from "../../../../api/categoriesApi";
 import { getGenders } from "../../../../api/gendersApi";
 import { IoArrowBackOutline } from "react-icons/io5";
 import Table from "../../../../ui/Table";
+import { useTranslation } from "react-i18next";
 
 export default function ProductsCollection() {
     const [products, setProducts] = useState([]);
@@ -15,6 +16,7 @@ export default function ProductsCollection() {
     const [categories, setCategories] = useState([]);
     const [genders, setGenders] = useState([]);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const getGenderName = (id) => {
         const gender = genders.find(g => g.id === id);
@@ -32,12 +34,12 @@ export default function ProductsCollection() {
     };
 
     const columns = [
-        { key: "name", label: "Name" },
-        { key: "price", label: "Price" },
-        { key: "stock", label: "Stock" },
-        { key: "category", label: "Category" },
-        { key: "collection", label: "Collection" },
-        { key: "gender", label: "Gender" },
+        { key: "name", label: ("name") },
+        { key: "price", label: t("price") },
+        { key: "stock", label: t("stock") },
+        { key: "category", label: t("category") },
+        { key: "collection", label: t("collection") },
+        { key: "gender", label: t("gender") },
     ];
 
     const data = products.map((product) => ({
@@ -89,9 +91,12 @@ export default function ProductsCollection() {
                 onClick={() => navigate("/admin/collection-management")}
             >
                 <IoArrowBackOutline />
-                back to the personal information
+                {t("ViewCollectionBackButton")}
             </button>
-            <h1 className="text-3xl font-[Panchang-Semibold]">{collection?.name} Products</h1>
+
+            <h1 className="text-3xl font-[Panchang-Semibold]">
+                {t("ViewCollectionTitle", { name: collection?.name })}
+            </h1>
 
             <div className="bg-white rounded-2xl pt-1 pl-6 pr-6 pb-6 shadow-md border border-stone-100">
                 <Table 

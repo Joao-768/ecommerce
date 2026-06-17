@@ -6,12 +6,14 @@ import { formatDate } from "../../../../utils/format";
 import AdminFormWrapper from "../../../../ui/AdminFormWrapper";
 import { FormInput, FormSelect } from "../../../../ui/Form";
 import { Button } from "../../../../ui/Buttons";
+import { useTranslation } from "react-i18next";
 
 export default function EditOrder() {
     const { id } = useParams();
     const [order, setOrder] = useState(null);
     const [address, setAddress] = useState(null);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!id) return;
@@ -41,7 +43,7 @@ export default function EditOrder() {
     }
 
     return (
-        <AdminFormWrapper title="Edit Order">
+        <AdminFormWrapper title={t("editOrder")}>
             <form
                 onSubmit={async (e) => {
                     e.preventDefault();
@@ -78,8 +80,8 @@ export default function EditOrder() {
 
                 <div className="col-span-2 flex justify-end gap-4 mt-4">
                     <Button shape="pill" variant="secondary" type="button" onClick={() => navigate("/admin/order-management")}>Cancel</Button>
-                    <Button shape="pill" type="button" onClick={() => handleRefund(order.id)}>Refund</Button>
-                    <Button shape="pill" type="submit">Update</Button>
+                    <Button shape="pill" type="button" onClick={() => handleRefund(order.id)}>{t("refund")}</Button>
+                    <Button shape="pill" type="submit">{t("update")}</Button>
                 </div>
             </form>
         </AdminFormWrapper>

@@ -8,6 +8,7 @@ import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../../../../utils/format';
 import Table from '../../../../ui/Table';
+import { useTranslation } from "react-i18next";
 
 export default function ProductManagement() {
     const [totalProducts, setTotalProducts] = useState();
@@ -22,6 +23,7 @@ export default function ProductManagement() {
     const [collections, setCollections] = useState([]);
     const [genders, setGenders] = useState([]);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const getCategoryName = (id) => {
         const category = categories.find(c => c.id === id);
@@ -39,30 +41,30 @@ export default function ProductManagement() {
     };
 
     const columns = [
-        { key: "name", label: "Name" },
-        { key: "price", label: "Price" },
-        { key: "stock", label: "Stock" },
-        { key: "sales", label: "Sales" },
-        { key: "category", label: "Category" },
-        { key: "collection", label: "Collection" },
-        { key: "gender", label: "Gender" },
+        { key: "name", label: t("name") },
+        { key: "price", label: t("price") },
+        { key: "stock", label: t("stock") },
+        { key: "sales", label: t("sales") },
+        { key: "category", label: t("category") },
+        { key: "collection", label: t("collection") },
+        { key: "gender", label: t("gender") },
         {
             key: "actions",
-            label: "Actions",
+            label: t("actions"),
             render: (row) => (
                 <div className="flex flex-col gap-1">
                     <button
                         onClick={() => navigate(`${row.id}/edit`)}
                         className="hover:underline text-left"
                     >
-                        Edit
+                        {t("edit")}
                     </button>
 
                     <button
                         onClick={() => handleDelete(row.id)}
                         className="hover:underline text-left"
                     >
-                        Delete
+                        {t("delete")}
                     </button>
                 </div>
             )
@@ -160,13 +162,13 @@ export default function ProductManagement() {
         <div className="flex-1 pl-10 flex flex-col gap-5 pr-10">
 
             {/* Stats */}
-            <h1 className="text-3xl font-[Panchang-Semibold]">Product Management</h1>
+            <h1 className="text-3xl font-[Panchang-Semibold]">{t("productManagement")}</h1>
             <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-5">
-                <p className="text-md font-[Panchang-Regular] pb-2">Total Products: {totalProducts}</p>
-                <p className="text-md font-[Panchang-Regular] pb-2">In Stock Products: {inStock}</p>
-                <p className="text-md font-[Panchang-Regular] pb-2">Out of Stock Products: {outOfStock}</p>
-                <p className="text-md font-[Panchang-Regular] pb-2">Low Stock Products: {lowStock}</p>
-                <p className="text-md font-[Panchang-Regular] pb-2">Total Collections: {totalCollections}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">{t("totalProducts")}: {totalProducts}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">{t("inStock")}: {inStock}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">{t("outOfStock")}: {outOfStock}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">{t("lowStock")}: {lowStock}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">{t("totalCollections")}: {totalCollections}</p>
             </div>
 
             {/* Search */}
@@ -174,7 +176,7 @@ export default function ProductManagement() {
                 <div className="flex items-center gap-4">
                     <input
                         type="text"
-                        placeholder="Search for a product"
+                        placeholder={t("searchForProduct")}
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="flex-1 border border-black px-4 py-3 bg-transparent focus:outline-none rounded-full font-[Panchang-Regular] shadow-md"
@@ -183,11 +185,10 @@ export default function ProductManagement() {
                         className="border border-black px-4 py-3 bg-transparent focus:outline-none rounded-full font-[Panchang-Regular] shadow-md hover:bg-black hover:text-white duration-200"
                         onClick={() => navigate("add")}
                     >
-                        Add New Product
+                        {t("addNewProduct")}
                     </button>
                 </div>
 
-                {/* Table */}
                 <Table 
                     columns={columns}
                     data={data}

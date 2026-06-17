@@ -4,6 +4,7 @@ import { getAllUsers } from "../../../../api/usersApi";
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import Table from "../../../../ui/Table";
+import { useTranslation } from "react-i18next";
 
 export default function UserManagement() {
     const [totalUsers, setTotalUsers] = useState(0);
@@ -14,29 +15,30 @@ export default function UserManagement() {
     const [allUsers, setAllUsers] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const columns = [
-        { key: "name", label: "Name" },
-        { key: "surname", label: "Surname" },
-        { key: "email", label: "Email" },
-        { key: "role", label: "Role" },
-        { key: "status", label: "Status" },
+        { key: "name", label: t("name") },
+        { key: "surname", label: t("surname") },
+        { key: "email", label: t("email") },
+        { key: "role", label: t("role") },
+        { key: "status", label: t("status") },
         {
             key: "actions",
-            label: "Actions",
+            label: t("actions"),
             render: (row) => (
                 <div className="flex flex-col gap-1">
                     <button
                         onClick={() => navigate(`${row.id}/edit`)}
                         className="hover:underline text-left"
                     >
-                        Edit
+                        {t("edit")}
                     </button>
                     <button
                         onClick={() => handleDelete(row.id)}
                         className="hover:underline text-left"
                     >
-                        Delete
+                        {t("delete")}
                     </button>
                 </div>
             )
@@ -74,7 +76,6 @@ export default function UserManagement() {
     };
 
     useEffect(() => {
-        // User Stats — totalUsers, totalAdmins, activeUsers, blockedUsers
         getUserStats()
             .then((data) => {
                 setTotalUsers(data?.totalUsers ?? 0);
@@ -105,20 +106,20 @@ export default function UserManagement() {
     return (
         <>
             <div className="flex-1 pl-10 flex flex-col gap-5 pr-10">
-                <h1 className="text-3xl font-[Panchang-Semibold]">User Management</h1>
+                <h1 className="text-3xl font-[Panchang-Semibold]">{t("userManagement")}</h1>
                 
                 <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-5">
-                    <p className="text-md font-[Panchang-Regular] pb-2">Total Users: {totalUsers}</p>
-                    <p className="text-md font-[Panchang-Regular] pb-2">Active Users: {activeUsers}</p>
-                    <p className="text-md font-[Panchang-Regular] pb-2">Blocked Users: {blockedUsers}</p>
-                    <p className="text-md font-[Panchang-Regular] pb-2">Admins: {admins}</p>
+                    <p className="text-md font-[Panchang-Regular] pb-2">{t("totalUsers")}: {totalUsers}</p>
+                    <p className="text-md font-[Panchang-Regular] pb-2">{t("activeUsers")}: {activeUsers}</p>
+                    <p className="text-md font-[Panchang-Regular] pb-2">{t("blockedUsers")}: {blockedUsers}</p>
+                    <p className="text-md font-[Panchang-Regular] pb-2">{t("admins")}: {admins}</p>
                 </div>
 
                 <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100 mt-5">
                     <div className="flex items-center gap-4">
                         <input
                             type="text"
-                            placeholder="Search for a User"
+                            placeholder={t("searchForUser")}
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
                             className="flex-1 border border-black px-4 py-3 bg-transparent focus:outline-none rounded-full font-[Panchang-Regular] shadow-md"
@@ -127,7 +128,7 @@ export default function UserManagement() {
                             className="border border-black px-4 py-3 bg-transparent focus:outline-none rounded-full font-[Panchang-Regular] shadow-md hover:bg-black hover:text-white duration-200"
                             onClick={() => navigate("add")}
                         >
-                            Add New User
+                            {t("addNewUser")}
                         </button>
                     </div>
                     <Table columns={columns} data={data} />

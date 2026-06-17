@@ -7,8 +7,10 @@ import { getCategories } from "../../../../api/categoriesApi";
 import { getCollections } from "../../../../api/collectionsApi";
 import { getGenders } from "../../../../api/gendersApi";
 import Table from "../../../../ui/Table";
+import { useTranslation } from "react-i18next";
 
 export default function Logs() {
+    const { t } = useTranslation();
     const [lastUsers, setLastUsers] = useState([]);
     const [lastOrders, setLastOrders] = useState([]);
     const [lastProducts, setLastProducts] = useState([]);
@@ -65,14 +67,14 @@ export default function Logs() {
     }));
 
     const productColumns = [
-        { key: "name", label: "Name" },
-        { key: "price", label: "Price" },
-        { key: "stock", label: "Stock" },
-        { key: "sales", label: "Sales" },
-        { key: "category", label: "Category" },
-        { key: "collection", label: "Collection" },
-        { key: "gender", label: "Gender" },
-        { key: "date", label: "Date" },
+        { key: "name", label: t("name") },
+        { key: "price", label: t("price") },
+        { key: "stock", label: t("stock") },
+        { key: "sales", label: t("sales") },
+        { key: "category", label: t("category") },
+        { key: "collection", label: t("collection") },
+        { key: "gender", label: t("gender") },
+        { key: "date", label: t("date") },
     ];
 
     const productData = lastProducts.map((product) => ({
@@ -119,8 +121,8 @@ export default function Logs() {
 
     return (
             <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100">
-                <h1 className="text-xl font-[Panchang-Semibold] pb-2">Logs</h1>
-                <p className="text-md font-[Panchang-Regular] pb-2">Last Created Users:</p>
+                <h1 className="text-xl font-[Panchang-Semibold] pb-2">{t("logs")}</h1>
+                <p className="text-md font-[Panchang-Regular] pb-2">{t("lastCreatedUsers")}:</p>
                 <div className="mt-2">
                     <Table
                         columns={userColumns}
@@ -128,13 +130,13 @@ export default function Logs() {
                     />
                 </div>
 
-                <p className="text-md font-[Panchang-Regular] pb-2 pt-5">Last Created Orders:</p>
+                <p className="text-md font-[Panchang-Regular] pb-2 pt-5">{t("lastCreatedOrders")}:</p>
                 <Table
                     columns={orderColumns}
                     data={orderData}
                 />
 
-                <p className="text-md font-[Panchang-Regular] pb-2">Last Created Products:</p>
+                <p className="text-md font-[Panchang-Regular] pb-2 pt-5">{t("lastCreatedProducts")}:</p>
                 <Table
                     columns={productColumns}
                     data={productData}

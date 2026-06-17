@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUserStats, getUsersByMonth } from "../../../../api/adminApi";
+import { useTranslation } from "react-i18next";
 import {
     LineChart,
     Line,
@@ -11,6 +12,7 @@ import {
 } from "recharts";
 
 export default function Users() {
+    const { t } = useTranslation();
     const [totalUsers, setTotalUsers] = useState(0);
     const [newWeekUsers, setNewUsers] = useState(0);
     const actualMonth = getMonth();
@@ -56,13 +58,13 @@ export default function Users() {
     return (
         <div className="pt-5">
             <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100">
-                <h1 className="text-xl font-[Panchang-Semibold] pb-2">Users</h1>
-                <p className="text-md font-[Panchang-Regular] pb-2">Total Users: {totalUsers}</p>
-                <p className="text-md font-[Panchang-Regular] pb-2">New Users This Week: {newWeekUsers}</p>
+                <h1 className="text-xl font-[Panchang-Semibold] pb-2">{t("users")}</h1>
+                <p className="text-md font-[Panchang-Regular] pb-2">{t("totalUsers")}: {totalUsers}</p>
+                <p className="text-md font-[Panchang-Regular] pb-2">{t("newUsersThisWeek")}: {newWeekUsers}</p>
                 
                 <div className="w-full h-100 font-[Panchang-Regular]">
                     <h2 className="text-md font-[Panchang-Regular] mb-4 pb-2">
-                        User Growth
+                        {t("userGrowth")}
                     </h2>
 
                     <ResponsiveContainer width="100%" height="90%">
