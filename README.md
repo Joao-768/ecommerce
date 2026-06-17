@@ -1,42 +1,31 @@
-# Ecommerce de Relógios
+# Ecommerce Project
 
-Aplicação web de e-commerce desenvolvida como projeto de fim de curso, focada na venda de relógios.
+A full-stack ecommerce web application that allows users to browse products, add items to a shopping cart, and complete purchases.
 
-## Tecnologias utilizadas
+## Features
+- Product listing
+- Product details page
+- Shopping cart system
+- User authentication
+- Checkout process
+- Admin management
 
-**Frontend:** React, React Router DOM, Tailwind CSS, i18next  
-**Backend:** Node.js, Express  
-**Base de dados:** MySQL  
-
-## Funcionalidades
-
-- Catálogo de produtos com filtragem por categoria, coleção e género
-- Página de produto com seleção de tamanho
-- Carrinho de compras e lista de desejos
-- Processo de checkout com morada de entrega
-- Autenticação com registo e login
-- Página de perfil do utilizador com histórico de encomendas
-- Suporte a múltiplos idiomas (PT, EN, ES, FR, DE)
-- Painel de administrador para gestão de produtos, utilizadores e encomendas
-
-## Como correr localmente
-
-### Pré-requisitos
+## Technologies Used
+- React
 - Node.js
-- XAMPP (MySQL)
+- Express
+- MySQL
 
-### Frontend
-```bash
+## How to Run
+
+1. Clone the repository
+git clone https://github.com/Joao-768/ecommerce.git
+
+2. Install dependencies
 npm install
-npm run dev
-```
 
-### Backend
-```bash
-cd api
-npm install
+3. Start the development server
 npm run dev
-```
 
-### Base de dados
-Importar o ficheiro `ecommerce_db.sql` no phpMyAdmin e configurar o ficheiro `.env` na pasta `api` com base no `.env.example`.
+## Status
+This project is currently under development.
