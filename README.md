@@ -1,31 +1,26 @@
-# Ecommerce Project
+# Ecommerce Project 🛒
 
-A full-stack ecommerce web application that allows users to browse products, add items to a shopping cart, and complete purchases.
+A full-stack ecommerce web application that allows users to browse products, manage a shopping cart, and complete purchases through a simple checkout flow.
 
 ## Features
-- Product listing
-- Product details page
-- Shopping cart system
+
+- Product catalog
+- Shopping cart
 - User authentication
-- Checkout process
-- Admin management
+- Checkout
+- Admin panel
+- Wishlist
+- Multi-language support (EN, PT, ES, FR, DE)
 
-## Technologies Used
-- React
-- Node.js
-- Express
-- MySQL
+## Tech Stack
 
-## How to Run
-
-1. Clone the repository
-git clone https://github.com/Joao-768/ecommerce.git
-
-2. Install dependencies
-npm install
-
-3. Start the development server
-npm run dev
+- Frontend: React
+- Backend: Node.js + Express (REST API)
+- Database: MySQL
+- REST API architecture
 
 ## Status
-This project is currently under development.
+
+Project is under active development.
+
+<img width="1440" height="809" alt="image" src="https://github.com/user-attachments/assets/c6aa3391-7958-4ba3-8bb8-09ad88f8b6ef" />
