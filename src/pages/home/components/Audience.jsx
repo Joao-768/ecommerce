@@ -21,12 +21,12 @@ export default function Audience() {
     const navigate = useNavigate();
 
     return (
-        <div className="h-screen px-10 py-16">
-            <div className="grid grid-cols-3 gap-4 h-full">
+        <div className="min-h-screen lg:h-screen px-4 lg:px-10 py-16">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:h-full">
                 {cards.map((card) => (
-                    <div 
+                    <div
                         key={card.title}
-                        className="relative overflow-hidden rounded-lg"
+                        className="relative overflow-hidden rounded-lg h-64 lg:h-auto cursor-pointer"
                         onClick={() =>
                             navigate(
                                 card.title === "mensWatches" || card.title === "womensWatches"
@@ -37,11 +37,11 @@ export default function Audience() {
                     >
                         <img
                             src={images.find(img => img.id === card.id && img.watch === 1)?.src}
-                            className="absolute -left-1/5 object-contain"
+                            className="absolute top-1/2 -translate-y-1/2 lg:translate-y-0 lg:top-0 left-[10%] lg:-left-1/5 h-2/3 lg:h-auto object-contain"
                         />
                         <img
                             src={images.find(img => img.id === card.id && img.watch === 2)?.src}
-                            className="absolute bottom-0 -right-1/5 object-contain"
+                            className="absolute bottom-0 right-[10%] lg:-right-1/5 h-2/3 lg:h-auto object-contain"
                         />
 
                         <div className="absolute inset-0 bg-black/20" />

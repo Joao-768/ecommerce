@@ -28,7 +28,7 @@ export default function AddCollection() {
                         alert(err.message);
                     }
                 }}
-                className="grid grid-cols-2 gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
                 <FormInput type="text" name="name" value={form.name} onChange={newHandleChange} placeholder={t("name")} className="col-span-2" />
                 <FormInput type="text" name="description" value={form.description} onChange={newHandleChange} placeholder={t("description")} className="col-span-2" />

@@ -41,7 +41,7 @@ export default function UserCollection() {
                 </p>
             </div>
             {/* Collection Products */}
-            <div className="grid grid-cols-4 text-center">
+            <div className="grid grid-cols-2 lg:grid-cols-4 text-center">
                 {collection.map((product) => (
                     <ProductCard 
                         key={product.id}

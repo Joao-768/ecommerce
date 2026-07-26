@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { createUser } from "../../../../api/usersApi";
+import { createUserAsAdmin } from "../../../../api/usersApi";
 import { useState } from "react";
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import AdminFormWrapper from "../../../../ui/AdminFormWrapper";
@@ -27,8 +27,8 @@ export default function AddUser() {
     return(
         <div className="flex justify-center items-start align h-full w-3/4">
             <AdminFormWrapper title={t("createNewUser")}>
-                <form onSubmit={(e) => { e.preventDefault(); createUser(form); navigate("/admin/user-management"); alert(t("userCreated")); }}
-                    className="grid grid-cols-2 gap-6"
+                <form onSubmit={async (e) => { e.preventDefault(); await createUserAsAdmin(form); navigate("/admin/user-management"); alert(t("userCreated")); }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                     <FormInput type="text" name="name" value={form.name} onChange={handleChange} placeholder={t("firstName")} />
                     <FormInput type="text" name="surname" value={form.surname} onChange={handleChange} placeholder={t("lastName")} />

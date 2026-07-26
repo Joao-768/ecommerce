@@ -26,7 +26,7 @@ export default function Products() {
     useEffect(() => {
         // Get Total Products
         getTotalProducts()
-            .then((data) => setTotalProducts(data?.totalProducts))
+            .then((data) => setTotalProducts(data?.total))
             .catch(() => setTotalProducts(0));
 
         // Get Out Of Stock Products

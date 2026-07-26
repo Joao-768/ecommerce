@@ -49,7 +49,7 @@ export default function EditProduct() {
                 updatedForm = { ...updatedForm, image: imagePath };
             }
 
-            await updateProduct(updatedForm);
+            await updateProduct(id, updatedForm);
             alert("Product Edited");
             navigate("/admin/product-management");
         } catch (err) {

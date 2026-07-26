@@ -51,7 +51,7 @@ export default function ChangePassword({ setCurrentSection }) {
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100">
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="flex flex-col gap-2 col-span-2">
 
                         <label className="text-xs text-stone-500 font-[Panchang-Regular]">

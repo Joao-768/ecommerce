@@ -57,7 +57,7 @@ const { t } = useTranslation();
                         alert(t("addressEdited"));
                         navigate("/user-page/personal-info");
                     }}
-                    className="grid grid-cols-2 gap-6"
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                     <FormInput type="text" name="street" value={editAddress.street} onChange={editHandleChange} placeholder={t("street")} className="col-span-2 w-full" />
                     <FormInput type="text" name="city" value={editAddress.city} onChange={editHandleChange} placeholder={t("city")} className="w-full" />

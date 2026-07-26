@@ -35,7 +35,7 @@ export default function EditOrder() {
         getUserOrdersItems(orderId)
             .then((items) => {
                 items.forEach((item) => adjustStock(item.product_id, item.quantity || 1, "increase"));
-                updateOrder(orderId, order.name, order.surname, order.total_price, "cancelled", order.created_at);
+                updateOrder(orderId, order.total_price, "cancelled");
                 alert("Refund feito!");
                 navigate("/admin/order-management");
             })
@@ -47,12 +47,12 @@ export default function EditOrder() {
             <form
                 onSubmit={async (e) => {
                     e.preventDefault();
-                    await updateOrder(order.id, order.name, order.surname, order.total_price, order.status, order.created_at);
+                    await updateOrder(order.id, order.total_price, order.status);
                     await updateOrderAddress(address.id, address.street, address.city, address.postal_code, address.district, address.country);
                     alert("Order Edited");
                     navigate("/admin/order-management");
                 }}
-                className="grid grid-cols-2 gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
                 <FormInput type="text" name="name" value={order?.name} onChange={handleChange} placeholder="First Name" />
                 <FormInput type="text" name="surname" value={order?.surname} onChange={handleChange} placeholder="Surname" />

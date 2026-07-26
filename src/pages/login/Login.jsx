@@ -42,13 +42,15 @@ export default function Login() {
         e.preventDefault();
         try {
             const data = await loginUser(form.email, form.password);
-            if (!data || data.id == null) return;
+            if (!data || data.user?.id == null) return;
 
-            localStorage.setItem("account", String(data.id))
-            
-            setLastActivity(data.id);
-            
-            const roleData = await getUserRole(data.id);
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            localStorage.setItem("account", data.user.id);
+
+            setLastActivity(data.user.id);
+
+            const roleData = await getUserRole(data.user.id);
             if (roleData?.userRole === "admin") 
                 navigate('/admin/dashboard');
             else
@@ -61,7 +63,7 @@ export default function Login() {
     
     return (
         <div className="min-h-screen flex items-center justify-center px-6"> 
-            <div className="w-full max-w-6xl bg-white shadow-2xl rounded-2xl grid grid-cols-2 overflow-hidden">
+            <div className="w-full max-w-6xl bg-white shadow-2xl rounded-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 {/* left Side */}
                 <div className="p-16 flex flex-col justify-center bg-black text-white">
                     <h2 className="text-2xl font-[Panchang-Semibold] mb-6">

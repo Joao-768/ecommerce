@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { forgotPassword } from "../../api/usersApi";
+import { forgotPassword, resetPassword } from "../../api/usersApi";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useScrollToTop } from "../../utils/format";
@@ -8,6 +8,7 @@ import { Button, GhostButton } from "../../ui/Buttons.jsx";
 import { FormInput } from "../../ui/Form.jsx";
 
 export default function ForgotPassword() {
+    const [step, setStep] = useState(1);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function ForgotPassword() {
 
     const [form, setForm] = useState({
         email: "",
+        code: "",
         newPassword: "",
         confirmPassword: "",
     });
@@ -25,10 +27,26 @@ export default function ForgotPassword() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
+    const handleRequestCode = async (e) => {
         e.preventDefault();
 
-        if (!form.email || !form.newPassword || !form.confirmPassword) {
+        if (!form.email) {
+            alert(t("fillAllFields"));
+            return;
+        }
+
+        try {
+            await forgotPassword(form.email);
+            setStep(2);
+        } catch (error) {
+            alert(error?.message || "Falha ao pedir código de recuperação");
+        }
+    };
+
+    const handleResetPassword = async (e) => {
+        e.preventDefault();
+
+        if (!form.code || !form.newPassword || !form.confirmPassword) {
             alert(t("fillAllFields"));
             return;
         }
@@ -39,7 +57,7 @@ export default function ForgotPassword() {
         }
 
         try {
-            await forgotPassword(form.email, form.newPassword);
+            await resetPassword(form.email, form.code, form.newPassword);
             navigate('/login');
         } catch (error) {
             alert(error?.message || "Falha ao atualizar password");
@@ -53,84 +71,105 @@ export default function ForgotPassword() {
                     {t("changeMyPassword")}
                 </h1>
                 <p className="text-stone-500 mb-8 text-center font-[Panchang-Regular]">
-                    {t("passwordDescription")}
+                    {step === 1
+                        ? t("passwordDescription")
+                        : "Insere o código que enviámos para o teu email e a nova password."}
                 </p>
 
-                <form onSubmit={handleSubmit} className="grid gap-6">
-
-                    {/* Email */}
-                    <div className="flex flex-col">
-                        <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
-                            {t("emailAddress")}
-                        </label>
-                        <FormInput
-                            variant="line"
-                            type="email"
-                            name="email"
-                            autoComplete="email"
-                            value={form.email}
-                            onChange={handleChange}
-                            placeholder={t("emailPlaceholder")}
-                        />
-                    </div>
-
-                    {/* New Password */}
-                    <div className="flex flex-col">
-                        <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
-                            {t("newPassword")}
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                name="newPassword"
-                                value={form.newPassword}
+                {step === 1 ? (
+                    <form onSubmit={handleRequestCode} className="grid gap-6">
+                        <div className="flex flex-col">
+                            <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
+                                {t("emailAddress")}
+                            </label>
+                            <FormInput
+                                variant="line"
+                                type="email"
+                                name="email"
+                                autoComplete="email"
+                                value={form.email}
                                 onChange={handleChange}
-                                placeholder="••••••••"
-                                className="w-full border-b border-stone-300 py-2 pr-10 outline-none focus:border-black transition-all font-[Panchang-Regular]"
+                                placeholder={t("emailPlaceholder")}
                             />
-                            <GhostButton
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
-                            >
-                                {showPassword ? <FaEye size={16} className="-translate-x-px" /> : <FaEyeSlash size={18} />}
-                            </GhostButton>
                         </div>
-                    </div>
 
-                    {/* Confirm New Password */}
-                    <div className="flex flex-col">
-                        <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
-                            {t("confirmNewPassword")}
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showConfirm ? "text" : "password"}
-                                name="confirmPassword"
-                                value={form.confirmPassword}
+                        <Button type="submit" className="py-3 rounded-full w-full" shape="pill">
+                            Enviar código
+                        </Button>
+                    </form>
+                ) : (
+                    <form onSubmit={handleResetPassword} className="grid gap-6">
+                        <div className="flex flex-col">
+                            <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
+                                Código de recuperação
+                            </label>
+                            <FormInput
+                                variant="line"
+                                type="text"
+                                name="code"
+                                value={form.code}
                                 onChange={handleChange}
-                                placeholder="••••••••"
-                                className="w-full border-b border-stone-300 py-2 pr-10 outline-none focus:border-black transition-all font-[Panchang-Regular]"
+                                placeholder="000000"
                             />
-                            <GhostButton
-                                type="button"
-                                onClick={() => setShowConfirm(!showConfirm)}
-                                className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
-                            >
-                                {showConfirm ? <FaEye size={16} className="-translate-x-px" /> : <FaEyeSlash size={18} />}
-                            </GhostButton>
                         </div>
-                    </div>
 
-                    <Button
-                        type="submit"
-                        className="py-3 rounded-full w-full"
-                        shape="pill"
-                    >
-                        {t("change")}
-                    </Button>
+                        {/* New Password */}
+                        <div className="flex flex-col">
+                            <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
+                                {t("newPassword")}
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="newPassword"
+                                    value={form.newPassword}
+                                    onChange={handleChange}
+                                    placeholder="••••••••"
+                                    className="w-full border-b border-stone-300 py-2 pr-10 outline-none focus:border-black transition-all font-[Panchang-Regular]"
+                                />
+                                <GhostButton
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
+                                >
+                                    {showPassword ? <FaEye size={16} className="-translate-x-px" /> : <FaEyeSlash size={18} />}
+                                </GhostButton>
+                            </div>
+                        </div>
 
-                </form>
+                        {/* Confirm New Password */}
+                        <div className="flex flex-col">
+                            <label className="text-sm mb-1 font-[Panchang-Regular] text-stone-600">
+                                {t("confirmNewPassword")}
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showConfirm ? "text" : "password"}
+                                    name="confirmPassword"
+                                    value={form.confirmPassword}
+                                    onChange={handleChange}
+                                    placeholder="••••••••"
+                                    className="w-full border-b border-stone-300 py-2 pr-10 outline-none focus:border-black transition-all font-[Panchang-Regular]"
+                                />
+                                <GhostButton
+                                    type="button"
+                                    onClick={() => setShowConfirm(!showConfirm)}
+                                    className="active:scale-100 absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-black hover:no-underline"
+                                >
+                                    {showConfirm ? <FaEye size={16} className="-translate-x-px" /> : <FaEyeSlash size={18} />}
+                                </GhostButton>
+                            </div>
+                        </div>
+
+                        <Button type="submit" className="py-3 rounded-full w-full" shape="pill">
+                            {t("change")}
+                        </Button>
+
+                        <GhostButton type="button" onClick={() => setStep(1)} className="text-stone-500 text-sm">
+                            Voltar
+                        </GhostButton>
+                    </form>
+                )}
             </div>
         </div>
     );

@@ -68,12 +68,12 @@ export default function Header({ setCartIsOpen }) {
 
     return (
         <header className={isHidden ? 'header fixed top-0 left-0 h-30 w-full z-50 flex flex-col text-sm  header--hidden' : 'header fixed top-0 left-0 h-30 w-full z-50 flex flex-col text-sm '}>
-            <div className='flex-1 flex items-center justify-between gap-5 p-25 w-full box-border relative header-top'>
+            <div className='flex-1 flex items-center justify-between gap-2 md:gap-5 py-6 md:py-25 w-full box-border relative header-top'>
                 
                 {/* Left Header */}
                 <div className='header-left'>
                     <select
-                        className='bg-none border-none cursor-pointer text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button outline-none'
+                        className='bg-none border-none cursor-pointer text-base md:text-xl flex m-0 p-0 pointer-events-auto z-10 font-[Panchang-Regular] header-button outline-none'
                         value={i18n.language || "en"}
                         onChange={(e) => {
                         const nextLang = e.target.value;
@@ -87,7 +87,7 @@ export default function Header({ setCartIsOpen }) {
                             </option>
                         ))}
                     </select>
-                    <NavButton className="text-xl header-button" onClick={() => navigate('/about-us')}>
+                    <NavButton className="hidden sm:inline text-base md:text-xl header-button whitespace-nowrap" onClick={() => navigate('/about-us')}>
                         {t("aboutUs")}
                     </NavButton>
                 </div>
@@ -99,10 +99,10 @@ export default function Header({ setCartIsOpen }) {
 
                 {/* Right Header */}
                 <div className='header-right'>
-                    <NavButton header className="text-xl" onClick={() => navigate("/search")}><IoSearch /></NavButton>
-                    <NavButton header className="text-xl" onClick={() => navigate('/wishlist')}><IoMdHeart /></NavButton>
-                    <NavButton header className="text-xl" onClick={() => setCartIsOpen(true)}><IoBagHandle /></NavButton>
-                    <NavButton header className="relative text-xl" onClick={handleAccountClick}>
+                    <NavButton header className="text-base md:text-xl" onClick={() => navigate("/search")}><IoSearch /></NavButton>
+                    <NavButton header className="text-base md:text-xl" onClick={() => navigate('/wishlist')}><IoMdHeart /></NavButton>
+                    <NavButton header className="text-base md:text-xl" onClick={() => setCartIsOpen(true)}><IoBagHandle /></NavButton>
+                    <NavButton header className="relative text-base md:text-xl" onClick={handleAccountClick}>
                         <IoPerson />
                         {account != null && <span className="account-dot absolute -top-1 -right-1 w-1.5 h-1.5 bg-black rounded-full" />}
                     </NavButton>

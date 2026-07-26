@@ -1,6 +1,6 @@
 import { pool } from "../config/database.js";
 
-export async function setWishlistItem(req, res) {
+export async function setWishlistItem(req, res, next) {
     let connection;
     const { userId, productId } = req.body;
 
@@ -12,19 +12,19 @@ export async function setWishlistItem(req, res) {
         connection = await pool.getConnection();
 
         await connection.query(
-            "INSERT INTO wishlist_items (user_id, product_id) VALUES (?, ?)",
+            "INSERT IGNORE INTO wishlist_items (user_id, product_id) VALUES (?, ?)",
             [userId, productId]
         );
 
         res.status(201).json({ ok: true });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
-        connection.release();
+        if (connection) connection.release();
     }
 }
 
-export async function getWishlistItems(req, res) {
+export async function getWishlistItems(req, res, next) {
     let connection;
     const { userId } = req.params;
 
@@ -45,13 +45,13 @@ export async function getWishlistItems(req, res) {
 
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function isInWishlist(req, res) {
+export async function isInWishlist(req, res, next) {
     let connection;
     const { userId, productId } = req.params;
 
@@ -65,7 +65,7 @@ export async function isInWishlist(req, res) {
 
         res.json(rows.length > 0);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

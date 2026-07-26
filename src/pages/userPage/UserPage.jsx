@@ -58,10 +58,10 @@ export default function UserPage() {
     }, [account, navigate]);
 
     return (
-        <div className="min-h-screen w-screen flex pl-14 pt-46">
+        <div className="min-h-screen w-screen flex pl-4 lg:pl-14 pt-46">
 
             {/* Sidebar */}
-            <div className="w-72 sticky top-46 pt-10 border-r text-sm flex flex-col gap-10 font-[Panchang-Regular]">
+            <div className="w-40 lg:w-72 shrink-0 sticky top-46 pt-10 border-r text-sm flex flex-col gap-10 font-[Panchang-Regular]">
 
                 {sidebarOptions.map((opt) => (
                     <NavButton

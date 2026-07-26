@@ -63,7 +63,7 @@ export default function UserPreferences() {
                 {t("selectYourPreferences")}
             </p>
 
-            <div className="grid grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                 {preferences.map((p, index) => {
                     const Icon = icons[index];
 

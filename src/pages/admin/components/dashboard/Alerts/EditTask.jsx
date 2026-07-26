@@ -45,7 +45,7 @@ export default function EditTask() {
                         e.preventDefault();
 
                         try {
-                            await updateAdminTask(task);
+                            await updateAdminTask(task.id, task.task, task.description, task.status);
 
                             alert("Task Updated");
                             navigate("/admin/dashboard");
@@ -54,7 +54,7 @@ export default function EditTask() {
                         }
                     }}
 
-                    className="grid grid-cols-2 gap-6"
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
 
                     {/* Name */}

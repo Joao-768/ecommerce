@@ -56,7 +56,7 @@ export default function EditUser() {
                     alert(t("userEdited"));
                     navigate("/admin/user-management");
                 }}
-                className="grid grid-cols-2 gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
                 <FormInput type="text" name="name" value={editUser?.name} onChange={handleChange} placeholder={t("firstName")} />
                 <FormInput type="text" name="surname" value={editUser?.surname} onChange={handleChange} placeholder={t("lastName")} />

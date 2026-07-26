@@ -39,7 +39,7 @@ export default function Step2({ card, updateCard, setStep, payment, t, savedCard
                 )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input name="expiry" placeholder={t("expiry")} value={card.expiry} onChange={updateCard}
                     className="p-3 border rounded-xl font-[Panchang-Regular]" />
                 <input name="cvc" placeholder={t("cvc")} value={card.cvc} onChange={updateCard}

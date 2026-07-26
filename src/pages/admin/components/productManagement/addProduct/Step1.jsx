@@ -5,7 +5,7 @@ import { Button } from "../../../../../ui/Buttons";
 
 export default function Step1({ form, setForm, handleChange, categories, collections, genders, navigate, setStep, t }) {
     return (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormInput type="text" name="name" value={form.name} onChange={handleChange} placeholder={t("name")} className="col-span-2" />
             <FormInput type="text" name="description" value={form.description} onChange={handleChange} placeholder={t("description")} className="col-span-2" />
             <FormInput type="number" name="price" value={form.price} onChange={handleChange} placeholder={t("price")} />
@@ -14,8 +14,8 @@ export default function Step1({ form, setForm, handleChange, categories, collect
             <FormSelect name="collection_id" value={form.collection_id} onChange={(e) => setForm({ ...form, [e.target.name]: Number(e.target.value) })} options={collections.map(c => ({ value: c.id, label: t(c.name) }))} />
             <FormSelect name="gender_id" value={form.gender_id} onChange={(e) => setForm({ ...form, [e.target.name]: Number(e.target.value) })} options={genders.map(g => ({ value: g.id, label: t(g.name) }))} />
 
-            <FormInput type="number" name={t("stock")} value={form.stock} onChange={handleChange} placeholder={t("stock")} />
-            <FormInput type="number" name={t("max_stock")} value={form.max_stock} onChange={handleChange} placeholder={t("maxStock")} />
+            <FormInput type="number" name="stock" value={form.stock} onChange={handleChange} placeholder={t("stock")} />
+            <FormInput type="number" name="max_stock" value={form.max_stock} onChange={handleChange} placeholder={t("maxStock")} />
 
             <FormFileInput
                 name="image"

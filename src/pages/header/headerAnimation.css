@@ -29,13 +29,21 @@
 }
 
 .header-top {
-    padding: 0 100px;
+    padding: 0 clamp(16px, 7vw, 100px);
 }
 
 .header-top > button {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+}
+
+@media (max-width: 640px) {
+    .header-top > button {
+        position: static;
+        left: auto;
+        transform: none;
+    }
 }
 
 .header-bottom {
@@ -56,11 +64,29 @@
     margin-right: 15px;
 }
 
+@media (max-width: 640px) {
+    .header-left {
+        gap: 10px;
+        margin-left: 0;
+    }
+
+    .header-right {
+        gap: 10px;
+        margin-right: 0;
+    }
+}
+
 .title {
     transition: filter 0.5s ease;
     width: auto;
     max-width: 180px;
     height: auto;
+}
+
+@media (max-width: 640px) {
+    .title {
+        max-width: 110px;
+    }
 }
 
 .header:hover .title {

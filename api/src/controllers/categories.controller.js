@@ -1,6 +1,6 @@
 import { pool } from "../config/database.js";
 
-export async function getCategories(req, res) {
+export async function getCategories(req, res, next) {
     let connection;
 
     try {
@@ -14,13 +14,13 @@ export async function getCategories(req, res) {
         // Return the categories
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getProductsByCategory(req, res) {
+export async function getProductsByCategory(req, res, next) {
     let connection;
     const { categoryId } = req.params;
 
@@ -36,14 +36,14 @@ export async function getProductsByCategory(req, res) {
         // Return the products
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
 // Get Total Categories
-export async function getTotalCategories(req, res) {
+export async function getTotalCategories(req, res, next) {
     let connection;
 
     try {
@@ -56,7 +56,7 @@ export async function getTotalCategories(req, res) {
         const totalCategories = rows[0].totalCategories;
         res.json({ totalCategories });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

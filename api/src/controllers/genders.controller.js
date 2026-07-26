@@ -1,6 +1,6 @@
 import { pool } from "../config/database.js";
 
-export async function getGenders(req, res) {
+export async function getGenders(req, res, next) {
     let connection;
 
     try {
@@ -13,13 +13,13 @@ export async function getGenders(req, res) {
 
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getProductsByGender(req, res) {
+export async function getProductsByGender(req, res, next) {
     let connection;
     const { genderId } = req.params;
     
@@ -48,13 +48,13 @@ export async function getProductsByGender(req, res) {
         // Return the products
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getGenderById(req, res) {
+export async function getGenderById(req, res, next) {
     let connection;
     const { id } = req.params;
 
@@ -70,7 +70,7 @@ export async function getGenderById(req, res) {
         // Return the collection
         res.json(rows[0]);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

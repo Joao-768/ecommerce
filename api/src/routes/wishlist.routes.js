@@ -5,12 +5,17 @@ import {
     isInWishlist, 
     removeWishlistItem 
 } from "../controllers/wishlist.controller.js";
+import authenticate, { requireSelfOrAdmin, requireSelfOrAdminInBody } from "../middleware/auth.middleware.js";
+import { validate } from "../middleware/validate.middleware.js";
+import { setWishlistItemSchema } from "../schemas/wishlist.schema.js";
 
 const router = express.Router();
 
-router.post("/", setWishlistItem);
-router.get("/:userId", getWishlistItems);
-router.get("/:userId/:productId", isInWishlist);
-router.delete("/:userId/:productId", removeWishlistItem);
+router.use(authenticate);
+
+router.post("/", validate(setWishlistItemSchema), requireSelfOrAdminInBody(), setWishlistItem);
+router.get("/:userId", requireSelfOrAdmin("userId"), getWishlistItems);
+router.get("/:userId/:productId", requireSelfOrAdmin("userId"), isInWishlist);
+router.delete("/:userId/:productId", requireSelfOrAdmin("userId"), removeWishlistItem);
 
 export { router as wishlistRoutes };

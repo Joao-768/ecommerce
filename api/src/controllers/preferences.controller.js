@@ -1,6 +1,6 @@
 import { pool } from "../config/database.js";
 
-export async function getPreferences(req, res) {
+export async function getPreferences(req, res, next) {
     let connection;
 
     try {
@@ -13,13 +13,13 @@ export async function getPreferences(req, res) {
 
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function setUserPreference(req, res) {
+export async function setUserPreference(req, res, next) {
     let connection;
     const { userId, preferenceId } = req.params;
 
@@ -49,13 +49,13 @@ export async function setUserPreference(req, res) {
 
         res.status(201).json({ id: result.insertId });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if(connection) connection.release();
     }
 }
 
-export async function removeUserPreference(req, res) {
+export async function removeUserPreference(req, res, next) {
     let connection;
 
     try {
@@ -75,13 +75,13 @@ export async function removeUserPreference(req, res) {
         res.json({ message: "User Preference Deleted Successfully" });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getUserPreferences(req, res) {
+export async function getUserPreferences(req, res, next) {
     let connection;
     const { userId } = req.params;
 
@@ -95,13 +95,13 @@ export async function getUserPreferences(req, res) {
 
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getProductsByPreferences(req, res) {
+export async function getProductsByPreferences(req, res, next) {
     let connection;
     const { userId } = req.params;
 
@@ -119,7 +119,7 @@ export async function getProductsByPreferences(req, res) {
 
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

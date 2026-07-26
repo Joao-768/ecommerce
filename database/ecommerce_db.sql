@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 04-Jun-2026 às 10:54
+-- Tempo de geração: 23-Jun-2026 às 22:32
 -- Versão do servidor: 10.4.28-MariaDB
 -- versão do PHP: 8.2.4
 
@@ -42,8 +42,7 @@ CREATE TABLE `Addresses` (
 --
 
 INSERT INTO `Addresses` (`id`, `user_id`, `street`, `city`, `postal_code`, `country`, `district`) VALUES
-(2, 4, 'Rua Cimo de Vila 185A', 'Vila Boa do Bispo', '4625-671', 'Portugal', 'Porto'),
-(3, 27, 'Rua de fontelas N401', 'Avessadas', '4630-032', 'Portugal', 'Porto');
+(2, 56, 'Rua das Flores N123', 'Vila Boa do Bispo', '4123-456', 'Portugal', 'Porto');
 
 -- --------------------------------------------------------
 
@@ -84,7 +83,7 @@ CREATE TABLE `Cart_Items` (
 --
 
 INSERT INTO `Cart_Items` (`user_id`, `product_id`, `quantity`, `size_mm`) VALUES
-(23, 1, 1, 40);
+(56, 1, 1, 40);
 
 -- --------------------------------------------------------
 
@@ -173,7 +172,7 @@ CREATE TABLE `Orders` (
 --
 
 INSERT INTO `Orders` (`id`, `user_id`, `total_price`, `status`, `payment_method_id`, `created_at`, `nif`) VALUES
-(33, 4, 12500.00, 'paid', NULL, '2026-05-27 08:46:49', '123456789');
+(35, 56, 125000.00, 'paid', NULL, '2026-06-17 08:49:38', NULL);
 
 -- --------------------------------------------------------
 
@@ -197,7 +196,7 @@ CREATE TABLE `Order_Addresses` (
 --
 
 INSERT INTO `Order_Addresses` (`id`, `order_id`, `street`, `city`, `postal_code`, `district`, `country`, `type`) VALUES
-(10, 33, 'Rua Cimo de Vila 185A', 'Vila Boa do Bispo', '4625-671', 'Porto', 'Portugal', 'delivery');
+(12, 35, 'Rua Dos Pimpa', 'Lixa', '1234-456', 'Porto', 'Portugal', 'delivery');
 
 -- --------------------------------------------------------
 
@@ -220,7 +219,7 @@ CREATE TABLE `Order_Items` (
 --
 
 INSERT INTO `Order_Items` (`id`, `order_id`, `product_id`, `price_at_purchase`, `product_name`, `quantity`, `size`) VALUES
-(41, 33, 1, 12500.00, 'The White Fang', 1, '36');
+(43, 35, 1, 12500.00, 'The White Fang', 10, '36');
 
 -- --------------------------------------------------------
 
@@ -239,7 +238,7 @@ CREATE TABLE `Order_Status_History` (
 --
 
 INSERT INTO `Order_Status_History` (`order_id`, `status`, `changed_at`) VALUES
-(33, 'paid', '2026-05-27 08:46:49');
+(35, 'paid', '2026-06-17 08:49:38');
 
 -- --------------------------------------------------------
 
@@ -259,7 +258,7 @@ CREATE TABLE `Payment_Methods` (
 --
 
 INSERT INTO `Payment_Methods` (`id`, `user_id`, `card_number`, `expiry`) VALUES
-(1, 4, '**** **** **** 3456', '12/30');
+(2, 56, '3456', '12/30');
 
 -- --------------------------------------------------------
 
@@ -317,7 +316,7 @@ CREATE TABLE `Products` (
 --
 
 INSERT INTO `Products` (`id`, `name`, `price`, `stock`, `collection_id`, `category_id`, `created_at`, `gender_id`, `search_count`, `image`, `max_stock`, `sales`, `code`, `movement`, `case_material`, `crystal`, `water_resistance`, `strap`, `warranty`) VALUES
-(1, 'The White Fang', 12500.00, 49, 1, 3, '2026-02-07 13:47:16', 1, 5, '/images/eternal-beasts/the-white-fang.png', 50, 8, 'EB-EL-1', 'Automatic', 'Stainless Steel 316L', 'Sapphire Crystal', '50m / 5ATM', 'Stainless Steel', '2 Years'),
+(1, 'The White Fang', 12500.00, 38, 1, 3, '2026-02-07 13:47:16', 1, 5, '/images/eternal-beasts/the-white-fang.png', 50, 8, 'EB-EL-1', 'Automatic', 'Stainless Steel 316L', 'Sapphire Crystal', '50m / 5ATM', 'Stainless Steel', '2 Years'),
 (2, 'The Onyx Panther', 9000.00, 50, 1, 3, '2026-02-07 13:47:16', 1, 4, '/images/eternal-beasts/the-onyx-panther.png', 50, 3, 'EB-EL-2', 'Automatic', 'Stainless Steel 316L', 'Sapphire Crystal', '100m / 10ATM', 'Black Leather', '2 Years'),
 (3, 'The Sapphire Lion', 10000.00, 49, 1, 3, '2026-02-10 22:05:19', 3, 0, '/images/eternal-beasts/the-sapphire-lion.png', 50, 4, 'EB-EL-3', 'Automatic', 'Gold PVD Stainless Steel', 'Sapphire Crystal', '30m / 3ATM', 'Gold Stainless Steel', '2 Years'),
 (4, 'The Amethyst Fox', 4000.00, 50, 1, 2, '2026-02-10 22:14:12', 3, 0, '/images/eternal-beasts/the-amethyst-fox.png', 50, 0, 'EB-DA-4', 'Quartz', 'Stainless Steel 316L', 'Mineral Crystal', '30m / 3ATM', 'Stainless Steel', '2 Years'),
@@ -604,15 +603,8 @@ CREATE TABLE `Users` (
 --
 
 INSERT INTO `Users` (`id`, `email`, `role`, `created_at`, `name`, `surname`, `password_hash`, `date_of_birth`, `last_activity`, `status`, `nif`) VALUES
-(4, 'joaomsc768@gmail.com', 'user', '2026-03-27 22:18:14', 'Joao', 'Caetano', '$2a$10$uh/vsMr0zarMtrGHv.Cpc.iIJy7Z8Lr1zr/5qevUFcd05fRmgrETi', '2008-06-07', '2026-05-27 08:49:23', 'active', '123456789'),
-(23, 'joaocaetano@untitled.com', 'admin', '2026-04-07 14:05:25', 'Joao', 'Caetano', '$2a$10$0pekkM31ExOssWhLKKi01.t7NbtOHrF56K1zb52f10ScBjjQC.lle', NULL, '2026-05-27 10:13:20', 'active', NULL),
-(27, 'angelinamdp957@gmail.com', 'user', '2026-04-11 13:40:35', 'Angelina', 'Pinto', '$2a$10$/tqA7J6SUkdHS5Qw7SlxCuVH7BR3ncByaoszkg.8OX27zITOr06dq', NULL, '2026-05-10 16:26:21', 'active', NULL),
-(39, 'kaioalmeida@gmail.com', 'user', '2026-04-14 13:16:06', 'Kaio', 'Almeida', '$2a$10$N6HUKmaS/FvfYLqZxsxMR.JWnCC0s1FzeB88baly5z/zFLli2Q20a', NULL, '2026-04-17 08:24:01', 'blocked', NULL),
-(41, 'diogoribeiro@gmail.com', 'user', '2026-04-17 12:26:25', 'Diogo', 'Ribeiro', '$2a$10$zjXT.gLLnwWrpt.qz5M3ueLE4DQ7sFcM0V9cmOWgUCL9sZVjPKE4i', '2007-04-04', '2026-04-18 00:14:37', 'active', NULL),
-(46, 'leandropereira@gmail.com', 'user', '2026-04-27 10:07:49', 'Leandro', 'Pereira', '$2a$10$arkVplDNG416ojU6nRgV3.Ka48TKv4EOaPxbZ6.KwtEfeZ/lB6a5u', NULL, '2026-05-10 16:26:49', 'active', NULL),
-(47, 'miguelsilva@gmail.com', 'user', '2026-04-27 10:31:38', 'Miguel', 'Silva', '$2a$10$HCuEYmSCMC2Qnojym4fKROBRo345sITcgctdWu6uM3W2Uc6sJXxja', NULL, '2026-04-27 10:31:38', 'active', NULL),
-(48, 'saracaetano@gmail.com', 'user', '2026-05-12 20:11:22', 'Sara', 'Caetano', '$2a$10$m1IlQlQK8PTvHS27bqlhkOCCbQUlspEG4JuZ.r7O4C8dDY.3BxF6.', NULL, '2026-05-12 20:12:47', 'active', NULL),
-(49, 'vaniarmsousa@gmail.com', 'user', '2026-05-17 14:32:15', 'Raquel', 'Sousa', '$2a$10$vzj.fCc8fnaTe38.UioZy.kalR/0Spj.zHmTwKgnF2BUxKsncFdje', '1992-03-02', '2026-05-17 14:32:15', 'active', NULL);
+(56, 'user@demo.com', 'user', '2026-06-23 20:25:29', 'User', 'Demo', '$2b$10$NUdr665pnVvDzrJygl.zv.ol2ZBhN9kvvI4wmFZIn86gMKMRIuvFq', NULL, '2026-06-23 20:25:29', 'active', NULL),
+(57, 'admin@demo.com', 'admin', '2026-06-23 20:26:16', 'Admin', 'Demo', '$2b$10$ecUyPqt6TYCGrh05x6s2Uep4uWbMduRJgU9rp3cOGnWnaDZKo4PaK', NULL, '2026-06-23 20:26:16', 'active', NULL);
 
 -- --------------------------------------------------------
 
@@ -631,12 +623,9 @@ CREATE TABLE `User_Collection` (
 --
 
 INSERT INTO `User_Collection` (`user_id`, `product_id`, `added_at`) VALUES
-(4, 1, '2026-04-18 22:57:19'),
-(4, 21, '2026-05-20 10:55:21'),
-(4, 22, '2026-05-20 10:55:17'),
-(49, 4, '2026-05-17 14:48:13'),
-(49, 10, '2026-05-17 14:48:27'),
-(49, 17, '2026-05-17 14:48:20');
+(56, 1, '2026-04-18 22:57:19'),
+(56, 21, '2026-05-20 10:55:21'),
+(56, 22, '2026-05-20 10:55:17');
 
 -- --------------------------------------------------------
 
@@ -654,10 +643,9 @@ CREATE TABLE `User_Preferences` (
 --
 
 INSERT INTO `User_Preferences` (`user_id`, `preference_id`) VALUES
-(4, 3),
-(4, 4),
-(4, 5),
-(49, 4);
+(56, 2),
+(56, 3),
+(56, 4);
 
 -- --------------------------------------------------------
 
@@ -675,16 +663,9 @@ CREATE TABLE `Wishlist_Items` (
 --
 
 INSERT INTO `Wishlist_Items` (`user_id`, `product_id`) VALUES
-(4, 1),
-(4, 2),
-(4, 10),
-(23, 1),
-(23, 3),
-(23, 12),
-(23, 13),
-(27, 1),
-(49, 1),
-(49, 13);
+(56, 1),
+(56, 2),
+(56, 10);
 
 --
 -- Índices para tabelas despejadas
@@ -873,25 +854,25 @@ ALTER TABLE `Genders`
 -- AUTO_INCREMENT de tabela `Orders`
 --
 ALTER TABLE `Orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT de tabela `Order_Addresses`
 --
 ALTER TABLE `Order_Addresses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de tabela `Order_Items`
 --
 ALTER TABLE `Order_Items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT de tabela `Payment_Methods`
 --
 ALTER TABLE `Payment_Methods`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `Preferences`
@@ -915,7 +896,7 @@ ALTER TABLE `Product_Translations`
 -- AUTO_INCREMENT de tabela `Users`
 --
 ALTER TABLE `Users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- Restrições para despejos de tabelas
@@ -1016,6 +997,32 @@ ALTER TABLE `User_Preferences`
 ALTER TABLE `Wishlist_Items`
   ADD CONSTRAINT `wishlist_items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `wishlist_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
+
+--
+-- Email verification & password reset support
+--
+ALTER TABLE `Users`
+  ADD COLUMN `email_verified` TINYINT(1) NOT NULL DEFAULT 0,
+  ADD COLUMN `email_verification_code` VARCHAR(10) DEFAULT NULL,
+  ADD COLUMN `email_verification_expires` DATETIME DEFAULT NULL,
+  ADD COLUMN `password_reset_code` VARCHAR(10) DEFAULT NULL,
+  ADD COLUMN `password_reset_expires` DATETIME DEFAULT NULL;
+
+UPDATE `Users` SET `email_verified` = 1 WHERE `password_hash` IS NOT NULL;
+
+--
+-- Missing description column on Products
+--
+ALTER TABLE `Products`
+  ADD COLUMN `description` TEXT DEFAULT NULL AFTER `name`;
+
+--
+-- NIF must be unique per user
+--
+UPDATE `Users` SET `nif` = NULL WHERE `id` IN (54, 56);
+ALTER TABLE `Users`
+  ADD UNIQUE KEY `unique_nif` (`nif`);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

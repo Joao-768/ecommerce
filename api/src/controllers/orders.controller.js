@@ -1,6 +1,108 @@
 import { pool } from "../config/database.js";
 
-export async function createOrder(req, res) {
+export async function checkout(req, res, next) {
+    let connection;
+    const { userId, nif, address, cartItems, card } = req.body;
+
+    if (!userId || !address || !Array.isArray(cartItems) || !cartItems.length) {
+        return res.status(400).json({ error: "User ID, address, and cart items are required" });
+    }
+
+    try {
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+
+        const verifiedItems = [];
+        let total = 0;
+
+        for (const item of cartItems) {
+            const quantity = item.quantity || 1;
+            const [rows] = await connection.query(
+                "SELECT name, price, stock FROM products WHERE id = ? FOR UPDATE",
+                [item.id]
+            );
+
+            if (!rows.length || rows[0].stock < quantity) {
+                await connection.rollback();
+                return res.status(409).json({ error: `Insufficient stock for product ${item.id}` });
+            }
+
+            const product = rows[0];
+            verifiedItems.push({ id: item.id, name: product.name, price: product.price, quantity, size_mm: item.size_mm });
+            total += Number(product.price) * quantity;
+        }
+
+        const [orderResult] = await connection.query(
+            "INSERT INTO orders (user_id, total_price, status, nif) VALUES (?, ?, ?, ?)",
+            [userId, total, "paid", nif || null]
+        );
+        const orderId = orderResult.insertId;
+
+        await connection.query(
+            "INSERT INTO order_status_history (order_id, status) VALUES (?, ?)",
+            [orderId, "paid"]
+        );
+
+        await connection.query(
+            "INSERT INTO order_addresses (order_id, street, city, postal_code, district, country) VALUES (?, ?, ?, ?, ?, ?)",
+            [orderId, address.street, address.city, address.postal_code, address.district, address.country]
+        );
+
+        for (const item of verifiedItems) {
+            await connection.query(
+                "INSERT INTO order_items (order_id, product_id, product_name, price_at_purchase, quantity, size) VALUES (?, ?, ?, ?, ?, ?)",
+                [orderId, item.id, item.name, item.price, item.quantity, item.size_mm]
+            );
+
+            await connection.query(
+                "UPDATE products SET stock = stock - ? WHERE id = ?",
+                [item.quantity, item.id]
+            );
+        }
+
+        if (nif) {
+            await connection.query(
+                "UPDATE users SET nif = ? WHERE id = ? AND nif IS NULL",
+                [nif, userId]
+            );
+        }
+
+        if (card?.cardNumber && card?.expiry) {
+            const last4 = String(card.cardNumber).replace(/\D/g, "").slice(-4);
+            const [existingCard] = await connection.query(
+                "SELECT id FROM payment_methods WHERE user_id = ?",
+                [userId]
+            );
+
+            if (existingCard.length) {
+                await connection.query(
+                    "UPDATE payment_methods SET card_number = ?, expiry = ? WHERE user_id = ?",
+                    [last4, card.expiry, userId]
+                );
+            } else {
+                await connection.query(
+                    "INSERT INTO payment_methods (user_id, card_number, expiry) VALUES (?, ?, ?)",
+                    [userId, last4, card.expiry]
+                );
+            }
+        }
+
+        await connection.query("DELETE FROM cart_items WHERE user_id = ?", [userId]);
+
+        await connection.commit();
+        res.status(201).json({ id: orderId });
+    } catch (error) {
+        if (connection) await connection.rollback();
+        if (error?.code === "ER_DUP_ENTRY" && error.message.includes("unique_nif")) {
+            return res.status(409).json({ error: "This NIF is already associated with another account" });
+        }
+        next(error);
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
+export async function createOrder(req, res, next) {
     let connection;
     const { userId, total, nif } = req.body;
 
@@ -25,13 +127,13 @@ export async function createOrder(req, res) {
 
         res.status(201).json({ id: orderId });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function setOrderItems(req, res) {
+export async function setOrderItems(req, res, next) {
     let connection;
 
     const { orderId, cartItems } = req.body;
@@ -53,14 +155,13 @@ export async function setOrderItems(req, res) {
         res.status(201).json({ success: true });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
-
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getUserOrders(req, res) {
+export async function getUserOrders(req, res, next) {
     let connection;
     const { userId } = req.params;
     const { last } = req.query;
@@ -91,13 +192,13 @@ export async function getUserOrders(req, res) {
         res.json(rows);
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getUserOrdersItems(req, res) {
+export async function getUserOrdersItems(req, res, next) {
     let connection;
     const { id } = req.params;
 
@@ -114,13 +215,13 @@ export async function getUserOrdersItems(req, res) {
         res.json(rows);
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getTotalItems(req, res) {
+export async function getTotalItems(req, res, next) {
     let connection;
     const { id } = req.params;
 
@@ -135,13 +236,13 @@ export async function getTotalItems(req, res) {
         const totalItems = rows[0].totalItems;
         res.json({ totalItems });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getAllOrders(req, res) {
+export async function getAllOrders(req, res, next) {
     let connection;
     const { count, limit } = req.query;
 
@@ -176,13 +277,13 @@ export async function getAllOrders(req, res) {
         res.json(rows);
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function updateOrder(req, res) {
+export async function updateOrder(req, res, next) {
     let connection;
     const orderId = req.params.id;
     const { total_price, status } = req.body;
@@ -213,13 +314,13 @@ export async function updateOrder(req, res) {
         res.json({ message: "Order updated successfully" });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getOrderById(req, res) {
+export async function getOrderById(req, res, next) {
     let connection;
     const { id } = req.params;
 
@@ -236,13 +337,13 @@ export async function getOrderById(req, res) {
         res.json(rows[0] || null);
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getOrderAddress(req, res) {
+export async function getOrderAddress(req, res, next) {
     let connection;
     const { id } = req.params;
 
@@ -257,13 +358,13 @@ export async function getOrderAddress(req, res) {
         res.json(rows[0] || null);
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function updateOrderAddress(req, res) {
+export async function updateOrderAddress(req, res, next) {
     let connection;
     const addressId = req.params.id;
     const { street, city, postal_code, district, country } = req.body;
@@ -279,13 +380,13 @@ export async function updateOrderAddress(req, res) {
         res.json({ message: "Order address updated successfully" });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function createOrderAddress(req, res) {
+export async function createOrderAddress(req, res, next) {
     let connection;
     const orderId = req.params.id;
     const { address } = req.body;
@@ -301,7 +402,7 @@ export async function createOrderAddress(req, res) {
         res.status(201).json({ message: "Address saved successfully" });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

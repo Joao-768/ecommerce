@@ -11,7 +11,7 @@ export default function Step1({ billing, updateBilling, delivery, updateDelivery
         <div className="space-y-4">
             <h2 className="font-[Panchang-Semibold]">{t("shippingInfo")}</h2>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input name="name" placeholder={t("name")} value={billing.name} onChange={updateBilling}
                     className="w-full p-3 border rounded-xl font-[Panchang-Regular]" />
                 <input name="surname" placeholder={t("surname")} value={billing.surname} onChange={updateBilling}
@@ -52,14 +52,14 @@ export default function Step1({ billing, updateBilling, delivery, updateDelivery
                 )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input name="city" placeholder={t("city")} value={billing.city} onChange={updateBilling}
                     className="p-3 border rounded-xl font-[Panchang-Regular]" />
                 <input name="postal_code" placeholder={t("postalCode")} value={billing.postal_code} onChange={updateBilling}
                     className="p-3 border rounded-xl font-[Panchang-Regular]" />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input name="district" placeholder={t("district")} value={billing.district} onChange={updateBilling}
                     className="p-3 border rounded-xl font-[Panchang-Regular]" />
                 <input name="country" placeholder={t("country")} value={billing.country} onChange={updateBilling}
@@ -103,14 +103,14 @@ export default function Step1({ billing, updateBilling, delivery, updateDelivery
                         )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input name="city" placeholder={t("city")} value={delivery.city} onChange={updateDelivery}
                             className="p-3 border rounded-xl font-[Panchang-Regular]" />
                         <input name="postal_code" placeholder={t("postalCode")} value={delivery.postal_code} onChange={updateDelivery}
                             className="p-3 border rounded-xl font-[Panchang-Regular]" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input name="district" placeholder={t("district")} value={delivery.district} onChange={updateDelivery}
                             className="p-3 border rounded-xl font-[Panchang-Regular]" />
                         <input name="country" placeholder={t("country")} value={delivery.country} onChange={updateDelivery}

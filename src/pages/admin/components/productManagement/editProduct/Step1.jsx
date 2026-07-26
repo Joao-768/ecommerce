@@ -5,7 +5,7 @@ import { FormFileInput, FormInput, FormSelect } from "../../../../../ui/Form";
 
 export default function Step1({ form, setForm, handleChange, categories, collections, genders, navigate, setStep }) {
     return (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormInput type="text" name="name" value={form.name ?? ""} onChange={handleChange} placeholder="Name" className="col-span-2" />
             <FormInput type="text" name="description" value={form.description ?? ""} onChange={handleChange} placeholder="Description" className="col-span-2" />
             <FormInput type="number" name="price" value={form.price ?? ""} onChange={handleChange} placeholder="Price" />

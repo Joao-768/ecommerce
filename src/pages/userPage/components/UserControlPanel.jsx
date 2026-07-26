@@ -1,7 +1,7 @@
 import { getLastOrder, getTotalItems } from "../../../api/ordersApi";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserById } from "../../../api/usersApi";
+import { getCurrentUser } from "../../../api/usersApi";
 
 import { FaMapLocationDot, FaGear } from "react-icons/fa6";
 import { BiSolidPackage } from "react-icons/bi";
@@ -26,7 +26,7 @@ export default function UserControlPanel() {
             .then((data) => setOrder(data))
             .catch(() => setOrder(null));
 
-        getUserById(account)
+        getCurrentUser()
             .then((data) => setUser(data))
             .catch(() => setUser(null));
     }, [account]);
@@ -57,7 +57,7 @@ export default function UserControlPanel() {
             </p>
 
             {/* Quick Access */}
-            <div className="grid grid-cols-2 gap-6 pt-8 pb-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 pb-3">
                 {/* Most Recent Order */}
                 <div className="bg-white rounded-lg p-10 relative overflow-hidden shadow-md min-h-48">
                     <BiSolidPackage className="absolute right-6 bottom-4 text-stone-200 h-25 w-25 pointer-events-none" />

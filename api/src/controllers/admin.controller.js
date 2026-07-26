@@ -1,7 +1,7 @@
 import { pool } from "../config/database.js";
 
 // Dashboard
-export async function getTotalUsers(req, res) {
+export async function getTotalUsers(req, res, next) {
     let connection;
     const { count, limit, month } = req.query;
 
@@ -62,13 +62,13 @@ export async function getTotalUsers(req, res) {
         res.json({ totalUsers: rows[0].totalUsers });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function deleteProduct(req, res) {
+export async function deleteProduct(req, res, next) {
     let connection;
 
     try {
@@ -88,7 +88,7 @@ export async function deleteProduct(req, res) {
         res.json({ message: "Product deleted successfully" });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
@@ -96,7 +96,7 @@ export async function deleteProduct(req, res) {
 
 // Admin Tasks
 
-export async function getAdminTasks(req, res) {
+export async function getAdminTasks(req, res, next) {
     let connection;
 
     try {
@@ -108,13 +108,13 @@ export async function getAdminTasks(req, res) {
 
         res.json({ tasks: rows });
     } catch(error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getAdminTaskById(req, res) {
+export async function getAdminTaskById(req, res, next) {
     const { id } = req.params;
     let connection;
 
@@ -129,13 +129,13 @@ export async function getAdminTaskById(req, res) {
 
         res.json({ task: rows[0] });
     } catch(error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function createAdminTask(req, res) {
+export async function createAdminTask(req, res, next) {
     let connection;
     const { task, description, status } = req.body;
 
@@ -154,14 +154,13 @@ export async function createAdminTask(req, res) {
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function updateAdminTask(req, res) {
+export async function updateAdminTask(req, res, next) {
     let connection;
     const { id } = req.params;
     const { task, description, status } = req.body;
@@ -181,14 +180,13 @@ export async function updateAdminTask(req, res) {
         res.json({ message: "Task updated successfully" });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function isUserActive(req, res) {
+export async function isUserActive(req, res, next) {
     let connection;
     try {
         connection = await pool.getConnection();
@@ -199,13 +197,13 @@ export async function isUserActive(req, res) {
         if (!rows.length) return res.status(404).json({ error: "User not found" });
         res.json({ isUserActive: rows[0].status === "active" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function blockUser(req, res) {
+export async function blockUser(req, res, next) {
     let connection;
     try {
         connection = await pool.getConnection();
@@ -222,13 +220,13 @@ export async function blockUser(req, res) {
         );
         res.json({ message: `User ${newStatus}` });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function deleteUser(req, res) {
+export async function deleteUser(req, res, next) {
     let connection;
 
     try {
@@ -248,7 +246,7 @@ export async function deleteUser(req, res) {
         res.json({ message: "User deleted successfully" });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

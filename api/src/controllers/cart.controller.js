@@ -1,6 +1,6 @@
 import { pool } from "../config/database.js";
 
-export async function setCartItem(req, res) {
+export async function setCartItem(req, res, next) {
     let connection;
     const { userId, productId, size } = req.body;
 
@@ -13,19 +13,20 @@ export async function setCartItem(req, res) {
 
         await connection.query(`
             INSERT INTO cart_items
-            (user_id, product_id, quantity, size_mm) 
-            VALUES (?, ?, ?, ?)
-        `, [userId, productId, 1, size] );
+            (user_id, product_id, quantity, size_mm)
+            VALUES (?, ?, 1, ?)
+            ON DUPLICATE KEY UPDATE quantity = quantity + 1
+        `, [userId, productId, size] );
 
         res.status(201).json({ ok: true });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
-        connection.release();
+        if (connection) connection.release();
     }
 }
 
-export async function ajustCartItemQuantity(req, res) {
+export async function ajustCartItemQuantity(req, res, next) {
     let connection;
     const { userId, productId } = req.params;
     const { quantity, type, size } = req.body;
@@ -65,13 +66,13 @@ export async function ajustCartItemQuantity(req, res) {
 
         res.status(200).json({ ok: true });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
-        connection.release();
+        if (connection) connection.release();
     }
 }
 
-export async function getCartItems(req, res) {
+export async function getCartItems(req, res, next) {
     let connection;
     const { userId } = req.params;
 
@@ -92,7 +93,7 @@ export async function getCartItems(req, res) {
 
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
@@ -114,7 +115,7 @@ export async function removeCartItem(req, res) {
     }
 }
 
-export async function isInCart(req, res) {
+export async function isInCart(req, res, next) {
     let connection;
     const { userId, productId, size } = req.params;
 
@@ -128,7 +129,7 @@ export async function isInCart(req, res) {
 
         res.json(rows.length > 0);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

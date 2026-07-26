@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { deleteAddress, getAddresses, getUserById, updateUser } from "../../../../api/usersApi";
+import { deleteAddress, getAddresses, getCurrentUser, updateUser } from "../../../../api/usersApi";
 import { useNavigate } from "react-router-dom";
 import Table from "../../../../ui/Table";
 import { useTranslation } from "react-i18next";
@@ -49,7 +49,7 @@ export default function UserInfo() {
     });
 
     useEffect(() => {
-        getUserById(account)
+        getCurrentUser()
             .then((data) => setUser(data))
             .catch(() => setUser([]));
     }, [account])
@@ -113,7 +113,7 @@ export default function UserInfo() {
             <div className="bg-white rounded-2xl p-8 shadow-md border border-stone-100">
                 <h2 className="text-lg font-[Panchang-Semibold] pb-2">{t("myAccount")}</h2>
                 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     {/* Email */}
                     <div className="flex flex-col gap-2">

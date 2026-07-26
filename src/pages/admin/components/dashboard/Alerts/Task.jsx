@@ -35,7 +35,7 @@ export default function EditTask() {
                         alert("Task Updated");
                         navigate("/admin/dashboard");
                     }}
-                    className="grid grid-cols-2 gap-6"
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
                     {/* Title */}
                     <input

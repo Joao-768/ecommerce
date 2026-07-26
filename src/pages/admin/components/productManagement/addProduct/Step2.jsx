@@ -14,7 +14,7 @@ export default function Step2({ form, setForm, handleChange, setStep, t }) {
     }
 
     return (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormInput type="text" name="movement" value={form.movement} onChange={handleChange} placeholder={t("movement")} className="col-span-2" />
             <FormInput type="text" name="case_material" value={form.case_material} onChange={handleChange} placeholder={t("caseMaterial")} className="col-span-2" />
             <FormInput type="text" name="crystal" value={form.crystal} onChange={handleChange} placeholder={t("crystal")} />

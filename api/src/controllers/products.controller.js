@@ -1,6 +1,6 @@
 import { pool } from "../config/database.js";
 
-export async function createProduct(req, res) {
+export async function createProduct(req, res, next) {
     let connection;
     const { 
         name, description, price, stock, max_stock,
@@ -29,13 +29,13 @@ export async function createProduct(req, res) {
         );
         res.status(201).json({ id: result.insertId, name });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getProducts(req, res) {
+export async function getProducts(req, res, next) {
     let connection;
     const { sort, limit, stock, count } = req.query;
 
@@ -90,13 +90,13 @@ export async function getProducts(req, res) {
         res.json({ products: rows });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getProductById(req, res) {
+export async function getProductById(req, res, next) {
     let connection;
     const { id } = req.params;
     const lang = req.query.lang || 'en';
@@ -111,32 +111,45 @@ export async function getProductById(req, res) {
         `, [lang, id]);
         res.json(rows[0]);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function updateProduct(req, res) {
+export async function updateProduct(req, res, next) {
     let connection;
     const productId = req.params.id;
-    const { name, price, stock, category, collection, gender } = req.body;
+    const {
+        name, description, price, stock, max_stock,
+        category_id, collection_id, gender_id, image,
+        movement, case_material, crystal,
+        water_resistance, strap, warranty
+    } = req.body;
 
     try {
         connection = await pool.getConnection();
         await connection.query(
-            "UPDATE products SET name = ?, price = ?, stock = ?, category_id = ?, collection_id = ?, gender_id = ? WHERE id = ?",
-            [name, price, stock, category, collection, gender, productId]
+            `UPDATE products SET
+            name = ?, description = ?, price = ?, stock = ?, max_stock = ?,
+            category_id = ?, collection_id = ?, gender_id = ?, image = ?,
+            movement = ?, case_material = ?, crystal = ?,
+            water_resistance = ?, strap = ?, warranty = ?
+            WHERE id = ?`,
+            [name, description, price, stock, max_stock,
+            category_id, collection_id, gender_id, image,
+            movement, case_material, crystal,
+            water_resistance, strap, warranty, productId]
         );
         res.json({ message: "Product updated successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function setCode(req, res) {
+export async function setCode(req, res, next) {
     const { id } = req.params;
     const { code } = req.body;
     let connection;
@@ -149,13 +162,13 @@ export async function setCode(req, res) {
         );
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function adjustStock(req, res) {
+export async function adjustStock(req, res, next) {
     let connection;
     const productId = req.params.id;
     const { amount, type } = req.body;
@@ -174,13 +187,13 @@ export async function adjustStock(req, res) {
         );
         res.json({ message: "Stock updated successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getCodes(req, res) {
+export async function getCodes(req, res, next) {
     let connection;
 
     try {
@@ -188,13 +201,13 @@ export async function getCodes(req, res) {
         const [rows] = await connection.query("SELECT id, code FROM products");
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getTotalProductByCollection(req, res) {
+export async function getTotalProductByCollection(req, res, next) {
     let connection;
 
     try {
@@ -206,13 +219,13 @@ export async function getTotalProductByCollection(req, res) {
         `);
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function getProductSizes(req, res) {
+export async function getProductSizes(req, res, next) {
     let connection;
     const { id } = req.params;
 
@@ -224,13 +237,13 @@ export async function getProductSizes(req, res) {
         );
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function setProductSize(req, res) {
+export async function setProductSize(req, res, next) {
     let connection;
     const { id } = req.params;
     const { size } = req.body;
@@ -243,7 +256,7 @@ export async function setProductSize(req, res) {
         );
         res.status(201).json({ ok: true });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

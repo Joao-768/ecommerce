@@ -1,19 +1,16 @@
 import { generateCollectionSlug } from "../../api/src/utils/collectionsUtils";
 import { API_URL } from "./config.js";
+import api from "./axios.js";
 
 const API_BASE = `${API_URL}/products`;
 
 export async function createProduct(productData) {
-    const res = await fetch(API_BASE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productData),
-    });
-    if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Fail to create product");
+    try {
+        const res = await api.post("/products", productData);
+        return res.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.error || "Fail to create product");
     }
-    return res.json();
 }
 
 export async function getProducts() {
@@ -31,43 +28,31 @@ export async function getProductById(id, lang = 'en') {
     return { product, error: null };
 }
 
-export async function updateProduct(productId, name, price, stock, category, collection, gender) {
-    const res = await fetch(`${API_BASE}/${productId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, price, stock, category, collection, gender }),
-    });
-    if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Fail to update product");
+export async function updateProduct(productId, productData) {
+    try {
+        const res = await api.put(`/products/${productId}`, productData);
+        return res.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.error || "Fail to update product");
     }
-    return res.json();
 }
 
 export async function setCode(id, code) {
-    const res = await fetch(`${API_BASE}/${id}/code`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
-    });
-    if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Fail to create code");
+    try {
+        const res = await api.patch(`/products/${id}/code`, { code });
+        return res.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.error || "Fail to create code");
     }
-    return res.json();
 }
 
 export async function adjustStock(productId, amount, type) {
-    const res = await fetch(`${API_BASE}/${productId}/stock`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, type }),
-    });
-    if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Fail to adjust product stock");
+    try {
+        const res = await api.patch(`/products/${productId}/stock`, { amount, type });
+        return res.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.error || "Fail to adjust product stock");
     }
-    return res.json();
 }
 
 export async function getPopularProducts() {
@@ -139,26 +124,26 @@ export async function getProductSizes(productId) {
 }
 
 export async function setProductSize(productId, size) {
-    const res = await fetch(`${API_BASE}/${productId}/sizes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ size }),
-    });
-    if (!res.ok) throw new Error("Fail to set product size");
-    return res.json();
+    try {
+        const res = await api.post(`/products/${productId}/sizes`, { size });
+        return res.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.error || "Fail to set product size");
+    }
 }
 
 export async function uploadImage(file, collectionName, productName) {
     const formData = new FormData();
     formData.append("image", file);
-    const res = await fetch(`${API_BASE}/upload`, {
-        method: "POST",
-        headers: {
-            "collectionname": generateCollectionSlug(collectionName),
-            "filename": `${productName}.png`,
-        },
-        body: formData,
-    });
-    if (!res.ok) throw new Error("Fail to upload image");
-    return res.json();
+    try {
+        const res = await api.post("/products/upload", formData, {
+            headers: {
+                "collectionname": generateCollectionSlug(collectionName),
+                "filename": `${productName}.png`,
+            },
+        });
+        return res.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.error || "Fail to upload image");
+    }
 }

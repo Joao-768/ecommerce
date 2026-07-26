@@ -1,6 +1,6 @@
 import { pool } from "../config/database.js";
 
-export async function searchProducts(req, res) {
+export async function searchProducts(req, res, next) {
     let connection;
     const { q } = req.query;
 
@@ -14,13 +14,13 @@ export async function searchProducts(req, res) {
         );
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }
 }
 
-export async function incrementSearchCount(req, res) {
+export async function incrementSearchCount(req, res, next) {
     let connection;
     const { id } = req.params;
 
@@ -32,7 +32,7 @@ export async function incrementSearchCount(req, res) {
         );
         res.json({ ok: true });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     } finally {
         if (connection) connection.release();
     }

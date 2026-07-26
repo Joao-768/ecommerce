@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { createUser } from "../../api/usersApi.js";
+import { createUser, verifyEmail, resendVerificationEmail } from "../../api/usersApi.js";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useScrollToTop } from "../../utils/format.js";
@@ -11,6 +11,8 @@ export default function CreateAccount() {
     const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [step, setStep] = useState(1);
+    const [code, setCode] = useState("");
 
     const navigate = useNavigate();
 
@@ -22,7 +24,6 @@ export default function CreateAccount() {
         email: "",
         password: "",
         confirmPassword: "",
-        role: "user",
     });
 
     const handleChange = (e) => {
@@ -68,11 +69,35 @@ export default function CreateAccount() {
         }
 
         try {
-            const data = await createUser(form);
-            localStorage.setItem("account", String(data.id));
-            navigate('/user-page/control-panel');
+            await createUser(form);
+            setStep(2);
         } catch (err) {
             alert(err?.message || "Falha ao criar conta");
+        }
+    };
+
+    const handleVerify = async (e) => {
+        e.preventDefault();
+
+        if (!code) {
+            alert(t("fillAllFields"));
+            return;
+        }
+
+        try {
+            await verifyEmail(form.email, code);
+            navigate('/login');
+        } catch (err) {
+            alert(err?.message || "Código inválido");
+        }
+    };
+
+    const handleResend = async () => {
+        try {
+            await resendVerificationEmail(form.email);
+            alert("Código reenviado");
+        } catch (err) {
+            alert(err?.message || "Falha ao reenviar código");
         }
     };
 
@@ -86,10 +111,30 @@ export default function CreateAccount() {
                 </h2>
 
                 <p className="text-stone-500 mb-10 text-center font-[Panchang-Regular]">
-                    {t("createAccountDescription")}
+                    {step === 1 ? t("createAccountDescription") : `Insere o código enviado para ${form.email}.`}
                 </p>
 
-                <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-x-6 gap-y-6">
+                {step === 2 ? (
+                    <form onSubmit={handleVerify} className="grid gap-6">
+                        <FormInput
+                            variant="line"
+                            type="text"
+                            name="code"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            placeholder="000000"
+                        />
+
+                        <Button type="submit" className="py-3 rounded-full w-full" shape="pill">
+                            Confirmar email
+                        </Button>
+
+                        <GhostButton type="button" onClick={handleResend} className="text-stone-500 text-sm">
+                            Reenviar código
+                        </GhostButton>
+                    </form>
+                ) : (
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
 
                     {/* Name */}
                     <div className="flex flex-col">
@@ -211,8 +256,8 @@ export default function CreateAccount() {
                         </div>
                     </div>
                 
-                    <Button 
-                        type="submit" 
+                    <Button
+                        type="submit"
                         className="col-span-2 py-3 rounded-full w-full"
                         shape="pill"
                     >
@@ -220,6 +265,7 @@ export default function CreateAccount() {
                     </Button>
 
                 </form>
+                )}
 
                 <p className="mt-8 text-center text-sm text-stone-500 font-[Panchang-Regular]">
                     {t("alreadyHaveAccount")}{" "}

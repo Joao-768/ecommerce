@@ -156,12 +156,12 @@ export default function ProductPage({ cartIsOpen, setCartIsOpen }) {
 
     return (
         <div className="w-screen min-h-screen">
-            <div className="grid grid-cols-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
 
                 {/* Left Screen */}
                 <div className="relative">
-                    <div className="sticky top-0 h-screen w-full bg-stone-100 flex items-center justify-center pt-30">
-                        <nav className="absolute top-32 left-3 h-10 z-10 flex items-center gap-2 text-sm font-[Panchang-Regular] whitespace-nowrap">
+                    <div className="lg:sticky lg:top-0 h-[60vh] lg:h-screen w-full bg-stone-100 flex items-center justify-center pt-30">
+                        <nav className="absolute top-32 left-3 right-3 h-10 z-10 flex flex-wrap items-center gap-2 text-sm font-[Panchang-Regular]">
                             <GhostButton onClick={() => navigate('/')}>{t("home")}</GhostButton>
                             <span>-</span>
                             <GhostButton onClick={() => navigate('/watches')}>{t("watches")}</GhostButton>
@@ -184,7 +184,7 @@ export default function ProductPage({ cartIsOpen, setCartIsOpen }) {
 
                 {/* Right Screen */}
                 <div className="flex justify-center border-l border-stone-100">
-                    <div className="w-full pr-20 pt-33 pb-20">
+                    <div className="w-full px-6 lg:pr-20 lg:pl-0 pt-16 lg:pt-33 pb-20">
                         <div className="flex items-center gap-3">
                             <h1 className="text-3xl font-[Panchang-Semibold]">{product.name}</h1>
                             <button

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { adjustStock } from "../../api/productsApi";
-import { getCartItems, clearCart } from "../../api/cartApi";
-import { getAddresses, getPaymentMethod, getUserById, setPaymentMethod, setNif } from "../../api/usersApi";
+import { getCartItems } from "../../api/cartApi";
+import { getAddresses, getPaymentMethod, getCurrentUser } from "../../api/usersApi";
 import { useTranslation } from "react-i18next";
-import { createOrder, createOrderAddress, setOrderItems } from "../../api/ordersApi";
+import { checkout } from "../../api/ordersApi";
 import { formatCurrency, useScrollToTop } from "../../utils/format";
 import { FiShoppingCart } from "react-icons/fi";
 
@@ -50,11 +49,12 @@ export default function Checkout() {
             .then((data) => setCartItems(data))
             .catch(() => setCartItems([]));
 
-        getUserById(account)
+        getCurrentUser()
         .then((u) => {
             setUser(u);
             setBilling(prev => ({ ...prev, name: u.name, surname: u.surname, nif: u.nif ?? "" }));
-        });
+        })
+        .catch(() => setUser(null));
 
         getAddresses(account)
             .then((address) => setAddresses(address))
@@ -132,21 +132,18 @@ export default function Checkout() {
         }
 
         try {
-            const order = await createOrder(account, total, billing.nif);
-            await createOrderAddress(order.id, finalDelivery);
-            await setOrderItems(order.id, cartItems);
-            if (!user?.nif) {
-                await setNif(account, billing.nif);
-            }
-            if (!selectedCard) {
-                await setPaymentMethod(account, card.cardNumber, card.expiry);
-            }
-            for (const item of cartItems) await adjustStock(item.id, item.quantity || 1, "decrease");
-            await clearCart(account);
+            await checkout({
+                userId: account,
+                nif: billing.nif,
+                address: finalDelivery,
+                cartItems,
+                card: !selectedCard ? { cardNumber: card.cardNumber, expiry: card.expiry } : undefined,
+            });
             alert(t("orderSuccess"));
             navigate("/user-page/orders");
         } catch (err) {
             console.error(err);
+            alert(err?.message || "Falha ao finalizar a encomenda");
         }
     }
 
