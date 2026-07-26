@@ -32,7 +32,7 @@ import AddTask from "./pages/admin/components/dashboard/Alerts/AddTask";
 import EditTask from "./pages/admin/components/dashboard/Alerts/EditTask";
 
 import CollectionManagement from "./pages/admin/components/collectionManagement/CollectionManagement"; 
-import AddCollection from "./pages/admin/components/collectionManagement/addCollection";
+import AddCollection from "./pages/admin/components/collectionManagement/AddCollection";
 import EditCollection from "./pages/admin/components/collectionManagement/EditCollection";
 import ProductsCollection from "./pages/admin/components/collectionManagement/ProductsCollection";
 

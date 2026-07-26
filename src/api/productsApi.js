@@ -1,4 +1,4 @@
-import { generateCollectionSlug } from "../../api/src/utils/collectionsUtils";
+import { generateCollectionSlug } from "./collectionsUtils";
 import { API_URL } from "./config.js";
 import api from "./axios.js";
 
