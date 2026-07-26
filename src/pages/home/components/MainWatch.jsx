@@ -20,7 +20,6 @@ export default function MainWatch() {
 
     return (
         <>
-            {/* Original hero — UNCHANGED, shown only at >=1400px (the design target width) */}
             <div className="hidden min-[1400px]:flex pt-48 text-black flex-col h-screen items-start relative overflow-hidden">
 
                 <div className="absolute inset-0 pt-40 z-0">
@@ -80,7 +79,6 @@ export default function MainWatch() {
                 </div>
             </div>
 
-            {/* Responsive stacked hero — shown only below 1400px */}
             <div className="flex min-[1400px]:hidden pt-32 sm:pt-40 text-black flex-col min-h-screen items-center relative overflow-hidden">
 
                 <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
@@ -93,7 +91,6 @@ export default function MainWatch() {
 
                 <div className="relative z-10 flex flex-col items-center gap-6 px-6 w-full">
 
-                    {/* Watch (main) with tiger beside */}
                     <div className="relative w-full flex items-end justify-center h-[40vh]">
                         <div className="absolute bottom-0 left-0 h-[62%] flex items-end">
                             <img src="/images/tiger.png" alt="Tiger" className="h-full object-contain max-w-none" />
@@ -106,7 +103,6 @@ export default function MainWatch() {
                         />
                     </div>
 
-                    {/* Title */}
                     <div className="flex flex-col items-center text-center">
                         <div className="text-[clamp(2rem,7vw,3.5rem)] font-[Panchang-Extrabold] leading-none -mb-2">
                             The White
@@ -116,7 +112,6 @@ export default function MainWatch() {
                         </div>
                     </div>
 
-                    {/* Buttons */}
                     <div className="flex flex-col items-center gap-4">
                         <Button className="shadow-xl" onClick={() => navigate('product/1')}>
                             {t("buyNow")}

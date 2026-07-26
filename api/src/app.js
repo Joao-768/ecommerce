@@ -71,12 +71,10 @@ app.use("/api/preferences", preferencesRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/cart", cartRoutes);
 
-// 404 for unmatched API routes
 app.use("/api", (req, res) => {
     res.status(404).json({ error: "Not found" });
 });
 
-// Central error handler
 app.use((err, req, res, next) => {
     if (err.message === "Not allowed by CORS") {
         return res.status(403).json({ error: "Not allowed by CORS" });

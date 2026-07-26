@@ -1,31 +1,12 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Tempo de geração: 23-Jun-2026 às 22:32
--- Versão do servidor: 10.4.28-MariaDB
--- versão do PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
-
---
--- Banco de dados: `ecommerce_db`
---
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Addresses`
---
 
 CREATE TABLE `Addresses` (
   `id` int(11) NOT NULL,
@@ -37,18 +18,8 @@ CREATE TABLE `Addresses` (
   `district` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Addresses`
---
-
 INSERT INTO `Addresses` (`id`, `user_id`, `street`, `city`, `postal_code`, `country`, `district`) VALUES
 (2, 56, 'Rua das Flores N123', 'Vila Boa do Bispo', '4123-456', 'Portugal', 'Porto');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Admin_Tasks`
---
 
 CREATE TABLE `Admin_Tasks` (
   `id` int(11) NOT NULL,
@@ -58,18 +29,8 @@ CREATE TABLE `Admin_Tasks` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Admin_Tasks`
---
-
 INSERT INTO `Admin_Tasks` (`id`, `task`, `description`, `status`, `created_at`) VALUES
 (2, 'Delete Product 4', 'Delete product 4 (The Amethyst Fox)', 'In Progress', '2026-04-25 21:44:57');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Cart_Items`
---
 
 CREATE TABLE `Cart_Items` (
   `user_id` int(11) NOT NULL,
@@ -78,18 +39,8 @@ CREATE TABLE `Cart_Items` (
   `size_mm` int(11) NOT NULL DEFAULT 36
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Cart_Items`
---
-
 INSERT INTO `Cart_Items` (`user_id`, `product_id`, `quantity`, `size_mm`) VALUES
 (56, 1, 1, 40);
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Categories`
---
 
 CREATE TABLE `Categories` (
   `id` int(11) NOT NULL,
@@ -97,20 +48,10 @@ CREATE TABLE `Categories` (
   `code` varchar(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Categories`
---
-
 INSERT INTO `Categories` (`id`, `name`, `code`) VALUES
 (1, 'daily', 'DA'),
 (2, 'casual', 'CA'),
 (3, 'elegance', 'EL');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Collections`
---
 
 CREATE TABLE `Collections` (
   `id` int(11) NOT NULL,
@@ -118,10 +59,6 @@ CREATE TABLE `Collections` (
   `description` text DEFAULT NULL,
   `code` varchar(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `Collections`
---
 
 INSERT INTO `Collections` (`id`, `name`, `description`, `code`) VALUES
 (1, 'Eternal Beasts', 'Main collection inspired by exotic animals', 'EB'),
@@ -131,31 +68,15 @@ INSERT INTO `Collections` (`id`, `name`, `description`, `code`) VALUES
 (5, 'Winter Edition', 'Winter seasonal limited line', 'WE'),
 (6, 'Limited Edition', 'Numbered exclusive models', 'LE');
 
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Genders`
---
-
 CREATE TABLE `Genders` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Genders`
---
-
 INSERT INTO `Genders` (`id`, `name`) VALUES
 (1, 'Male'),
 (2, 'Female'),
 (3, 'Unisex');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Orders`
---
 
 CREATE TABLE `Orders` (
   `id` int(11) NOT NULL,
@@ -167,18 +88,8 @@ CREATE TABLE `Orders` (
   `nif` varchar(9) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Orders`
---
-
 INSERT INTO `Orders` (`id`, `user_id`, `total_price`, `status`, `payment_method_id`, `created_at`, `nif`) VALUES
 (35, 56, 125000.00, 'paid', NULL, '2026-06-17 08:49:38', NULL);
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Order_Addresses`
---
 
 CREATE TABLE `Order_Addresses` (
   `id` int(11) NOT NULL,
@@ -191,18 +102,8 @@ CREATE TABLE `Order_Addresses` (
   `type` enum('billing','delivery') NOT NULL DEFAULT 'delivery'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Order_Addresses`
---
-
 INSERT INTO `Order_Addresses` (`id`, `order_id`, `street`, `city`, `postal_code`, `district`, `country`, `type`) VALUES
 (12, 35, 'Rua Dos Pimpa', 'Lixa', '1234-456', 'Porto', 'Portugal', 'delivery');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Order_Items`
---
 
 CREATE TABLE `Order_Items` (
   `id` int(11) NOT NULL,
@@ -214,18 +115,8 @@ CREATE TABLE `Order_Items` (
   `size` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Order_Items`
---
-
 INSERT INTO `Order_Items` (`id`, `order_id`, `product_id`, `price_at_purchase`, `product_name`, `quantity`, `size`) VALUES
 (43, 35, 1, 12500.00, 'The White Fang', 10, '36');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Order_Status_History`
---
 
 CREATE TABLE `Order_Status_History` (
   `order_id` int(11) NOT NULL,
@@ -233,18 +124,8 @@ CREATE TABLE `Order_Status_History` (
   `changed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Order_Status_History`
---
-
 INSERT INTO `Order_Status_History` (`order_id`, `status`, `changed_at`) VALUES
 (35, 'paid', '2026-06-17 08:49:38');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Payment_Methods`
---
 
 CREATE TABLE `Payment_Methods` (
   `id` int(11) NOT NULL,
@@ -253,27 +134,13 @@ CREATE TABLE `Payment_Methods` (
   `expiry` varchar(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Payment_Methods`
---
-
 INSERT INTO `Payment_Methods` (`id`, `user_id`, `card_number`, `expiry`) VALUES
 (2, 56, '3456', '12/30');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Preferences`
---
 
 CREATE TABLE `Preferences` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `Preferences`
---
 
 INSERT INTO `Preferences` (`id`, `name`) VALUES
 (1, 'daily'),
@@ -282,12 +149,6 @@ INSERT INTO `Preferences` (`id`, `name`) VALUES
 (4, 'minimalist'),
 (5, 'classic'),
 (6, 'bold');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Products`
---
 
 CREATE TABLE `Products` (
   `id` int(11) NOT NULL,
@@ -311,10 +172,6 @@ CREATE TABLE `Products` (
   `warranty` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Products`
---
-
 INSERT INTO `Products` (`id`, `name`, `price`, `stock`, `collection_id`, `category_id`, `created_at`, `gender_id`, `search_count`, `image`, `max_stock`, `sales`, `code`, `movement`, `case_material`, `crystal`, `water_resistance`, `strap`, `warranty`) VALUES
 (1, 'The White Fang', 12500.00, 38, 1, 3, '2026-02-07 13:47:16', 1, 5, '/images/eternal-beasts/the-white-fang.png', 50, 8, 'EB-EL-1', 'Automatic', 'Stainless Steel 316L', 'Sapphire Crystal', '50m / 5ATM', 'Stainless Steel', '2 Years'),
 (2, 'The Onyx Panther', 9000.00, 50, 1, 3, '2026-02-07 13:47:16', 1, 4, '/images/eternal-beasts/the-onyx-panther.png', 50, 3, 'EB-EL-2', 'Automatic', 'Stainless Steel 316L', 'Sapphire Crystal', '100m / 10ATM', 'Black Leather', '2 Years'),
@@ -336,20 +193,10 @@ INSERT INTO `Products` (`id`, `name`, `price`, `stock`, `collection_id`, `catego
 (21, 'The Sovereign Eclipse', 15000.00, 9, 6, 3, '2026-03-05 16:35:38', 3, 0, '/images/limited-edition/the-sovereign-eclipse.png', 10, 0, 'LE-EL-21', 'Automatic', 'Stainless Steel 316L', 'Sapphire Crystal', '100m / 10ATM', 'Stainless Steel', '2 Years'),
 (22, 'The Legendary Crown', 15000.00, 10, 6, 3, '2026-03-05 16:35:38', 3, 0, '/images/limited-edition/the-legendary-crown.png', 10, 0, 'LE-EL-22', 'Automatic', 'Stainless Steel 316L', 'Sapphire Crystal', '50m / 5ATM', 'Stainless Steel', '2 Years');
 
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Product_Preferences`
---
-
 CREATE TABLE `Product_Preferences` (
   `product_id` int(11) NOT NULL,
   `preference_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `Product_Preferences`
---
 
 INSERT INTO `Product_Preferences` (`product_id`, `preference_id`) VALUES
 (1, 3),
@@ -395,20 +242,10 @@ INSERT INTO `Product_Preferences` (`product_id`, `preference_id`) VALUES
 (22, 4),
 (22, 5);
 
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Product_Sizes`
---
-
 CREATE TABLE `Product_Sizes` (
   `product_id` int(11) NOT NULL,
   `size_mm` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `Product_Sizes`
---
 
 INSERT INTO `Product_Sizes` (`product_id`, `size_mm`) VALUES
 (1, 36),
@@ -444,22 +281,12 @@ INSERT INTO `Product_Sizes` (`product_id`, `size_mm`) VALUES
 (22, 36),
 (22, 40);
 
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Product_Translations`
---
-
 CREATE TABLE `Product_Translations` (
   `id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `language_code` varchar(5) NOT NULL,
   `description` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `Product_Translations`
---
 
 INSERT INTO `Product_Translations` (`id`, `product_id`, `language_code`, `description`) VALUES
 (1, 1, 'en', 'Ultra-refined luxury piece with a pure white dial'),
@@ -558,31 +385,15 @@ INSERT INTO `Product_Translations` (`id`, `product_id`, `language_code`, `descri
 (94, 22, 'fr', 'Modèle collectionneur limité'),
 (95, 22, 'de', 'Limitiertes Sammlermodell');
 
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Sizes`
---
-
 CREATE TABLE `Sizes` (
   `size_mm` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `Sizes`
---
 
 INSERT INTO `Sizes` (`size_mm`) VALUES
 (36),
 (40),
 (44),
 (48);
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Users`
---
 
 CREATE TABLE `Users` (
   `id` int(11) NOT NULL,
@@ -598,19 +409,9 @@ CREATE TABLE `Users` (
   `nif` varchar(9) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Users`
---
-
 INSERT INTO `Users` (`id`, `email`, `role`, `created_at`, `name`, `surname`, `password_hash`, `date_of_birth`, `last_activity`, `status`, `nif`) VALUES
 (56, 'user@demo.com', 'user', '2026-06-23 20:25:29', 'User', 'Demo', '$2b$10$NUdr665pnVvDzrJygl.zv.ol2ZBhN9kvvI4wmFZIn86gMKMRIuvFq', NULL, '2026-06-23 20:25:29', 'active', NULL),
 (57, 'admin@demo.com', 'admin', '2026-06-23 20:26:16', 'Admin', 'Demo', '$2b$10$ecUyPqt6TYCGrh05x6s2Uep4uWbMduRJgU9rp3cOGnWnaDZKo4PaK', NULL, '2026-06-23 20:26:16', 'active', NULL);
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `User_Collection`
---
 
 CREATE TABLE `User_Collection` (
   `user_id` int(11) NOT NULL,
@@ -618,389 +419,206 @@ CREATE TABLE `User_Collection` (
   `added_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `User_Collection`
---
-
 INSERT INTO `User_Collection` (`user_id`, `product_id`, `added_at`) VALUES
 (56, 1, '2026-04-18 22:57:19'),
 (56, 21, '2026-05-20 10:55:21'),
 (56, 22, '2026-05-20 10:55:17');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `User_Preferences`
---
 
 CREATE TABLE `User_Preferences` (
   `user_id` int(11) NOT NULL,
   `preference_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `User_Preferences`
---
-
 INSERT INTO `User_Preferences` (`user_id`, `preference_id`) VALUES
 (56, 2),
 (56, 3),
 (56, 4);
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `Wishlist_Items`
---
 
 CREATE TABLE `Wishlist_Items` (
   `user_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Extraindo dados da tabela `Wishlist_Items`
---
-
 INSERT INTO `Wishlist_Items` (`user_id`, `product_id`) VALUES
 (56, 1),
 (56, 2),
 (56, 10);
 
---
--- Índices para tabelas despejadas
---
-
---
--- Índices para tabela `Addresses`
---
 ALTER TABLE `Addresses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
---
--- Índices para tabela `Admin_Tasks`
---
 ALTER TABLE `Admin_Tasks`
   ADD PRIMARY KEY (`id`);
 
---
--- Índices para tabela `Cart_Items`
---
 ALTER TABLE `Cart_Items`
   ADD PRIMARY KEY (`user_id`,`product_id`,`size_mm`),
   ADD KEY `ci_product_fk` (`product_id`),
   ADD KEY `ci_size_fk` (`size_mm`);
 
---
--- Índices para tabela `Categories`
---
 ALTER TABLE `Categories`
   ADD PRIMARY KEY (`id`);
 
---
--- Índices para tabela `Collections`
---
 ALTER TABLE `Collections`
   ADD PRIMARY KEY (`id`);
 
---
--- Índices para tabela `Genders`
---
 ALTER TABLE `Genders`
   ADD PRIMARY KEY (`id`);
 
---
--- Índices para tabela `Orders`
---
 ALTER TABLE `Orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `payment_method_id` (`payment_method_id`);
 
---
--- Índices para tabela `Order_Addresses`
---
 ALTER TABLE `Order_Addresses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_oa_order` (`order_id`);
 
---
--- Índices para tabela `Order_Items`
---
 ALTER TABLE `Order_Items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `product_id` (`product_id`),
   ADD KEY `order_items_ibfk_1` (`order_id`);
 
---
--- Índices para tabela `Order_Status_History`
---
 ALTER TABLE `Order_Status_History`
   ADD PRIMARY KEY (`order_id`,`changed_at`);
 
---
--- Índices para tabela `Payment_Methods`
---
 ALTER TABLE `Payment_Methods`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_payment_user` (`user_id`);
 
---
--- Índices para tabela `Preferences`
---
 ALTER TABLE `Preferences`
   ADD PRIMARY KEY (`id`);
 
---
--- Índices para tabela `Products`
---
 ALTER TABLE `Products`
   ADD PRIMARY KEY (`id`),
   ADD KEY `collection_id` (`collection_id`),
   ADD KEY `category_id` (`category_id`),
   ADD KEY `products_ibfk_3` (`gender_id`);
 
---
--- Índices para tabela `Product_Preferences`
---
 ALTER TABLE `Product_Preferences`
   ADD PRIMARY KEY (`product_id`,`preference_id`),
   ADD KEY `pp_ibfk_2` (`preference_id`);
 
---
--- Índices para tabela `Product_Sizes`
---
 ALTER TABLE `Product_Sizes`
   ADD PRIMARY KEY (`product_id`,`size_mm`),
   ADD KEY `product_sizes_size_fk` (`size_mm`);
 
---
--- Índices para tabela `Product_Translations`
---
 ALTER TABLE `Product_Translations`
   ADD PRIMARY KEY (`id`),
   ADD KEY `product_id` (`product_id`);
 
---
--- Índices para tabela `Sizes`
---
 ALTER TABLE `Sizes`
   ADD PRIMARY KEY (`size_mm`);
 
---
--- Índices para tabela `Users`
---
 ALTER TABLE `Users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
---
--- Índices para tabela `User_Collection`
---
 ALTER TABLE `User_Collection`
   ADD PRIMARY KEY (`user_id`,`product_id`),
   ADD KEY `user_collection_ibfk_2` (`product_id`);
 
---
--- Índices para tabela `User_Preferences`
---
 ALTER TABLE `User_Preferences`
   ADD PRIMARY KEY (`user_id`,`preference_id`),
   ADD KEY `user_preferences_ibfk_2` (`preference_id`);
 
---
--- Índices para tabela `Wishlist_Items`
---
 ALTER TABLE `Wishlist_Items`
   ADD PRIMARY KEY (`user_id`,`product_id`),
   ADD KEY `product_id` (`product_id`);
 
---
--- AUTO_INCREMENT de tabelas despejadas
---
-
---
--- AUTO_INCREMENT de tabela `Addresses`
---
 ALTER TABLE `Addresses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
---
--- AUTO_INCREMENT de tabela `Admin_Tasks`
---
 ALTER TABLE `Admin_Tasks`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
---
--- AUTO_INCREMENT de tabela `Categories`
---
 ALTER TABLE `Categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
---
--- AUTO_INCREMENT de tabela `Collections`
---
 ALTER TABLE `Collections`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
---
--- AUTO_INCREMENT de tabela `Genders`
---
 ALTER TABLE `Genders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
---
--- AUTO_INCREMENT de tabela `Orders`
---
 ALTER TABLE `Orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
---
--- AUTO_INCREMENT de tabela `Order_Addresses`
---
 ALTER TABLE `Order_Addresses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
---
--- AUTO_INCREMENT de tabela `Order_Items`
---
 ALTER TABLE `Order_Items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
---
--- AUTO_INCREMENT de tabela `Payment_Methods`
---
 ALTER TABLE `Payment_Methods`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
---
--- AUTO_INCREMENT de tabela `Preferences`
---
 ALTER TABLE `Preferences`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
---
--- AUTO_INCREMENT de tabela `Products`
---
 ALTER TABLE `Products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
---
--- AUTO_INCREMENT de tabela `Product_Translations`
---
 ALTER TABLE `Product_Translations`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
---
--- AUTO_INCREMENT de tabela `Users`
---
 ALTER TABLE `Users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
---
--- Restrições para despejos de tabelas
---
-
---
--- Limitadores para a tabela `Addresses`
---
 ALTER TABLE `Addresses`
   ADD CONSTRAINT `addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Cart_Items`
---
 ALTER TABLE `Cart_Items`
   ADD CONSTRAINT `ci_product_fk` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `ci_size_fk` FOREIGN KEY (`size_mm`) REFERENCES `Sizes` (`size_mm`),
   ADD CONSTRAINT `ci_user_fk` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Orders`
---
 ALTER TABLE `Orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `orders_payment_fk` FOREIGN KEY (`payment_method_id`) REFERENCES `Payment_Methods` (`id`) ON DELETE SET NULL;
 
---
--- Limitadores para a tabela `Order_Addresses`
---
 ALTER TABLE `Order_Addresses`
   ADD CONSTRAINT `fk_oa_order` FOREIGN KEY (`order_id`) REFERENCES `Orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_order_addresses` FOREIGN KEY (`order_id`) REFERENCES `Orders` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Order_Items`
---
 ALTER TABLE `Order_Items`
   ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `Orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Order_Status_History`
---
 ALTER TABLE `Order_Status_History`
   ADD CONSTRAINT `order_status_history_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `Orders` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Payment_Methods`
---
 ALTER TABLE `Payment_Methods`
   ADD CONSTRAINT `fk_payment_user` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Products`
---
 ALTER TABLE `Products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`collection_id`) REFERENCES `Collections` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `products_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `Categories` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `products_ibfk_3` FOREIGN KEY (`gender_id`) REFERENCES `Genders` (`id`) ON DELETE SET NULL;
 
---
--- Limitadores para a tabela `Product_Preferences`
---
 ALTER TABLE `Product_Preferences`
   ADD CONSTRAINT `pp_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `pp_ibfk_2` FOREIGN KEY (`preference_id`) REFERENCES `Preferences` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Product_Sizes`
---
 ALTER TABLE `Product_Sizes`
   ADD CONSTRAINT `product_sizes_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `product_sizes_size_fk` FOREIGN KEY (`size_mm`) REFERENCES `Sizes` (`size_mm`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Product_Translations`
---
 ALTER TABLE `Product_Translations`
   ADD CONSTRAINT `product_translations_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `User_Collection`
---
 ALTER TABLE `User_Collection`
   ADD CONSTRAINT `user_collection_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_collection_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `User_Preferences`
---
 ALTER TABLE `User_Preferences`
   ADD CONSTRAINT `user_preferences_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_preferences_ibfk_2` FOREIGN KEY (`preference_id`) REFERENCES `Preferences` (`id`) ON DELETE CASCADE;
 
---
--- Limitadores para a tabela `Wishlist_Items`
---
 ALTER TABLE `Wishlist_Items`
   ADD CONSTRAINT `wishlist_items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `wishlist_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
 
---
--- Email verification & password reset support
---
 ALTER TABLE `Users`
   ADD COLUMN `email_verified` TINYINT(1) NOT NULL DEFAULT 0,
   ADD COLUMN `email_verification_code` VARCHAR(10) DEFAULT NULL,
@@ -1010,15 +628,9 @@ ALTER TABLE `Users`
 
 UPDATE `Users` SET `email_verified` = 1 WHERE `password_hash` IS NOT NULL;
 
---
--- Missing description column on Products
---
 ALTER TABLE `Products`
   ADD COLUMN `description` TEXT DEFAULT NULL AFTER `name`;
 
---
--- NIF must be unique per user
---
 UPDATE `Users` SET `nif` = NULL WHERE `id` IN (54, 56);
 ALTER TABLE `Users`
   ADD UNIQUE KEY `unique_nif` (`nif`);
